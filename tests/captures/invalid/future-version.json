@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "repo": {
+    "host": "github.com",
+    "name": "example-org/todo-service"
+  },
+  "commit": "3f2a9c1e5b7d4a6f8e0c2b4d6f8a0c2e4b6d8f0a",
+  "path": "store/open.go",
+  "ranges": [
+    {
+      "start": 42,
+      "end": 48
+    }
+  ],
+  "snippet_sha256": "4698a0d6ddb651e214302e7767ce73361de8a83afb477fe304784a78f6233eed",
+  "note": "Opening the store must never fall back to an in-memory store; data would be lost on quit.",
+  "kind": "code-shape",
+  "source": {
+    "adapter": "cli"
+  },
+  "created_at": "2026-11-24T08:00:00Z"
+}

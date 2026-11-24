@@ -1,0 +1,9 @@
+name = "counter"
+defaultTargets = ["Counter"]
+
+[[require]]
+name = "tribrach"
+path = "../.."
+
+[[lean_lib]]
+name = "Counter"

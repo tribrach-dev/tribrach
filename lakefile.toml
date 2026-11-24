@@ -1,0 +1,6 @@
+name = "tribrach"
+version = "0.0.1"
+defaultTargets = ["Tribrach"]
+
+[[lean_lib]]
+name = "Tribrach"
