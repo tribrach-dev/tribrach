@@ -23,3 +23,19 @@ rule is checked here rather than proved; see `examples/counter` for proofs.
 In a real app the report contents come from the model's privacy labels, so a
 user sees exactly what will be sent, and only operation names and model state
 leave the device.
+
+## Rule cards
+
+[RULES.md](RULES.md) explains each rule in plain English, with situations it
+allows and forbids, and a "Did you know?" section of questions answered by the
+shortest example the search finds (for instance, whether a ticked item can end
+up unticked). Everything on the page is generated from the model:
+
+```sh
+lake exe cards --write RULES.md
+```
+
+CI runs `lake exe cards --check RULES.md`, which fails if the page is out of
+date, if the model breaks a rule, or if a rule forbids nothing (a rule that
+can't be broken says nothing). The examples are checked on every small list,
+not proved for all lists.

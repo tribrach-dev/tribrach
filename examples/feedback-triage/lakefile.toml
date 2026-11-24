@@ -1,5 +1,5 @@
 name = "feedback-triage"
-defaultTargets = ["Todo", "triage"]
+defaultTargets = ["Todo", "triage", "cards"]
 
 [[lean_lib]]
 name = "Todo"
@@ -7,3 +7,7 @@ name = "Todo"
 [[lean_exe]]
 name = "triage"
 root = "Main"
+
+[[lean_exe]]
+name = "cards"
+root = "CardsMain"
