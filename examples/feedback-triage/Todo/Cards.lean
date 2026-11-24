@@ -4,8 +4,8 @@ import Todo.Model
 # Rule cards
 
 A rule card restates one rule in plain English and shows it at work: a few
-situations the rule allows (taken from the model) and a few it forbids (the
-nearest outcome that would break it). Every example is found by search, not
+situations the rule allows (taken from the model) and, for each realistic bug
+the rule catches, what the buggy app would show. Every example is found by search, not
 written by hand, so the cards can't drift from the model.
 
 The search covers every list with items 1 and 2 that can be reached in up to
@@ -41,14 +41,6 @@ def reachable : List (List Item) :=
 /-- Every situation the cards are checked on: a list and an action. -/
 def cases : List (List Item × Op) :=
   reachable.flatMap (fun b => allOps.map (fun o => (b, o)))
-
-/-- Outcomes to search for forbidden examples, including broken ones such as
-duplicates. -/
-def items : List Item :=
-  ids.flatMap (fun i => [⟨i, false⟩, ⟨i, true⟩])
-
-def smallStates : List (List Item) :=
-  [[]] ++ items.map (fun a => [a]) ++ items.flatMap (fun a => items.map (fun b => [a, b]))
 
 /-! ## Plain-English rendering -/
 
@@ -128,21 +120,66 @@ def rules : List Rule := [
     holds := fun b o a => removesOnly b o a }
 ]
 
+/-! ## Realistic bugs
+
+Forbidden examples come from bugs an app could plausibly have. Each bug is a
+small change to the model. A rule earns its place by catching at least one,
+and a bug no rule catches is a blind spot worth knowing about.
+-/
+
+structure Bug where
+  name : String
+  step : Op → List Item → List Item
+
+def bugAddDuplicate : Op → List Item → List Item
+  | .add i, s => s ++ [⟨i, false⟩]
+  | o, s => step o s
+
+def bugReaddUnticks : Op → List Item → List Item
+  | .add i, s => if hasId s i then s.map (fun it => if it.id == i then { it with done := false } else it) else step (.add i) s
+  | o, s => step o s
+
+def bugAddAtTop : Op → List Item → List Item
+  | .add i, s => if hasId s i then s else ⟨i, false⟩ :: s
+  | o, s => step o s
+
+def bugTickToggles : Op → List Item → List Item
+  | .complete i, s => s.map (fun it => if it.id == i then { it with done := !it.done } else it)
+  | o, s => step o s
+
+def bugTickUnticksOthers : Op → List Item → List Item
+  | .complete i, s => s.map (fun it => { it with done := it.id == i })
+  | o, s => step o s
+
+def bugTickMissingAdds : Op → List Item → List Item
+  | .complete i, s => if hasId s i then step (.complete i) s else s ++ [⟨i, true⟩]
+  | o, s => step o s
+
+def bugRemoveUnticksOthers : Op → List Item → List Item
+  | .remove i, s => (step (.remove i) s).map (fun it => { it with done := false })
+  | o, s => step o s
+
+def bugRemoveLastIgnored : Op → List Item → List Item
+  | .remove i, s => if s.length == 1 then s else step (.remove i) s
+  | o, s => step o s
+
+def bugRemoveReverses : Op → List Item → List Item
+  | .remove i, s => (step (.remove i) s).reverse
+  | o, s => step o s
+
+def bugs : List Bug := [
+  { name := "adding an item that's already there adds a second copy", step := bugAddDuplicate },
+  { name := "adding an item that's already there unticks it", step := bugReaddUnticks },
+  { name := "new items go at the top", step := bugAddAtTop },
+  { name := "ticking a ticked item unticks it", step := bugTickToggles },
+  { name := "ticking one item unticks the others", step := bugTickUnticksOthers },
+  { name := "ticking a missing item adds it, ticked", step := bugTickMissingAdds },
+  { name := "removing an item unticks the others", step := bugRemoveUnticksOthers },
+  { name := "the last item can't be removed", step := bugRemoveLastIgnored },
+  { name := "removing an item reverses the rest", step := bugRemoveReverses }
+]
+
 /-! ## Finding examples -/
-
-def mismatches (e a : List Item) : Nat :=
-  ((e.zip a).filter (fun p => !(p.1 == p.2))).length
-
-/-- How far an outcome is from what the model does. -/
-def dist (e a : List Item) : Nat :=
-  (a.length - e.length) + (e.length - a.length) + mismatches e a
-
-/-- The outcome closest to `e` among `cands`, earliest first on ties. -/
-def closest (e : List Item) (cands : List (List Item)) : Option (List Item) :=
-  cands.foldl (fun best c =>
-    match best with
-    | none => some c
-    | some b => if dist e c < dist e b then some c else some b) none
 
 abbrev Example := List Item × Op × List Item
 
@@ -150,24 +187,26 @@ structure Card where
   rule : Rule
   checked : Nat
   allowed : List Example
-  forbidden : List Example
+  /-- An example per bug the rule catches: what the buggy app would show. -/
+  forbidden : List (Example × String)
   /-- Situations where the model itself breaks the rule. Should be empty. -/
   broken : List (List Item × Op)
 
-def nearMisses (r : Rule) (mine : List (List Item × Op)) : List (Example × Nat) :=
-  mine.filterMap (fun c =>
-    let e := step c.2 c.1
-    match closest e (smallStates.filter (fun a => !(r.holds c.1 c.2 a))) with
-    | some a => some ((c.1, c.2, a), dist e a)
-    | none => none)
+/-- Up to three examples spread across the list: first, middle, last. -/
+def spread {α : Type} (xs : List α) : List α :=
+  if xs.length ≤ 3 then xs
+  else [0, xs.length / 2, xs.length - 1].filterMap (fun k => xs[k]?)
+
+/-- The first situation where `bug` breaks rule `r`, if any. -/
+def caught (r : Rule) (mine : List (List Item × Op)) (bug : Bug) : Option (Example × String) :=
+  (mine.find? (fun c => !(r.holds c.1 c.2 (bug.step c.2 c.1)))).map
+    (fun c => ((c.1, c.2, bug.step c.2 c.1), bug.name))
 
 def makeCard (r : Rule) : Card :=
   let mine := cases.filter (fun c => r.applies c.1 c.2)
   let broken := mine.filter (fun c => !(r.holds c.1 c.2 (step c.2 c.1)))
-  let allowed := (mine.take 3).map (fun c => (c.1, c.2, step c.2 c.1))
-  let misses := nearMisses r mine
-  let nearestFirst := [1, 2, 3, 4, 5].flatMap (fun d => misses.filter (fun m => m.2 == d))
-  let forbidden := (nearestFirst.take 3).map (·.1)
+  let allowed := (spread mine).map (fun c => (c.1, c.2, step c.2 c.1))
+  let forbidden := bugs.filterMap (caught r mine)
   { rule := r, checked := mine.length, allowed, forbidden, broken }
 
 /-! ## Did you know? -/
@@ -226,9 +265,24 @@ def renderCard (n : Nat) (c : Card) : List String :=
    "**Allowed.** What the model does:", "",
    "| Before | Action | After |", "| --- | --- | --- |"] ++
   c.allowed.map row ++
-  ["", "**Forbidden.** An app that did this would break the rule:", "",
-   "| Before | Action | Not allowed after |", "| --- | --- | --- |"] ++
-  c.forbidden.map row ++ [""]
+  ["", "**Forbidden.** Bugs this rule catches, and what the buggy app would show:", "",
+   "| Bug | Before | Action | Buggy app shows |", "| --- | --- | --- | --- |"] ++
+  c.forbidden.map (fun f =>
+    s!"| {f.2} | {showState f.1.1} | {showOp f.1.2.1} | {showState f.1.2.2} |") ++ [""]
+
+/-- Bugs no rule catches anywhere in the search. -/
+def blindSpots : List Bug :=
+  bugs.filter (fun bug => rules.all (fun r =>
+    (caught r (cases.filter (fun c => r.applies c.1 c.2)) bug).isNone))
+
+def renderBlindSpots : List String :=
+  ["## Bugs these rules would miss", "",
+   s!"The search tried {bugs.length} realistic bugs against every rule."] ++
+  (if blindSpots.isEmpty then
+    ["Every one is caught by at least one rule.", ""]
+  else
+    ["These ones slip past every rule, so a buggy app would still pass:", ""] ++
+    blindSpots.map (fun b => s!"- {b.name}") ++ [""])
 
 def renderTrace (ops : List Op) : List String :=
   (List.range ops.length).map (fun k =>
@@ -253,7 +307,7 @@ def problems : List String :=
   cards.flatMap (fun c =>
     (if c.broken.isEmpty then [] else [s!"the model breaks \"{c.rule.name}\" in {c.broken.length} situations"]) ++
     (if c.checked == 0 then [s!"\"{c.rule.name}\" never applies in the search"] else []) ++
-    (if c.forbidden.isEmpty then [s!"\"{c.rule.name}\" forbids nothing, so it says nothing"] else []))
+    (if c.forbidden.isEmpty then [s!"\"{c.rule.name}\" catches none of the known bugs"] else []))
 
 def render : String :=
   let header := [
@@ -268,7 +322,7 @@ def render : String :=
   let dyk := ["## Did you know?", "",
     "Questions about the rules, answered with the shortest example the search finds.", ""] ++
     questions.flatMap renderQuestion
-  "\n".intercalate (header ++ body ++ dyk)
+  "\n".intercalate (header ++ body ++ renderBlindSpots ++ dyk)
 
 end Cards
 end Todo
