@@ -23,7 +23,9 @@ jobs:
         run: |
           for d in examples/*/; do
             if [ -f "$d/lakefile.toml" ]; then
-              echo "::group::$d"; (cd "$d" && lake build); echo "::endgroup::"
+              echo "::group::$d"
+              (cd "$d" && lake build && if [ -x check.sh ]; then ./check.sh; fi)
+              echo "::endgroup::"
             fi
           done
       - name: No sorry or new axioms

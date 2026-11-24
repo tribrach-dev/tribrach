@@ -1,0 +1,56 @@
+[
+  {
+    "id": "r1-wrong-item-completed",
+    "note": "I ticked the first item and the second one got ticked too.",
+    "start": [],
+    "ops": [
+      {"op": "add", "id": 1},
+      {"op": "add", "id": 2},
+      {"op": "complete", "id": 1}
+    ],
+    "observed": [{"id": 1, "done": true}, {"id": 2, "done": true}],
+    "expected": [{"id": 1, "done": true}, {"id": 2, "done": false}],
+    "triage": "code-bug"
+  },
+  {
+    "id": "r2-duplicate-item",
+    "note": "The same item shows up twice.",
+    "start": [],
+    "ops": [
+      {"op": "add", "id": 1},
+      {"op": "add", "id": 1}
+    ],
+    "observed": [{"id": 1, "done": false}, {"id": 1, "done": false}],
+    "triage": "code-bug"
+  },
+  {
+    "id": "r3-readd-should-uncheck",
+    "note": "I added a finished item again and expected it to be unticked.",
+    "start": [],
+    "ops": [
+      {"op": "add", "id": 1},
+      {"op": "complete", "id": 1},
+      {"op": "add", "id": 1}
+    ],
+    "observed": [{"id": 1, "done": true}],
+    "expected": [{"id": 1, "done": false}],
+    "triage": "expectation-mismatch"
+  },
+  {
+    "id": "r4-unknown-operation",
+    "note": "Archiving did something odd.",
+    "start": [{"id": 1, "done": true}],
+    "ops": [{"op": "archive", "id": 1}],
+    "observed": [],
+    "triage": "cannot-reproduce"
+  },
+  {
+    "id": "r5-all-agree",
+    "note": "Removing an item looked wrong.",
+    "start": [{"id": 1, "done": false}, {"id": 2, "done": true}],
+    "ops": [{"op": "remove", "id": 2}],
+    "observed": [{"id": 1, "done": false}],
+    "expected": [{"id": 1, "done": false}],
+    "triage": "cannot-reproduce"
+  }
+]

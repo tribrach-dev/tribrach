@@ -53,6 +53,7 @@ same things in the same way.
   user, with vectors for the rules emulator.
 - Deletion and retention: deleting an account provably leaves nothing behind.
 - Telemetry privacy flow: personal values traced into event arguments.
+- Feedback captures: user reports as operation-sequence captures (see "User feedback").
 
 ## Telemetry
 
@@ -226,3 +227,23 @@ competing with them.
   model itself.
 - **Later:** importing existing OpenAPI or protobuf definitions as a starting
   model. Only boundary types with rules worth promising need to be contracts.
+
+## User feedback
+
+The model knows what the app should have done, so user feedback can be
+replayed instead of guessed at. Prototype: `examples/feedback-triage`.
+
+- **Reports with context:** when a user says "this is wrong", the app attaches
+  the recent operation names, the rules in play, the model stamp and the app
+  version. Privacy labels decide what may be included, and the user sees
+  exactly what will be sent.
+- **Triage by replay** into three groups: `code-bug` (the app broke the model
+  or a rule; arrives with a test case), `expectation-mismatch` (the app
+  followed the rules but the user expected otherwise; a spec question, shown
+  with `tribrach explain`), and `cannot-reproduce`.
+- **Disagreement per rule:** counting reports per rule shows which rules
+  users push back on, a product signal rather than a bug signal.
+- **Same plugin shape:** feedback is a capture of an operation sequence
+  rather than code lines (a new capture kind, v0.3), so an expectation
+  mismatch can feed `tribrach guard add` or a rule change. Delivery goes
+  through adapters (issue trackers, email, an app's own backend).

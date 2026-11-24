@@ -1,0 +1,9 @@
+name = "feedback-triage"
+defaultTargets = ["Todo", "triage"]
+
+[[lean_lib]]
+name = "Todo"
+
+[[lean_exe]]
+name = "triage"
+root = "Main"
