@@ -27,6 +27,47 @@
    rollback challenge, with small adapters per store (SwiftData, Firestore,
    SQLite). Later packs could cover UI state machines and sync merge rules.
 
+## Package contract
+
+Tribrach is split into four kinds of package. Each owns one set of
+responsibilities, and packages only talk to each other through the core
+formats.
+
+| Kind | Owns | Must never |
+| --- | --- | --- |
+| **Core** (`tribrach`) | Model and link library; the formats (manifest, vectors, stamps, captures, claims, diagnostics); the rules-file generator; the `check`, `explain` and `guard` runner; the conformance suite | Know about any language or store |
+| **Instrument**, one per language (`tribrach-go`, `tribrach-swift`) | Static analysis for that language (links, purity, drift, stamps, telemetry awareness and suggestions, code-shape guardrails) and its runtime (generated checkers, replay harness, telemetry hooks) | Define rules or formats of its own |
+| **Pack**, one per domain (`tribrach-data`) | Domain rule shapes for the rules file, domain guardrails and its own diagnostics | Talk to a specific store directly |
+| **Adapter** | Exactly one connection: a store (SwiftData, Firestore, SQLite), a capture source (GitHub pull requests, an editor) or a telemetry sink (OpenTelemetry) | Make decisions; it only translates to and from the core formats |
+
+### Package descriptor
+
+Every package declares what it provides in `tribrach-package.toml`:
+
+```toml
+name = "tribrach-swift"
+kind = "instrument"            # core | instrument | pack | adapter
+formats = { manifest = "1", vectors = "1", diagnostics = "1" }
+provides = ["link", "purity", "drift", "replay", "checker", "telemetry", "guard:code-shape"]
+diagnostics = "TRS"            # diagnostic code prefix, e.g. TRS0101
+```
+
+- Diagnostic prefixes keep codes from colliding: `TR` core, `TRG` Go,
+  `TRS` Swift, `TRD` data. Adapters use their pack's or instrument's prefix.
+- `tribrach check` reads the descriptors and reports gaps, for example links
+  in Swift with no Swift instrument installed, or the data pack without an
+  adapter for the store in use.
+- Each package runs the core conformance suite for every format version it
+  declares.
+
+### Where new work goes
+
+- A new language is an instrument.
+- A new store, capture source or telemetry sink is an adapter.
+- A new kind of rule or guardrail is a pack (or an addition to one).
+- The core changes only when a format changes, which needs an issue first
+  (see GOVERNANCE.md).
+
 ## Shared formats (to stabilise first)
 
 - Manifest: links, Lean names, host symbols, stamps, format version.
