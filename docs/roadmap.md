@@ -304,7 +304,8 @@ cheap to check. "No" answers are either complete (Datalog at its fixpoint) or
 proved once in Lean; anything else is labelled as bounded.
 
 - **Logic layer (started):** `Tribrach.Logic` is a Datalog engine with why
-  trees, plus an independent checker, `Why.check`. The example is
+  trees, plus an independent checker, `Why.check`, proved sound in Lean
+  (`Why.check_sound`). Rules can say "unless" over given facts. The example is
   `examples/data-flow`. Facts come from the instruments (code facts such as
   "this field is sent to this event") and from the model; rules come from
   packs and architects.
@@ -356,6 +357,6 @@ proved once in Lean; anything else is labelled as bounded.
     Soufflé for large Datalog, SWI-Prolog, SAT/SMT solvers, ILP learners such
     as Popper, and invariant miners. Lean's own `bv_decide`, which checks an
     external SAT solver's certificate, is the precedent.
-- **Next:** a soundness proof for `Why.check` (an accepted tree means the fact
-  follows), stratified negation (for example "unless it is redacted"), then
-  goal-directed search for the to-do rule cards.
+- **Next:** negation of derived predicates (stratification), engine
+  completeness so that "no" is proved too, and goal-directed search for the
+  to-do rule cards.
