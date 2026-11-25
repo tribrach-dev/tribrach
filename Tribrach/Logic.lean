@@ -107,8 +107,8 @@ def Rule.safe (r : Rule) : Bool :=
 
 `Derivable facts rules f` says what it means for `f` to follow, independently
 of any engine or checker: `f` is given, or some rule, with some variable
-bindings, has a head that becomes `f`, every positive body atom becomes a
-derivable fact, and every negated atom becomes a fact that isn't given. -/
+bindings, has a head that becomes `f`, its positive body atoms become
+derivable facts (`prem`), and every negated atom becomes a fact that isn't given. -/
 
 /-- Fill in every atom; fails if any variable is unbound. -/
 def groundAll (s : Subst) : List Atom → Option (List Fact)
@@ -117,10 +117,11 @@ def groundAll (s : Subst) : List Atom → Option (List Fact)
 
 inductive Derivable (facts : List Fact) (rules : List Rule) : Fact → Prop
   | given {f : Fact} : f ∈ facts → Derivable facts rules f
-  | byRule (r : Rule) (s : Subst) (f : Fact) :
+  | byRule (r : Rule) (s : Subst) (f : Fact) (prem : List Fact) :
       r ∈ rules →
       ground s r.head = some f →
-      (∀ a ∈ r.body, ∃ g, ground s a = some g ∧ Derivable facts rules g) →
+      groundAll s r.body = some prem →
+      (∀ g ∈ prem, Derivable facts rules g) →
       (∀ a ∈ r.neg, ∃ g, ground s a = some g ∧ g ∉ facts) →
       Derivable facts rules f
 
@@ -180,23 +181,6 @@ def checkSteps (facts : List Fact) (rules : List Rule) : List Fact → List Step
 def Cert.check (facts : List Fact) (rules : List Rule) (steps : List Step) (goal : Fact) : Bool :=
   checkSteps facts rules [] steps && decide (goal ∈ steps.map Step.fact)
 
-theorem groundAll_mem (s : Subst) : ∀ (body : List Atom) (fs : List Fact),
-    groundAll s body = some fs → ∀ a, a ∈ body → ∃ g, g ∈ fs ∧ ground s a = some g
-  | [], _, _, _, ha => by simp at ha
-  | b :: bs, fs, h, a, ha => by
-    cases hb : ground s b with
-    | none => simp [groundAll, hb] at h
-    | some g =>
-      cases hbs : groundAll s bs with
-      | none => simp [groundAll, hb, hbs] at h
-      | some gs =>
-        simp [groundAll, hb, hbs] at h
-        subst h
-        rcases List.mem_cons.mp ha with rfl | ha'
-        · exact ⟨g, by simp, hb⟩
-        · obtain ⟨g', hg', hground⟩ := groundAll_mem s bs gs hbs a ha'
-          exact ⟨g', by simp [hg'], hground⟩
-
 theorem groundNot_sound {facts : List Fact} {s : Subst} {a : Atom}
     (h : groundNot facts s a = true) : ∃ g, ground s a = some g ∧ g ∉ facts := by
   unfold groundNot at h
@@ -224,10 +208,9 @@ theorem stepOk_sound (facts : List Fact) (rules : List Rule) (proven : List Fact
       | some prem =>
         rw [hga] at hprem
         simp only [premisesOk, List.all_eq_true, decide_eq_true_eq] at hprem
-        apply Derivable.byRule r s f (List.mem_of_find?_eq_some hr) hhead
-        · intro a ha
-          obtain ⟨g, hg, hground⟩ := groundAll_mem s r.body prem hga a ha
-          exact ⟨g, hground, hp g (hprem g hg)⟩
+        apply Derivable.byRule r s f prem (List.mem_of_find?_eq_some hr) hhead hga
+        · intro g hg
+          exact hp g (hprem g hg)
         · intro a ha
           have hna := (List.all_eq_true.mp hneg) a ha
           simp only [Bool.and_eq_true] at hna
