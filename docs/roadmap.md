@@ -261,14 +261,22 @@ who doesn't read Lean check what a rule means. Prototype:
   fails if the page is stale, the model breaks a rule, or a rule catches no
   known bug. The cards are checked over small cases, not proved.
 - **Cards change rarely and on purpose.** Feature work builds to the spec, so
-  its cards don't move.
+  its cards don't move. Each layer has its own job:
   - *Planning* is where cards change. `tribrach cards --compare main` previews
     new cards, flipped answers and changes in which bugs are caught. Decisions
     are pinned, and a small spec PR lands before the feature work.
-  - *Feature PRs* see cards only as a tripwire. A flipped answer fails CI
-    ("this PR changes the spec") unless the PR carries the spec-change label.
-    Cards for a brand-new area are expected and get listed for the next
-    planning review.
+  - *While coding* (a person or a coding agent), static analysis is the
+    layer that keeps code aligned with the spec: the instruments' analyzers
+    report stable codes (link, purity, drift, guardrails) in the editor, in
+    `--json`/SARIF and in an agent's own loop, so most drift is fixed before
+    a PR exists. Cards are not part of this loop.
+  - *At PR time*, cards are the human-readable layer. CI posts a short
+    summary (job summary or one PR comment): the cards whose rules this PR's
+    code touches, found through the link manifest, so a reviewer sees in
+    plain English which promises the change sits under. Any flipped answer
+    goes at the top and fails CI ("this PR changes the spec") unless the PR
+    carries the spec-change label. Cards for a brand-new area are expected
+    and get listed for the next planning review.
   - *Triage* groups expectation-mismatch reports by card, so pushback from
     users shows up against the rule it's about.
 - **Pins:** a plain-text file next to the cards, with an expected answer per
