@@ -4,7 +4,8 @@ import Tribrach.Logic
 # Does personal data reach telemetry?
 
 A made-up note-taking app, described as facts about where data goes. The
-rules say what "reaches" and "leaks" mean. Queries answer questions an
+rules say what "ends up in" and "reaches telemetry" mean, unless the data is
+redacted on the way. Queries answer questions an
 architect or product manager might ask, each with a plain-English why tree.
 -/
 
@@ -29,7 +30,8 @@ def facts : List Fact := [
   fact "flows" ["note_metadata", "usage_event"],
   fact "flows" ["note_text", "sync_payload"],
   fact "telemetry" ["crash_report"],
-  fact "telemetry" ["usage_event"]
+  fact "telemetry" ["usage_event"],
+  fact "redacted" ["email", "crash_report"]
 ]
 
 def rules : List Rule := [
@@ -41,7 +43,8 @@ def rules : List Rule := [
     body := [atom "flows" [v "X", v "Y"], atom "reaches" [v "Y", v "Z"]] },
   { name := "personal data in telemetry"
     head := atom "exposed" [v "D", v "E"]
-    body := [atom "personal" [v "D"], atom "reaches" [v "D", v "E"], atom "telemetry" [v "E"]] }
+    body := [atom "personal" [v "D"], atom "reaches" [v "D", v "E"], atom "telemetry" [v "E"]]
+    neg := [atom "redacted" [v "D", v "E"]] }
 ]
 
 def templates : Templates := [
@@ -49,6 +52,7 @@ def templates : Templates := [
   ("flows", "$1 is sent to $2"),
   ("reaches", "$1 ends up in $2"),
   ("telemetry", "$1 is a telemetry event"),
+  ("redacted", "$1 is removed before $2 is sent"),
   ("exposed", "personal data $1 reaches telemetry event $2")
 ]
 
@@ -62,10 +66,13 @@ structure Question where
 def questions : List Question := [
   { ask := "Which personal data reaches a telemetry event?"
     pattern := atom "exposed" [v "D", v "E"]
-    expected := [["email", "crash_report"], ["location", "usage_event"]] },
+    expected := [["location", "usage_event"]] },
   { ask := "Where does a user's location end up?"
     pattern := atom "reaches" [c "location", v "Where"]
     expected := [["location", "note_metadata"], ["location", "sync_payload"], ["location", "usage_event"]] },
+  { ask := "Does email reach a telemetry event at all, redacted or not?"
+    pattern := atom "reaches" [c "email", c "crash_report"]
+    expected := [["email", "crash_report"]] },
   { ask := "Does note text reach any telemetry event?"
     pattern := atom "exposed" [c "note_text", v "E"]
     expected := [] }

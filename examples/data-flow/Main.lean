@@ -3,12 +3,17 @@ import DataFlow
 open Tribrach.Logic
 
 /-- Usage: `lake exe why`. Answers each question with why trees, re-checks
-every tree with the independent checker, and exits non-zero if a tree fails
-the check, the search didn't finish, or an answer differs from the expected
+every tree with the independent checker (proved sound by
+`Why.check_sound`), and exits non-zero if a tree fails the check, a rule is
+unsafe, the search didn't finish, or an answer differs from the expected
 one. -/
 def main : IO UInt32 := do
   let res := saturate DataFlow.facts DataFlow.rules
   let mut failures : Nat := 0
+  for r in DataFlow.rules do
+    if !r.safe then
+      IO.println s!"FAIL rule \"{r.name}\" uses a variable its positive body doesn't bind"
+      failures := failures + 1
   if !res.complete then
     IO.println "FAIL the engine ran out of rounds, so \"no\" answers are not complete"
     failures := failures + 1
@@ -26,7 +31,7 @@ def main : IO UInt32 := do
       let mark := if ok then "checked" else "FAILED CHECK"
       IO.println s!"**{say DataFlow.templates why.fact}** ({mark})"
       IO.println ""
-      for line in why.explain DataFlow.templates do
+      for line in why.explain DataFlow.templates DataFlow.rules do
         IO.println line
       IO.println ""
     let got := answers.map (fun a => a.2.fact.args)
