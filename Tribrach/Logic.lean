@@ -85,10 +85,10 @@ def matchAll (s : Subst) : List (Atom × Fact) → Option Subst
 
 /-- Fill in an atom's variables; fails if one is unbound. -/
 def ground (s : Subst) (a : Atom) : Option Fact :=
-  (a.args.mapM (fun t =>
+  (a.args.mapM (fun (t : Term) =>
     match t with
-    | .const c => some c
-    | .var x => s.lookup x)).map (fun args => { pred := a.pred, args })
+    | Term.const c => some c
+    | Term.var x => s.lookup x)).map (fun args => ({ pred := a.pred, args } : Fact))
 
 def Term.vars : Term → List String
   | .var x => [x]
