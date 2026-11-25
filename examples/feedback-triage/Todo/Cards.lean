@@ -210,50 +210,125 @@ def makeCard (r : Rule) : Card :=
   let forbidden := bugs.filterMap (caught r mine)
   { rule := r, checked := mine.length, allowed, forbidden, broken }
 
-/-! ## Did you know? -/
+/-! ## Did you know?
 
-structure Question where
-  ask : String
-  found : List Op → Bool
+Questions are answered by a *tabled* breadth-first search. Instead of trying
+every sequence of actions, it walks the distinct situations a sequence can
+lead to, and never visits the same situation twice. A situation is the list
+plus a small memo of what the question needs to remember (for example, which
+items have ever been ticked).
+
+- Level by level, so the first example found is a shortest one.
+- If every reachable situation has been visited without reaching the goal,
+  the answer is a complete "no", for sequences of any length, not just short
+  ones.
+-/
+
+/-- What a question remembers about the past, kept in a canonical order so
+equal memories compare equal. -/
+abbrev Memo := List (List Nat)
 
 def ticked (s : List Item) (i : Nat) : Bool := s.any (fun it => it.id == i && it.done)
 def unticked (s : List Item) (i : Nat) : Bool := s.any (fun it => it.id == i && !it.done)
 
-/-- The proper prefixes of a sequence, shortest first. -/
-def prefixes (ops : List Op) : List (List Op) :=
-  (List.range ops.length).map (fun k => ops.take k)
+def memoKey (l : List Nat) : Nat := l.foldl (fun acc n => acc * 100 + n) 0
 
-def addLeavesTicked (ops : List Op) : Bool :=
-  match ops.getLast? with
-  | some (.add i) => ticked (run [] ops) i
-  | _ => false
+/-- Add an entry to a memo, keeping it sorted and free of duplicates. -/
+def remember (m : Memo) (x : List Nat) : Memo :=
+  if m.contains x then m else (x :: m).mergeSort (fun p q => decide (memoKey p ≤ memoKey q))
 
-def removeTouchesOthers (ops : List Op) : Bool :=
-  match ops.getLast? with
-  | some (.remove i) =>
-    let before := run [] ops.dropLast
-    before.filter (fun it => it.id != i) != run [] ops
-  | _ => false
+structure Question where
+  ask : String
+  /-- Update the memo after one action: memo, list before, action, list after. -/
+  track : Memo → List Item → Op → List Item → Memo
+  /-- Whether the goal is reached, given the memo and the current list. -/
+  goal : Memo → List Item → Bool
 
-def reordered (ops : List Op) : Bool :=
-  let f := (run [] ops).map (·.id)
-  (prefixes ops).any (fun p =>
-    let s := (run [] p).map (·.id)
-    s.length == f.length && s != f && s.all (fun x => f.contains x))
+/-- Remember every item that has ever been ticked. -/
+def trackTicked (m : Memo) (_ : List Item) (_ : Op) (after : List Item) : Memo :=
+  (after.filter (·.done)).foldl (fun acc it => remember acc [it.id]) m
 
-def everUnticked (ops : List Op) : Bool :=
-  let final := run [] ops
-  ids.any (fun i => unticked final i && (prefixes ops).any (fun p => ticked (run [] p) i))
+def goalUnticked (m : Memo) (s : List Item) : Bool :=
+  m.any (fun l => l.any (fun i => unticked s i))
+
+/-- Remember the item the last action added, if it was an add. -/
+def trackLastAdd (_ : Memo) (_ : List Item) (o : Op) (_ : List Item) : Memo :=
+  match o with
+  | .add i => [[i]]
+  | _ => []
+
+def goalAddedTicked (m : Memo) (s : List Item) : Bool :=
+  m.any (fun l => l.any (fun i => ticked s i))
+
+/-- Pairs `[a, b]` where `a` has been seen above `b`. -/
+def orderPairs (s : List Item) : List (List Nat) :=
+  let idsInOrder := s.map (·.id)
+  (List.range idsInOrder.length).flatMap (fun k =>
+    (idsInOrder.drop (k + 1)).map (fun b => [idsInOrder.getD k 0, b]))
+
+def trackOrder (m : Memo) (_ : List Item) (_ : Op) (after : List Item) : Memo :=
+  (orderPairs after).foldl remember m
+
+def goalSwapped (m : Memo) (s : List Item) : Bool :=
+  (orderPairs s).any (fun p => m.contains p.reverse)
+
+/-- Remember whether the last action removed one item and changed another. -/
+def trackRemoveSideEffect (_ : Memo) (before : List Item) (o : Op) (after : List Item) : Memo :=
+  match o with
+  | .remove i => if before.filter (fun it => it.id != i) != after then [[1]] else []
+  | _ => []
+
+def goalSideEffect (m : Memo) (_ : List Item) : Bool := !m.isEmpty
 
 def questions : List Question := [
-  { ask := "Can a ticked item end up unticked again?", found := everUnticked },
-  { ask := "Can adding an item leave it already ticked?", found := addLeavesTicked },
-  { ask := "Can the same items end up in a different order?", found := reordered },
-  { ask := "Can removing one item change another?", found := removeTouchesOthers }
+  { ask := "Can a ticked item end up unticked again?", track := trackTicked, goal := goalUnticked },
+  { ask := "Can adding an item leave it already ticked?", track := trackLastAdd, goal := goalAddedTicked },
+  { ask := "Can two items swap places?", track := trackOrder, goal := goalSwapped },
+  { ask := "Can removing one item change another?", track := trackRemoveSideEffect, goal := goalSideEffect }
 ]
 
-/-- How many actions the question search tries, from an empty list. -/
-def searchDepth : Nat := 4
+abbrev Node := List Item × Memo × List Op
+
+/-- Visit the next level, skipping situations already seen. -/
+def expand (q : Question) (seen : List (List Item × Memo)) (frontier : List Node) :
+    List (List Item × Memo) × List Node :=
+  frontier.foldl (fun acc n =>
+    allOps.foldl (fun acc2 o =>
+      let after := step o n.1
+      let m := q.track n.2.1 n.1 o after
+      if acc2.1.contains (after, m) then acc2
+      else ((after, m) :: acc2.1, acc2.2 ++ [(after, m, n.2.2 ++ [o])])) acc) (seen, [])
+
+structure Found where
+  /-- The shortest example, if one was found. -/
+  ops : Option (List Op)
+  /-- How many distinct situations the search visited. -/
+  visited : Nat
+  /-- True if every reachable situation was visited, so "no" is complete. -/
+  exhausted : Bool
+
+def searchFrom (q : Question) : Nat → List (List Item × Memo) → List Node → Found
+  | 0, seen, frontier =>
+    match frontier.find? (fun n => q.goal n.2.1 n.1) with
+    | some n => { ops := some n.2.2, visited := seen.length, exhausted := false }
+    | none => { ops := none, visited := seen.length, exhausted := frontier.isEmpty }
+  | k + 1, seen, frontier =>
+    match frontier.find? (fun n => q.goal n.2.1 n.1) with
+    | some n => { ops := some n.2.2, visited := seen.length, exhausted := false }
+    | none =>
+      let r := expand q seen frontier
+      if r.2.isEmpty then { ops := none, visited := r.1.length, exhausted := true }
+      else searchFrom q k r.1 r.2
+
+/-- The most actions the search will take before giving up. -/
+def searchLimit : Nat := 12
+
+def search (q : Question) : Found :=
+  searchFrom q searchLimit [([], [])] [([], [], [])]
+
+/-- How many sequences of up to `n` actions exist, for comparison. -/
+def sequencesUpTo (n : Nat) : Nat :=
+  (List.range (n + 1)).foldl (fun acc k => acc + allOps.length ^ k) 0
 
 /-! ## The page -/
 
@@ -291,14 +366,20 @@ def renderTrace (ops : List Op) : List String :=
     s!"{k + 1}. {showOp o} gives {showState (run [] (ops.take (k + 1)))}")
 
 def renderQuestion (q : Question) : List String :=
-  match (seqs searchDepth).find? q.found with
+  let r := search q
+  match r.ops with
   | some ops =>
     [s!"### {q.ask}", "", "**Yes.** The shortest way, starting from an empty list:", ""] ++
     renderTrace ops ++
-    ["", "If this isn't what users should see, it's a rule to change, not a bug in the app.", ""]
+    ["", s!"Found after visiting {r.visited} distinct situations; trying every sequence of up to {ops.length} actions would mean {sequencesUpTo ops.length}.",
+     "", "If this isn't what users should see, it's a rule to change, not a bug in the app.", ""]
   | none =>
-    [s!"### {q.ask}", "",
-     s!"**No.** Not in any sequence of up to {searchDepth} actions from an empty list.", ""]
+    if r.exhausted then
+      [s!"### {q.ask}", "",
+       s!"**No**, never, in any number of actions: the search visited all {r.visited} situations reachable with items 1, 2 and 3.", ""]
+    else
+      [s!"### {q.ask}", "",
+       s!"**No** within {searchLimit} actions (the search stopped there, so this is not a complete answer).", ""]
 
 def cards : List Card := rules.map makeCard
 
@@ -321,7 +402,9 @@ def render : String :=
     "possible list.", ""]
   let body := ((List.range cards.length).zip cards).flatMap (fun p => renderCard (p.1 + 1) p.2)
   let dyk := ["## Did you know?", "",
-    "Questions about the rules, answered with the shortest example the search finds.", ""] ++
+    "Questions about the rules, answered with the shortest example a tabled search",
+    "finds. The search never visits the same situation twice, so a \"no\" can cover",
+    "sequences of any length.", ""] ++
     questions.flatMap renderQuestion
   "\n".intercalate (header ++ body ++ renderBlindSpots ++ dyk)
 
