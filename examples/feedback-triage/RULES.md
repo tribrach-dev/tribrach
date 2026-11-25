@@ -141,7 +141,9 @@ Every one is caught by at least one rule.
 
 ## Did you know?
 
-Questions about the rules, answered with the shortest example the search finds.
+Questions about the rules, answered with the shortest example a tabled search
+finds. The search never visits the same situation twice, so a "no" can cover
+sequences of any length.
 
 ### Can a ticked item end up unticked again?
 
@@ -151,6 +153,8 @@ Questions about the rules, answered with the shortest example the search finds.
 2. `tick 1` gives `[x] 1`
 3. `remove 1` gives (empty list)
 4. `add 1` gives `[ ] 1`
+
+Found after visiting 67 distinct situations; trying every sequence of up to 4 actions would mean 7381.
 
 If this isn't what users should see, it's a rule to change, not a bug in the app.
 
@@ -162,9 +166,11 @@ If this isn't what users should see, it's a rule to change, not a bug in the app
 2. `tick 1` gives `[x] 1`
 3. `add 1` gives `[x] 1`
 
+Found after visiting 55 distinct situations; trying every sequence of up to 3 actions would mean 820.
+
 If this isn't what users should see, it's a rule to change, not a bug in the app.
 
-### Can the same items end up in a different order?
+### Can two items swap places?
 
 **Yes.** The shortest way, starting from an empty list:
 
@@ -173,8 +179,10 @@ If this isn't what users should see, it's a rule to change, not a bug in the app
 3. `remove 1` gives `[ ] 2`
 4. `add 1` gives `[ ] 2, [ ] 1`
 
+Found after visiting 121 distinct situations; trying every sequence of up to 4 actions would mean 7381.
+
 If this isn't what users should see, it's a rule to change, not a bug in the app.
 
 ### Can removing one item change another?
 
-**No.** Not in any sequence of up to 4 actions from an empty list.
+**No**, never, in any number of actions: the search visited all 79 situations reachable with items 1, 2 and 3.
