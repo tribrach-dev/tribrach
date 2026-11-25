@@ -247,3 +247,40 @@ replayed instead of guessed at. Prototype: `examples/feedback-triage`.
   rather than code lines (a new capture kind, v0.3), so an expectation
   mismatch can feed `tribrach guard add` or a rule change. Delivery goes
   through adapters (issue trackers, email, an app's own backend).
+
+## Rule cards
+
+The real risk in a spec is proving the wrong statement. Rule cards let someone
+who doesn't read Lean check what a rule means. Prototype:
+`examples/feedback-triage` (`lake exe cards`, [RULES.md](../examples/feedback-triage/RULES.md)).
+
+- **Each card shows** the rule in plain English, situations it allows, and the
+  realistic bugs it catches, with what a buggy app would show. The page also
+  lists bugs that no rule catches, and a "Did you know?" section answers
+  questions with the shortest example found. Everything is generated, and CI
+  fails if the page is stale, the model breaks a rule, or a rule catches no
+  known bug. The cards are checked over small cases, not proved.
+- **Cards change rarely and on purpose.** Feature work builds to the spec, so
+  its cards don't move.
+  - *Planning* is where cards change. `tribrach cards --compare main` previews
+    new cards, flipped answers and changes in which bugs are caught. Decisions
+    are pinned, and a small spec PR lands before the feature work.
+  - *Feature PRs* see cards only as a tripwire. A flipped answer fails CI
+    ("this PR changes the spec") unless the PR carries the spec-change label.
+    Cards for a brand-new area are expected and get listed for the next
+    planning review.
+  - *Triage* groups expectation-mismatch reports by card, so pushback from
+    users shows up against the rule it's about.
+- **Pins:** a plain-text file next to the cards, with an expected answer per
+  question id and "should not happen" per example id. Canvases only write to
+  this file. The first canvas is a GitHub PR comment (`/tribrach pin`,
+  `/tribrach flag`), with the same capture adapter shape as code highlighting
+  and a new capture kind, "card reaction". A clickable HTML page comes later.
+- **At scale:**
+  - stable ids;
+  - regenerate only cards whose part of the model changed;
+  - areas with owners;
+  - a "needs a decision" queue, riskiest first;
+  - a baseline that accepts every current answer on adoption;
+  - question templates per rule shape, with implied answers dropped;
+  - a health summary per area.
