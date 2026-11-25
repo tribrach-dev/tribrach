@@ -292,3 +292,70 @@ who doesn't read Lean check what a rule means. Prototype:
   - a baseline that accepts every current answer on adoption;
   - question templates per rule shape, with implied answers dropped;
   - a health summary per area.
+
+## Reasoning engines
+
+Logic programming gives Tribrach a way to *ask* the spec questions, not only
+check it. One rule runs through all of it: **engines suggest, Lean checks.**
+A search engine, even a large external one, only proposes an answer: an
+example, a derivation, a candidate rule. Tribrach reports it only after a
+small checker has re-verified it. "Yes" answers come with an example that is
+cheap to check. "No" answers are either complete (Datalog at its fixpoint) or
+proved once in Lean; anything else is labelled as bounded.
+
+- **Logic layer (started):** `Tribrach.Logic` is a Datalog engine with why
+  trees, plus an independent checker, `Why.check`. The example is
+  `examples/data-flow`. Facts come from the instruments (code facts such as
+  "this field is sent to this event") and from the model; rules come from
+  packs and architects.
+- **Goal-directed search.** Search backwards from a question with tabling
+  (remembering states it has seen) and iterative deepening (so the shortest
+  example comes first). It replaces brute force in rule cards, and doubles as
+  a test budget: keep one test per distinct reason a goal can be reached,
+  plus near misses. Goals are ranked by risk:
+  - rules users push back on;
+  - pinned answers;
+  - rules whose linked code a PR touches.
+- **"Why" and "impact" for people and coding agents.**
+  - `tribrach why --json` returns the shortest trace, the rule and the linked
+    function behind an analyzer error or an answer.
+  - `tribrach impact <symbol>` lists the rules and cards that depend on a
+    function before it is edited.
+
+  An agent calls these tools instead of simulating code in chain of thought.
+  To measure it, seed known bugs (the rule-card mutants) and compare an
+  agent's turns and tokens to a correct fix, with and without `why`.
+- **Abduction in feedback triage.** Given a state a user reports, list the
+  action sequences that could produce it. Some "cannot reproduce" reports
+  become "explained by …". When no sequence without a given action produces
+  the state, it's a code bug, even without logs.
+- **Query language for architects and product managers.** They query the
+  spec, not the code. Questions about sequences ("can a user get an alert
+  after cancelling?") use goal-directed search. Questions about code
+  structure ("where does personal data flow?") use Datalog over facts the
+  instruments emit. Plain-language questions can be translated by an LLM,
+  because every answer comes back with a checked example.
+- **Brownfield on-ramp.** Mine candidate rules from what already exists, and
+  show them as cards for a person to confirm. A confirmed candidate becomes a
+  Lean rule; a rejected one points at a possible bug. Sources:
+  - traces from tests, logs and telemetry: likely invariants (Daikon-style)
+    and inductive logic programming for relational rules;
+  - issues and the PRs that resolved them, which hold intent: the before and
+    after behaviour gives an example pair, the discussion gives the rule and
+    its reason, and a "working as intended" close gives a pinned answer.
+    Each candidate links to where it was decided, and the latest decision
+    wins. Only the rule and the link are kept, never issue text that might
+    hold personal data. This is an issue-tracker capture adapter.
+  - An LLM can draft the model of actions from code, and replaying traces
+    checks the draft.
+- **What runs where.**
+  - Lean holds the model, rules, proofs, checkers, cards, explanations, and
+    the small engines (Datalog, goal-directed search, abduction) for models of
+    Tribrach's first size.
+  - External engines are optional suggesters behind the same checkers:
+    Soufflé for large Datalog, SWI-Prolog, SAT/SMT solvers, ILP learners such
+    as Popper, and invariant miners. Lean's own `bv_decide`, which checks an
+    external SAT solver's certificate, is the precedent.
+- **Next:** a soundness proof for `Why.check` (an accepted tree means the fact
+  follows), stratified negation (for example "unless it is redacted"), then
+  goal-directed search for the to-do rule cards.
