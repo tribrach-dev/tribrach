@@ -7,24 +7,25 @@ full numbers are in [results/RESULTS.md](results/RESULTS.md).
 
 ## What it shows so far (2026-11-26)
 
-368 runs: Claude Sonnet 5.5 and Claude Opus 5.5 on all 11 tasks (5 repeats
-on the large suite, 3 on the small), and a 4-task, 2-repeat sample of Claude
-Fable 5.2. Claude Code 2.1.332, effort `high`.
+418 runs: Claude Sonnet 5.5 and Claude Opus 5.5 on all 11 tasks (5 repeats
+on the large suite, 3 on the small), and Claude Fable 5.2 on the large suite
+(3 repeats). Claude Code 2.1.332, effort `high`.
 
 - **Correctness doesn't separate the arms.** Every run found the right cause
   in both arms, so these tasks are too easy to show a difference there.
 - **Less context, consistently.** With `./why`, the context a session pulled
   in to do the work fell by a median of about 30% per task for every model
-  and both sizes (large suite: Sonnet 0.58×, Opus 0.71×; small: 0.69× and
-  0.70×), and went down on 10 or 11 of the 11 tasks in each case. In
+  and both sizes (large suite: Sonnet 0.58×, Opus 0.71×, Fable 0.81×;
+  small: Sonnet 0.69×, Opus 0.70×), and went down on 10 or 11 of the 11
+  tasks in each case. In
   absolute terms that is roughly 1,100-2,800 tokens per task (medians).
 - **Output tokens depend on the model.** Sonnet wrote less with `./why`
   (0.86× on the large suite, lower on all 11 tasks); Opus wrote more (1.16×,
   lower on 2 of 11).
-  The Fable sample wrote less (0.86×), but it is 4 tasks at 2 repeats.
+  Fable wrote about the same (0.98×, lower on 6 of 11).
 - **Sonnet often skipped the tool.** It called `./why` in 35 of 55 large-suite
-  runs and 15 of 33 small ones; Opus in 51 of 55 and 31 of 33. The context
-  figures above include the runs that didn't use it.
+  runs and 15 of 33 small ones; Opus in 51 of 55 and 31 of 33; Fable in 32 of
+  33. The context figures above include the runs that didn't use it.
 - **No time saved.** Sessions made about one extra tool call (the `./why`
   query), and wall time was flat.
 - **The fixed overhead dominates.** Each request starts with roughly 37-40k
