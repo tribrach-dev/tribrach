@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tribrach-dev/tribrach/schema/triage.schema.json",
+  "title": "Tribrach triage result, version 1",
+  "description": "One line of `triage --json` output.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "report", "model", "verdict", "reason", "evidence", "group"],
+  "properties": {
+    "format": { "const": "tribrach.triage.v1" },
+    "report": { "type": "string" },
+    "model": { "type": "string" },
+    "verdict": { "$ref": "#/$defs/verdict" },
+    "reason": { "type": "string" },
+    "evidence": { "type": "array", "items": { "type": "string" } },
+    "group": { "type": "string", "pattern": "^[a-z-]+-[0-9a-f]+$", "description": "Same for reports with the same verdict and trace." },
+    "source": { "$ref": "report.schema.json#/properties/source" }
+  },
+  "$defs": {
+    "verdict": {
+      "enum": ["malformed", "version-mismatch", "model-gap", "code-bug", "expectation-mismatch", "cannot-reproduce"]
+    }
+  }
+}

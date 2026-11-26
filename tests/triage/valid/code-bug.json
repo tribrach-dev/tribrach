@@ -1,0 +1,10 @@
+{
+  "format": "tribrach.triage.v1",
+  "report": "issue-12",
+  "model": "todo.v1",
+  "verdict": "code-bug",
+  "reason": "the app's state breaks the unique-id rule",
+  "evidence": ["the app's state breaks the unique-id rule"],
+  "group": "code-bug-1f3a",
+  "source": { "service": "github-issue-form", "ref": "12" }
+}

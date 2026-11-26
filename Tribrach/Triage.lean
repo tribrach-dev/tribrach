@@ -33,18 +33,25 @@ project-specific:
 ```lean
 def subject : Triage.Subject myModel := { version := "orders.v3", … }
 def main (args : List String) : IO UInt32 :=
-  Triage.runFile subject (args.headD "reports.json")
+  Triage.main subject args
 ```
 
 ## Report format
 
+`tribrach.report.v1` (`schema/report.schema.json`):
+
 ```json
-{ "id": "r1", "model": "orders.v3", "note": "free text from the user",
+{ "format": "tribrach.report.v1", "id": "r1", "model": "orders.v3",
+  "source": { "service": "helpdesk", "ref": "4471" },
+  "note": "free text from the user",
   "start": <state>, "ops": [<op>, …], "observed": <state>,
   "expected": <state>, "triage": "code-bug" }
 ```
 
-`model`, `start`, `expected`, `note` and `triage` are optional. A missing
+The reader itself is lenient: only `id`, `ops` and `observed` are required,
+and fields it doesn't use (`source`, `app`, `privacy`) are ignored. `format`,
+when present, must be `tribrach.report.v1`. `main` with `--json` prints one
+`tribrach.triage.v1` result per report (`schema/triage.schema.json`). A missing
 `start` means the subject's initial state. `triage` is the verdict the report
 should get, so a project can keep sample reports as regression tests.
 
@@ -132,7 +139,13 @@ def readState {m : Model} (sub : Subject m) (j : Json) (field : String) :
     let s ← (sub.decodeState sj).mapError (fun e => s!"{field}: {e}")
     pure (some (s, lostKeys field sj (sub.encodeState s)))
 
+/-- The envelope format this module reads and the result format it writes. -/
+def reportFormat : String := "tribrach.report.v1"
+def resultFormat : String := "tribrach.triage.v1"
+
 def Report.read {m : Model} (sub : Subject m) (j : Json) : Except String (Report m) := do
+  if let .ok f := j.getObjValAs? String "format" then
+    if f != reportFormat then throw s!"unknown report format {f}"
   let id ← j.getObjValAs? String "id"
   let opsJ ← j.getObjValAs? (Array Json) "ops"
   let ops ← ((List.range opsJ.size).zip opsJ.toList).mapM (fun p =>
@@ -207,10 +220,38 @@ theorem kept_rules {m : Model} (sub : Subject m) (r : Report m)
     (h : sub.broken r.observed = []) : m.Inv r.observed :=
   sub.sound _ h
 
-/-- Read a JSON array of reports, print one line each, and return 1 if any
-report's `triage` field disagrees with its verdict (2 if the file can't be
-read). Suitable as a project's `main`. -/
-def runFile {m : Model} (sub : Subject m) (path : String) : IO UInt32 := do
+/-- A key that is the same for reports with the same verdict and the same
+trace, so duplicates can be grouped. -/
+def groupKey (v : Verdict) (j : Json) : String :=
+  let trace := (j.getObjValD "start").compress ++ "|" ++ (j.getObjValD "ops").compress ++
+    "|" ++ (j.getObjValD "observed").compress
+  s!"{v.name}-{String.ofList (Nat.toDigits 16 (hash trace).toNat)}"
+
+/-- The machine-readable result for one report (`tribrach.triage.v1`). The
+report's `source` is passed through so a router can answer the original
+ticket. -/
+def result {m : Model} (sub : Subject m) (j : Json) : Json :=
+  let (v, why) := classify sub j
+  let id := (j.getObjValAs? String "id").toOption.getD "(no id)"
+  let source : List (String × Json) :=
+    match j.getObjVal? "source" with
+    | .ok s => [("source", s)]
+    | .error _ => []
+  Json.mkObj ([
+    ("format", Json.str resultFormat),
+    ("report", Json.str id),
+    ("model", Json.str sub.version),
+    ("verdict", Json.str v.name),
+    ("reason", Json.str why),
+    ("evidence", toJson (why.splitOn "; ")),
+    ("group", Json.str (groupKey v j))] ++ source)
+
+/-- Read a JSON array of reports and print one line each: plain text, or one
+`tribrach.triage.v1` object per line with `json`. Returns 1 if any report's
+`triage` field disagrees with its verdict (mismatches go to stderr in JSON
+mode), and 2 if the file can't be read. -/
+def runFile {m : Model} (sub : Subject m) (path : String) (json : Bool := false) :
+    IO UInt32 := do
   let text ← IO.FS.readFile path
   match Json.parse text >>= fun j => j.getArr? with
   | .error e => do
@@ -229,8 +270,19 @@ def runFile {m : Model} (sub : Subject m) (path : String) : IO UInt32 := do
         | none => "    "
       if mark == "FAIL" then
         failures := failures + 1
-      IO.println s!"{mark} {id}: {t.name} ({why})"
+      if json then
+        IO.println (result sub j).compress
+        if mark == "FAIL" then
+          IO.eprintln s!"FAIL {id}: {t.name}, expected {want.getD ""}"
+      else
+        IO.println s!"{mark} {id}: {t.name} ({why})"
     return (if failures == 0 then 0 else 1)
+
+/-- A ready-made command line: `[--json] [reports.json]`. -/
+def main {m : Model} (sub : Subject m) (args : List String) : IO UInt32 :=
+  let json := args.contains "--json"
+  let rest := args.filter (· != "--json")
+  runFile sub (rest.headD "reports.json") json
 
 end Triage
 end Tribrach

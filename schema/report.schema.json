@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tribrach-dev/tribrach/schema/report.schema.json",
+  "title": "Tribrach feedback report, version 1",
+  "description": "What an app attaches when a user says 'this is wrong'. States and operations are the model's own JSON; everything else is fixed here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "id", "model", "source", "ops", "observed"],
+  "properties": {
+    "format": { "const": "tribrach.report.v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "model": { "type": "string", "minLength": 1, "description": "The model version the app was built against." },
+    "stamp": { "type": "string", "description": "The model stamp, when the app records it." },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "ref"],
+      "properties": {
+        "service": { "type": "string", "minLength": 1, "description": "Where the report arrived, such as github-issue-form." },
+        "ref": { "type": "string", "minLength": 1, "description": "The ticket, issue or event id at that service." },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": { "type": "string" },
+        "platform": { "type": "string" }
+      }
+    },
+    "privacy": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Privacy labels of the fields included, as shown to the user before sending."
+    },
+    "start": {},
+    "ops": { "type": "array", "items": { "type": "object" } },
+    "observed": {},
+    "expected": {},
+    "note": { "type": "string" },
+    "triage": { "$ref": "triage.schema.json#/$defs/verdict" }
+  }
+}

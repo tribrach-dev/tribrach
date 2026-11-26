@@ -185,6 +185,21 @@ The report format, the replay, the gap detection and a ready-made `main`
 
 Example: `examples/feedback-triage`.
 
+**Plumbing to feedback services.** The core only speaks two JSON formats:
+
+- `tribrach.report.v1`, the report envelope (`schema/report.schema.json`). It
+  says where the report came from (service, ticket id), the app version, the
+  model version and stamp, and the privacy labels the user saw.
+- `tribrach.triage.v1`, one result per report from `triage --json`
+  (`schema/triage.schema.json`). It gives the verdict, reason and evidence,
+  the source passed through, and a `group` key shared by duplicate reports.
+
+Adapters for particular services, and the routing of verdicts to issue
+trackers, product boards and replies, live outside the core. A routing file
+names the environment variable for each token, never the token itself.
+`examples/feedback-sources` shows offline stubs; live connectors belong in a
+separate repository, like the instruments.
+
 ## Build plan
 
 Tribrach is written fresh against this design and its own neutral examples.

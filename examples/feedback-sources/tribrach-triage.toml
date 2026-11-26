@@ -1,0 +1,66 @@
+# Where feedback comes from and where each verdict goes.
+#
+# Secrets never go in this file: `token_env` names the environment variable
+# that holds the token. Locally that's a gitignored `.env` (see `.env.example`);
+# in CI it's the secret store. `--offline` reads `fixtures/` instead and
+# needs no tokens.
+
+model = "todo.v1"
+
+[[source]]
+name = "github-issues"
+kind = "github-issue-form"
+repo = "example-org/todo-app"
+label = "feedback"
+token_env = "GITHUB_TOKEN"            # issues: read
+fixture = "fixtures/github-issue-form.json"
+
+[[source]]
+name = "crash-reporter"
+kind = "crash-reporter-feedback"
+project = "todo-app"
+token_env = "CRASH_REPORTER_TOKEN"    # read-only: events and attachments
+fixture = "fixtures/crash-reporter-feedback.json"
+
+[[source]]
+name = "helpdesk"
+kind = "helpdesk-ticket"
+base_url = "https://help.example.com"
+token_env = "HELPDESK_API_TOKEN"      # read tickets, write replies
+fixture = "fixtures/helpdesk-tickets.json"
+
+[sink.issues]
+kind = "github-issue"
+repo = "example-org/todo-app"
+token_env = "GITHUB_TOKEN"            # issues: write
+
+[sink.product]
+kind = "tracker-card"
+board = "Product questions"
+token_env = "TRACKER_API_KEY"         # create cards
+
+[route.code-bug]
+sink = "issues"
+labels = ["bug", "has-replay"]
+reply = "Thanks! We reproduced this and filed it for the team."
+
+[route.model-gap]
+sink = "issues"
+labels = ["model-gap"]
+reply = "Thanks! This touches something our design doesn't cover yet; we're looking at it."
+
+[route.malformed]
+sink = "issues"
+labels = ["capture-broken"]
+
+[route.expectation-mismatch]
+sink = "product"
+labels = ["spec-question"]
+reply = "Thanks! The app worked as designed here, and we've passed your expectation on to the product team."
+
+[route.version-mismatch]
+sink = "hold"
+reply = "Thanks! This came from an older app version; updating should help."
+
+[route.cannot-reproduce]
+sink = "count"

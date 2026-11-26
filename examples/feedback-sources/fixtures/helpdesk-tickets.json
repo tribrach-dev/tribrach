@@ -1,0 +1,28 @@
+[
+  {
+    "id": 4471,
+    "url": "https://help.example.com/tickets/4471",
+    "subject": "My pinned item lost its pin",
+    "requester": { "name": "A. Customer", "email": "customer@example.com" },
+    "custom_fields": { "app_version": "2.3.0", "platform": "ios" },
+    "attachments": [
+      {
+        "file_name": "tribrach-report.json",
+        "content": "{\"model\": \"todo.v1\", \"start\": [{\"id\": 1, \"done\": false, \"pinned\": true}], \"ops\": [{\"op\": \"complete\", \"id\": 1}], \"observed\": [{\"id\": 1, \"done\": true, \"pinned\": false}], \"privacy\": [\"operation-names\", \"item-ids\", \"item-flags\"]}"
+      }
+    ]
+  },
+  {
+    "id": 4480,
+    "url": "https://help.example.com/tickets/4480",
+    "subject": "Old version",
+    "requester": { "name": "B. Customer", "email": "other@example.com" },
+    "custom_fields": { "app_version": "1.9.0", "platform": "android" },
+    "attachments": [
+      {
+        "file_name": "tribrach-report.json",
+        "content": "{\"model\": \"todo.v0\", \"start\": [], \"ops\": [{\"op\": \"add\", \"id\": 3}], \"observed\": [{\"id\": 3, \"done\": false}], \"privacy\": [\"operation-names\", \"item-ids\"]}"
+      }
+    ]
+  }
+]
