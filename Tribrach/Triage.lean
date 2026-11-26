@@ -1,4 +1,5 @@
 import Lean.Data.Json
+import Std.Data.TreeMap.Raw
 import Tribrach.Model
 
 /-!
@@ -112,7 +113,7 @@ structure Report (m : Model) where
 partial def lostKeys (path : String) (sent back : Json) : List String :=
   match sent, back with
   | .obj kvs, .obj _ =>
-    kvs.fold (fun acc k v =>
+    kvs.foldl (fun acc k v =>
       match back.getObjVal? k with
       | .ok v' => acc ++ lostKeys s!"{path}.{k}" v v'
       | .error _ => acc ++ [s!"{path}.{k} isn't in the model"]) []
