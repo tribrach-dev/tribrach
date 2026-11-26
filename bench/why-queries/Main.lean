@@ -1,11 +1,13 @@
 import Bench.Irrigation
 import Bench.Library
 import Bench.Notify
+import Bench.Access
+import Bench.Deploy
 import Tribrach.WhyNot
 
 open Lean Tribrach.Logic Bench
 
-def models : List BenchModel := [Irrigation.model, Library.model, Notify.model]
+def models : List BenchModel := [Irrigation.model, Library.model, Notify.model, Access.model, Deploy.model]
 
 def usage : String := "usage:
   why expect <model> <inputs.json>               print test vectors (expected decisions) as JSON

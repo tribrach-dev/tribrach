@@ -1,0 +1,2043 @@
+[{"input":
+  {"service": {"tier": 3, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "low",
+    "migration": false,
+    "id": "c415",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 13, "freeze": false, "day": "mon"},
+   "approvals":
+   [{"role": "security", "by": "u7"}, {"role": "sre", "by": "u9"}]},
+  "id": "dep-01",
+  "expected": ["canary search"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "low",
+    "migration": false,
+    "id": "c780",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 19, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u1"}, {"role": "owner", "by": "u6"}]},
+  "id": "dep-02",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c136",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 15, "freeze": false, "day": "wed"},
+   "approvals": [{"role": "sre", "by": "u2"}, {"role": "sre", "by": "u5"}]},
+  "id": "dep-03",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c142",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 16, "freeze": false, "day": "sat"},
+   "approvals":
+   [{"role": "security", "by": "u4"}, {"role": "owner", "by": "u9"}]},
+  "id": "dep-04",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c383",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 15, "freeze": false, "day": "sat"},
+   "approvals": [{"role": "security", "by": "u7"}]},
+  "id": "dep-05",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "medium",
+    "migration": false,
+    "id": "c115",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u8"}, {"role": "owner", "by": "u7"}]},
+  "id": "dep-06",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c868",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 19, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "peer", "by": "u9"}, {"role": "security", "by": "u7"}]},
+  "id": "dep-07",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "high",
+    "migration": false,
+    "id": "c275",
+    "hotfix": true,
+    "author": "u4"},
+   "calendar": {"hour": 15, "freeze": false, "day": "wed"},
+   "approvals": [{"role": "owner", "by": "u5"}]},
+  "id": "dep-08",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c185",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "owner", "by": "u4"},
+    {"role": "peer", "by": "u2"},
+    {"role": "security", "by": "u9"}]},
+  "id": "dep-09",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": false,
+    "id": "c661",
+    "hotfix": true,
+    "author": "u4"},
+   "calendar": {"hour": 10, "freeze": false, "day": "mon"},
+   "approvals":
+   [{"role": "sre", "by": "u1"},
+    {"role": "sre", "by": "u8"},
+    {"role": "owner", "by": "u2"}]},
+  "id": "dep-10",
+  "expected": ["deploy docs", "page docs"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": true,
+    "id": "c359",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 13, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "sre", "by": "u5"},
+    {"role": "owner", "by": "u6"},
+    {"role": "sre", "by": "u4"}]},
+  "id": "dep-11",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": false,
+    "id": "c776",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 16, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "security", "by": "u5"},
+    {"role": "peer", "by": "u3"},
+    {"role": "peer", "by": "u9"}]},
+  "id": "dep-12",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "high",
+    "migration": false,
+    "id": "c738",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 8, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "sre", "by": "u9"},
+    {"role": "security", "by": "u8"},
+    {"role": "peer", "by": "u1"}]},
+  "id": "dep-13",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c782",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "peer", "by": "u6"}]},
+  "id": "dep-14",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": true,
+    "id": "c836",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 19, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "peer", "by": "u2"}, {"role": "owner", "by": "u8"}]},
+  "id": "dep-15",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c382",
+    "hotfix": true,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "peer", "by": "u3"},
+    {"role": "sre", "by": "u5"},
+    {"role": "peer", "by": "u4"}]},
+  "id": "dep-16",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c345",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "sre", "by": "u7"}, {"role": "sre", "by": "u2"}]},
+  "id": "dep-17",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "high",
+    "migration": false,
+    "id": "c701",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 19, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "owner", "by": "u3"},
+    {"role": "peer", "by": "u3"},
+    {"role": "sre", "by": "u7"}]},
+  "id": "dep-18",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "high",
+    "migration": false,
+    "id": "c660",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "sre", "by": "u2"}]},
+  "id": "dep-19",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "fail"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c351",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "mon"},
+   "approvals":
+   [{"role": "sre", "by": "u6"},
+    {"role": "sre", "by": "u2"},
+    {"role": "peer", "by": "u8"}]},
+  "id": "dep-20",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "low",
+    "migration": false,
+    "id": "c696",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "owner", "by": "u8"}]},
+  "id": "dep-21",
+  "expected": ["canary auth"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "high",
+    "migration": false,
+    "id": "c909",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 13, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u6"}, {"role": "owner", "by": "u2"}]},
+  "id": "dep-22",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c289",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "security", "by": "u8"}, {"role": "peer", "by": "u2"}]},
+  "id": "dep-23",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c143",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "owner", "by": "u6"},
+    {"role": "owner", "by": "u2"},
+    {"role": "owner", "by": "u5"}]},
+  "id": "dep-24",
+  "expected": ["canary docs"]},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c843",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 10, "freeze": false, "day": "tue"},
+   "approvals":
+   [{"role": "security", "by": "u3"}, {"role": "sre", "by": "u8"}]},
+  "id": "dep-25",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c909",
+    "hotfix": true,
+    "author": "u1"},
+   "calendar": {"hour": 13, "freeze": false, "day": "sat"},
+   "approvals": [{"role": "peer", "by": "u8"}, {"role": "peer", "by": "u4"}]},
+  "id": "dep-26",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c756",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 8, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "sre", "by": "u7"}]},
+  "id": "dep-27",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "high",
+    "migration": false,
+    "id": "c294",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "owner", "by": "u8"}, {"role": "owner", "by": "u9"}]},
+  "id": "dep-28",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c658",
+    "hotfix": true,
+    "author": "u1"},
+   "calendar": {"hour": 8, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "sre", "by": "u5"}]},
+  "id": "dep-29",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "fail", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "high",
+    "migration": true,
+    "id": "c645",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 19, "freeze": false, "day": "wed"},
+   "approvals": [{"role": "peer", "by": "u2"}, {"role": "peer", "by": "u2"}]},
+  "id": "dep-30",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "high",
+    "migration": false,
+    "id": "c122",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 10, "freeze": false, "day": "mon"},
+   "approvals":
+   [{"role": "owner", "by": "u1"},
+    {"role": "security", "by": "u2"},
+    {"role": "security", "by": "u3"}]},
+  "id": "dep-31",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c568",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 8, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "security", "by": "u8"},
+    {"role": "peer", "by": "u6"},
+    {"role": "peer", "by": "u6"}]},
+  "id": "dep-32",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c849",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 15, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "peer", "by": "u5"},
+    {"role": "peer", "by": "u1"},
+    {"role": "peer", "by": "u7"}]},
+  "id": "dep-33",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": false,
+    "id": "c589",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u6"}]},
+  "id": "dep-34",
+  "expected": ["deploy docs"]},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": true,
+    "id": "c168",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 8, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "sre", "by": "u2"}, {"role": "owner", "by": "u4"}]},
+  "id": "dep-35",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c133",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 19, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "sre", "by": "u1"}, {"role": "sre", "by": "u5"}]},
+  "id": "dep-36",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c918",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 15, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "owner", "by": "u4"}, {"role": "owner", "by": "u9"}]},
+  "id": "dep-37",
+  "expected": ["canary payments"]},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 40, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": true,
+    "id": "c586",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 19, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "owner", "by": "u1"},
+    {"role": "sre", "by": "u6"},
+    {"role": "owner", "by": "u7"}]},
+  "id": "dep-38",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "low",
+    "migration": false,
+    "id": "c164",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 16, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "security", "by": "u9"}]},
+  "id": "dep-39",
+  "expected": ["deploy payments"]},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "high",
+    "migration": false,
+    "id": "c520",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": false, "day": "sat"},
+   "approvals": [{"role": "sre", "by": "u5"}]},
+  "id": "dep-40",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c311",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 19, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "sre", "by": "u5"},
+    {"role": "owner", "by": "u8"},
+    {"role": "security", "by": "u7"}]},
+  "id": "dep-41",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "low",
+    "migration": true,
+    "id": "c160",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 19, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "owner", "by": "u4"}, {"role": "peer", "by": "u7"}]},
+  "id": "dep-42",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "medium",
+    "migration": false,
+    "id": "c196",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 15, "freeze": false, "day": "sat"},
+   "approvals": [{"role": "peer", "by": "u3"}, {"role": "owner", "by": "u3"}]},
+  "id": "dep-43",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "low",
+    "migration": false,
+    "id": "c145",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 16, "freeze": false, "day": "wed"},
+   "approvals": [{"role": "owner", "by": "u4"}, {"role": "sre", "by": "u3"}]},
+  "id": "dep-44",
+  "expected": ["deploy feed"]},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "medium",
+    "migration": true,
+    "id": "c441",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 10, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "sre", "by": "u2"},
+    {"role": "security", "by": "u2"},
+    {"role": "owner", "by": "u1"}]},
+  "id": "dep-45",
+  "expected": ["deploy feed"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "low",
+    "migration": false,
+    "id": "c925",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "owner", "by": "u3"}]},
+  "id": "dep-46",
+  "expected": ["deploy search"]},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c870",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": true, "day": "sat"},
+   "approvals":
+   [{"role": "owner", "by": "u4"},
+    {"role": "security", "by": "u8"},
+    {"role": "security", "by": "u5"}]},
+  "id": "dep-47",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c267",
+    "hotfix": true,
+    "author": "u3"},
+   "calendar": {"hour": 15, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "security", "by": "u5"}, {"role": "owner", "by": "u8"}]},
+  "id": "dep-48",
+  "expected": ["page payments"]},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c489",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 10, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "security", "by": "u9"}]},
+  "id": "dep-49",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 5, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c803",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 8, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u5"}]},
+  "id": "dep-50",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": false,
+    "id": "c210",
+    "hotfix": true,
+    "author": "u4"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals":
+   [{"role": "owner", "by": "u2"},
+    {"role": "security", "by": "u2"},
+    {"role": "owner", "by": "u9"}]},
+  "id": "dep-51",
+  "expected": ["deploy docs", "page docs"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "high",
+    "migration": true,
+    "id": "c962",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u3"}]},
+  "id": "dep-52",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c873",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 16, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "owner", "by": "u1"},
+    {"role": "sre", "by": "u7"},
+    {"role": "owner", "by": "u6"}]},
+  "id": "dep-53",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c566",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 15, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "owner", "by": "u6"}, {"role": "security", "by": "u3"}]},
+  "id": "dep-54",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "medium",
+    "migration": true,
+    "id": "c950",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 19, "freeze": false, "day": "sat"},
+   "approvals": [{"role": "security", "by": "u3"}]},
+  "id": "dep-55",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "high",
+    "migration": true,
+    "id": "c785",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "peer", "by": "u9"}, {"role": "owner", "by": "u4"}]},
+  "id": "dep-56",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "medium",
+    "migration": true,
+    "id": "c589",
+    "hotfix": true,
+    "author": "u2"},
+   "calendar": {"hour": 13, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "security", "by": "u9"},
+    {"role": "sre", "by": "u4"},
+    {"role": "owner", "by": "u3"}]},
+  "id": "dep-57",
+  "expected": ["deploy feed", "page feed"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c907",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "sre", "by": "u2"}]},
+  "id": "dep-58",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "search",
+    "risk": "low",
+    "migration": false,
+    "id": "c894",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u4"}]},
+  "id": "dep-59",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": true,
+    "id": "c388",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 16, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "owner", "by": "u5"}, {"role": "owner", "by": "u1"}]},
+  "id": "dep-60",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c924",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "peer", "by": "u4"}]},
+  "id": "dep-61",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "low",
+    "migration": false,
+    "id": "c362",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 13, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "owner", "by": "u4"},
+    {"role": "sre", "by": "u4"},
+    {"role": "sre", "by": "u4"}]},
+  "id": "dep-62",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "low",
+    "migration": false,
+    "id": "c126",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 8, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "owner", "by": "u6"}, {"role": "security", "by": "u4"}]},
+  "id": "dep-63",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c193",
+    "hotfix": true,
+    "author": "u1"},
+   "calendar": {"hour": 19, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "peer", "by": "u2"}, {"role": "sre", "by": "u5"}]},
+  "id": "dep-64",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c467",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "sre", "by": "u2"}]},
+  "id": "dep-65",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "payments",
+    "risk": "low",
+    "migration": false,
+    "id": "c553",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 19, "freeze": false, "day": "tue"},
+   "approvals":
+   [{"role": "owner", "by": "u4"},
+    {"role": "owner", "by": "u1"},
+    {"role": "sre", "by": "u8"}]},
+  "id": "dep-66",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c472",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "sre", "by": "u8"}]},
+  "id": "dep-67",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": true,
+    "id": "c694",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals":
+   [{"role": "owner", "by": "u4"},
+    {"role": "security", "by": "u9"},
+    {"role": "owner", "by": "u1"}]},
+  "id": "dep-68",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "auth",
+    "risk": "low",
+    "migration": false,
+    "id": "c410",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 10, "freeze": false, "day": "tue"},
+   "approvals":
+   [{"role": "security", "by": "u7"},
+    {"role": "sre", "by": "u5"},
+    {"role": "sre", "by": "u5"}]},
+  "id": "dep-69",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 80, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c570",
+    "hotfix": true,
+    "author": "u1"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u7"}, {"role": "owner", "by": "u8"}]},
+  "id": "dep-70",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": true,
+    "id": "c980",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u1"}]},
+  "id": "dep-71",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c809",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "sre", "by": "u6"}]},
+  "id": "dep-72",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c974",
+    "hotfix": true,
+    "author": "u4"},
+   "calendar": {"hour": 8, "freeze": false, "day": "mon"},
+   "approvals":
+   [{"role": "peer", "by": "u4"},
+    {"role": "sre", "by": "u4"},
+    {"role": "sre", "by": "u7"}]},
+  "id": "dep-73",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": true,
+    "id": "c261",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "owner", "by": "u5"}]},
+  "id": "dep-74",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c805",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 10, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "peer", "by": "u2"}, {"role": "sre", "by": "u3"}]},
+  "id": "dep-75",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": true,
+    "id": "c985",
+    "hotfix": true,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "peer", "by": "u7"}, {"role": "security", "by": "u7"}]},
+  "id": "dep-76",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "high",
+    "migration": false,
+    "id": "c363",
+    "hotfix": true,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "peer", "by": "u2"},
+    {"role": "security", "by": "u7"},
+    {"role": "peer", "by": "u8"}]},
+  "id": "dep-77",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "high",
+    "migration": false,
+    "id": "c930",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "security", "by": "u3"},
+    {"role": "peer", "by": "u9"},
+    {"role": "sre", "by": "u8"}]},
+  "id": "dep-78",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c183",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 10, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "owner", "by": "u7"}, {"role": "sre", "by": "u9"}]},
+  "id": "dep-79",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 5, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "high",
+    "migration": false,
+    "id": "c108",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u2"}]},
+  "id": "dep-80",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c374",
+    "hotfix": true,
+    "author": "u5"},
+   "calendar": {"hour": 10, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "owner", "by": "u3"},
+    {"role": "owner", "by": "u9"},
+    {"role": "security", "by": "u8"}]},
+  "id": "dep-81",
+  "expected": ["deploy auth", "page auth"]},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "high",
+    "migration": false,
+    "id": "c858",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 8, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u4"}, {"role": "owner", "by": "u7"}]},
+  "id": "dep-82",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "low",
+    "migration": false,
+    "id": "c122",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 8, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "security", "by": "u1"},
+    {"role": "sre", "by": "u9"},
+    {"role": "owner", "by": "u6"}]},
+  "id": "dep-83",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "high",
+    "migration": false,
+    "id": "c561",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 16, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "security", "by": "u1"}]},
+  "id": "dep-84",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "medium",
+    "migration": true,
+    "id": "c649",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 15, "freeze": false, "day": "thu"},
+   "approvals":
+   [{"role": "owner", "by": "u8"},
+    {"role": "security", "by": "u4"},
+    {"role": "peer", "by": "u2"}]},
+  "id": "dep-85",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "high",
+    "migration": false,
+    "id": "c252",
+    "hotfix": true,
+    "author": "u1"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u9"}, {"role": "owner", "by": "u5"}]},
+  "id": "dep-86",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": true,
+    "id": "c393",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u8"}, {"role": "owner", "by": "u6"}]},
+  "id": "dep-87",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c540",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 8, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u5"}, {"role": "owner", "by": "u4"}]},
+  "id": "dep-88",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c840",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 15, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "owner", "by": "u6"}]},
+  "id": "dep-89",
+  "expected": ["deploy auth"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "high",
+    "migration": false,
+    "id": "c347",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 8, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "owner", "by": "u9"},
+    {"role": "owner", "by": "u5"},
+    {"role": "owner", "by": "u9"}]},
+  "id": "dep-90",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "auth",
+    "risk": "low",
+    "migration": false,
+    "id": "c910",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 19, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "owner", "by": "u3"},
+    {"role": "owner", "by": "u8"},
+    {"role": "peer", "by": "u3"}]},
+  "id": "dep-91",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "high",
+    "migration": true,
+    "id": "c339",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "owner", "by": "u7"},
+    {"role": "owner", "by": "u5"},
+    {"role": "security", "by": "u7"}]},
+  "id": "dep-92",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "high",
+    "migration": false,
+    "id": "c577",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 10, "freeze": false, "day": "wed"},
+   "approvals": [{"role": "owner", "by": "u9"}, {"role": "owner", "by": "u3"}]},
+  "id": "dep-93",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c105",
+    "hotfix": true,
+    "author": "u4"},
+   "calendar": {"hour": 15, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "sre", "by": "u4"}, {"role": "sre", "by": "u6"}]},
+  "id": "dep-94",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c913",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "wed"},
+   "approvals": [{"role": "sre", "by": "u8"}]},
+  "id": "dep-95",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": false,
+    "id": "c107",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 10, "freeze": false, "day": "sat"},
+   "approvals":
+   [{"role": "security", "by": "u5"}, {"role": "owner", "by": "u2"}]},
+  "id": "dep-96",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c663",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 10, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "owner", "by": "u4"}]},
+  "id": "dep-97",
+  "expected": ["deploy payments"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "docs",
+    "risk": "high",
+    "migration": false,
+    "id": "c582",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u1"}]},
+  "id": "dep-98",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 40, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c188",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 16, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u3"}, {"role": "sre", "by": "u2"}]},
+  "id": "dep-99",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "low",
+    "migration": false,
+    "id": "c986",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 16, "freeze": true, "day": "mon"},
+   "approvals":
+   [{"role": "peer", "by": "u2"},
+    {"role": "owner", "by": "u7"},
+    {"role": "owner", "by": "u4"}]},
+  "id": "dep-100",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 40, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": true,
+    "id": "c648",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 10, "freeze": false, "day": "sat"},
+   "approvals": [{"role": "peer", "by": "u2"}, {"role": "owner", "by": "u3"}]},
+  "id": "dep-101",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": true,
+    "id": "c130",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "sat"},
+   "approvals":
+   [{"role": "owner", "by": "u2"},
+    {"role": "owner", "by": "u1"},
+    {"role": "security", "by": "u4"}]},
+  "id": "dep-102",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "fail"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": false,
+    "id": "c327",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 8, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "owner", "by": "u7"}, {"role": "owner", "by": "u1"}]},
+  "id": "dep-103",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 40, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "medium",
+    "migration": false,
+    "id": "c223",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals":
+   [{"role": "security", "by": "u1"},
+    {"role": "owner", "by": "u6"},
+    {"role": "security", "by": "u8"}]},
+  "id": "dep-104",
+  "expected": ["deploy auth"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 12, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "high",
+    "migration": true,
+    "id": "c811",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u4"}, {"role": "peer", "by": "u9"}]},
+  "id": "dep-105",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "fail", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "low",
+    "migration": false,
+    "id": "c571",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 10, "freeze": false, "day": "thu"},
+   "approvals": [{"role": "peer", "by": "u7"}, {"role": "owner", "by": "u9"}]},
+  "id": "dep-106",
+  "expected": ["canary payments"]},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "medium",
+    "migration": false,
+    "id": "c779",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 10, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "security", "by": "u3"}, {"role": "owner", "by": "u5"}]},
+  "id": "dep-107",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "low",
+    "migration": false,
+    "id": "c207",
+    "hotfix": false,
+    "author": "u3"},
+   "calendar": {"hour": 8, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "owner", "by": "u1"}, {"role": "owner", "by": "u3"}]},
+  "id": "dep-108",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "auth",
+    "risk": "high",
+    "migration": false,
+    "id": "c787",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 13, "freeze": false, "day": "tue"},
+   "approvals": [{"role": "owner", "by": "u7"}, {"role": "owner", "by": "u7"}]},
+  "id": "dep-109",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 12, "canary": false},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c354",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 15, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u6"}, {"role": "owner", "by": "u3"}]},
+  "id": "dep-110",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 40, "canary": false},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "low",
+    "migration": false,
+    "id": "c343",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u1"}]},
+  "id": "dep-111",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 80, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "fail", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "high",
+    "migration": false,
+    "id": "c487",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 10, "freeze": false, "day": "mon"},
+   "approvals":
+   [{"role": "security", "by": "u4"}, {"role": "sre", "by": "u9"}]},
+  "id": "dep-112",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 1, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c793",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 10, "freeze": false, "day": "fri"},
+   "approvals":
+   [{"role": "sre", "by": "u1"},
+    {"role": "owner", "by": "u4"},
+    {"role": "sre", "by": "u1"}]},
+  "id": "dep-113",
+  "expected": ["deploy search"]},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "high",
+    "migration": false,
+    "id": "c317",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 19, "freeze": false, "day": "wed"},
+   "approvals": [{"role": "peer", "by": "u1"}]},
+  "id": "dep-114",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": true,
+    "id": "c434",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 10, "freeze": false, "day": "mon"},
+   "approvals": [{"role": "security", "by": "u6"}]},
+  "id": "dep-115",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": false,
+    "id": "c360",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 15, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "peer", "by": "u6"}, {"role": "owner", "by": "u2"}]},
+  "id": "dep-116",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 25, "canary": true},
+   "oncall": {"acked": true},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "docs",
+    "risk": "medium",
+    "migration": true,
+    "id": "c827",
+    "hotfix": false,
+    "author": "u2"},
+   "calendar": {"hour": 19, "freeze": false, "day": "fri"},
+   "approvals": [{"role": "sre", "by": "u5"}, {"role": "sre", "by": "u8"}]},
+  "id": "dep-117",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 3, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "search",
+    "risk": "medium",
+    "migration": false,
+    "id": "c340",
+    "hotfix": false,
+    "author": "u4"},
+   "calendar": {"hour": 19, "freeze": true, "day": "wed"},
+   "approvals": [{"role": "sre", "by": "u1"}, {"role": "peer", "by": "u1"}]},
+  "id": "dep-118",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 18, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "fail", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "payments",
+    "risk": "medium",
+    "migration": false,
+    "id": "c818",
+    "hotfix": false,
+    "author": "u1"},
+   "calendar": {"hour": 8, "freeze": false, "day": "wed"},
+   "approvals":
+   [{"role": "owner", "by": "u4"},
+    {"role": "owner", "by": "u1"},
+    {"role": "security", "by": "u5"}]},
+  "id": "dep-119",
+  "expected": []},
+ {"input":
+  {"service": {"tier": 2, "error_budget_pct": 5, "canary": true},
+   "oncall": {"acked": false},
+   "checks":
+   {"unit": "pass", "security": "pass", "perf": "pass", "integration": "pass"},
+   "change":
+   {"service": "feed",
+    "risk": "high",
+    "migration": false,
+    "id": "c179",
+    "hotfix": false,
+    "author": "u5"},
+   "calendar": {"hour": 8, "freeze": true, "day": "wed"},
+   "approvals": [{"role": "owner", "by": "u8"}]},
+  "id": "dep-120",
+  "expected": []}]

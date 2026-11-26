@@ -17,6 +17,7 @@ questions.json. See README.md for the method.
 """
 import argparse
 import datetime as dt
+import difflib
 import json
 import os
 import re
@@ -35,11 +36,14 @@ WORK = Path(os.environ.get("WHY_BENCH_WORK", "/tmp/why-bench"))
 ENGINE = Path(os.environ.get("WHY_BENCH_ENGINE", "/opt/why-bench/why"))
 RESULTS = HERE / "results"
 
-SPEC = {"irrigation": "Irrigation", "library": "Library", "notify": "Notify"}
+SPEC = {"irrigation": "Irrigation", "library": "Library", "notify": "Notify",
+        "access": "Access", "deploy": "Deploy"}
 DESCRIBE = {
     "irrigation": "garden irrigation controller (which valves to open this hour)",
     "library": "library lending desk (which requested items a member may take home)",
     "notify": "notification service (which channels an event goes out on)",
+    "access": "building access service (what happens when someone taps a badge at a door)",
+    "deploy": "deploy gate (whether and how a change ships)",
 }
 
 TOOLS = "Bash,Read,Grep,Glob,Write,Edit"
@@ -51,11 +55,38 @@ SUITES = {
     # The same logic spread over a package of 7-9 modules (160-290 lines),
     # next to code that has nothing to do with the decision.
     "large": {"host": "host_large", "faults": "faults_large.json"},
+    # User reports against bigger packages (430-720 lines) with deeper specs.
+    # Some reports describe a real bug; in others the code is right and the
+    # user's expectation is wrong. No test fails: the report is the evidence.
+    "hard": {"host": "host_hard", "reports": "tasks_hard.json"},
+    # The same packages, but the session must fix the code (or leave it alone
+    # when the user is wrong), and the fix is graded on hidden vectors. Reports
+    # are vague and name no test case; one fault needs edits in two places.
+    "fix": {"host": "host_hard", "fixes": "tasks_fix.json"},
 }
 
 
 def faults(suite):
+    if "faults" not in SUITES[suite]:
+        return []
     return json.loads((HERE / SUITES[suite]["faults"]).read_text())
+
+
+def reports(suite):
+    """Report-style tasks (the `reports` or `fixes` file of a suite)."""
+    key = "reports" if "reports" in SUITES[suite] else "fixes" if "fixes" in SUITES[suite] else None
+    if key is None:
+        return []
+    return [{**t, "fix": key == "fixes"} for t in json.loads((HERE / SUITES[suite][key]).read_text())]
+
+
+def is_report_suite(suite):
+    return "reports" in SUITES[suite] or "fixes" in SUITES[suite]
+
+
+def suite_models(suite):
+    return sorted({t["model"] for t in reports(suite)}) if is_report_suite(suite) else \
+        ["irrigation", "library", "notify"]
 
 
 def questions():
@@ -63,6 +94,8 @@ def questions():
 
 
 def tasks(suite):
+    if is_report_suite(suite):
+        return {t["id"]: t for t in reports(suite)}
     return {t["id"]: t for t in faults(suite) + questions()}
 
 
@@ -82,6 +115,8 @@ def entry(model, suite):
 
 
 def fault_file(fault):
+    if "edits" in fault:
+        return fault["edits"][0]["file"]
     return fault.get("file", f"{fault['model']}.py")
 
 
@@ -89,6 +124,15 @@ def plant(fault, suite):
     """Return the host tree with the fault planted, and the 1-based lines
     that hold the fault in fault_file(fault)."""
     tree = host_tree(fault["model"], suite)
+    if "edits" in fault:  # several edits; lines are where each edit starts
+        tree, lines = dict(tree), set()
+        for e in fault["edits"]:
+            src = tree[e["file"]]
+            assert src.count(e["find"]) == 1, f"{fault['id']}: find text must occur once"
+            if e["file"] == fault_file(fault):
+                lines.add(src[: src.index(e["find"])].count("\n") + 1)
+            tree[e["file"]] = src.replace(e["find"], e["replace"])
+        return tree, sorted(lines)
     path = fault_file(fault)
     src = tree[path]
     assert src.count(fault["find"]) == 1, f"{fault['id']}: find text must occur once"
@@ -104,6 +148,47 @@ def plant(fault, suite):
 
 def vectors(model):
     return json.loads((HERE / "vectors" / f"{model}.json").read_text())
+
+
+def host_decide(tree, model, inputs):
+    """Run a host tree's `decide` on each input, in a fresh interpreter.
+    An input whose call raises gets the string "error: ..."."""
+    d = WORK / "check" / uuid.uuid4().hex[:12]
+    for rel, src in tree.items():
+        (d / rel).parent.mkdir(parents=True, exist_ok=True)
+        (d / rel).write_text(src)
+    code = (f"import json, sys; sys.path.insert(0, {str(d)!r}); import {model} as m\n"
+            "def one(i):\n"
+            "    try:\n        return m.decide(i)\n"
+            "    except Exception as e:\n        return 'error: ' + repr(e)\n"
+            "print(json.dumps([one(i) for i in json.load(sys.stdin)]))")
+    try:
+        out = subprocess.run([sys.executable, "-c", code], input=json.dumps(inputs),
+                             capture_output=True, text=True, check=True, timeout=300).stdout
+        return json.loads(out)
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, json.JSONDecodeError) as e:
+        return [f"error: {type(e).__name__}"] * len(inputs)
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+
+
+_QUIET = {}
+
+
+def quiet_vectors(model, suite):
+    """For report suites: the vectors that no planted fault changes, so that
+    the tests pass whichever fault is planted and the report stays the only
+    evidence."""
+    if (model, suite) not in _QUIET:
+        cases = vectors(model)
+        keep = [True] * len(cases)
+        for t in reports(suite):
+            if t["model"] == model and t["verdict"] == "bug":
+                tree, _ = plant(t, suite)
+                got = host_decide(tree, model, [c["input"] for c in cases])
+                keep = [k and g == c["expected"] for k, g, c in zip(keep, got, cases)]
+        _QUIET[(model, suite)] = [c for k, c in zip(keep, cases) if k]
+    return _QUIET[(model, suite)]
 
 
 def write_workspace(run_dir, model, tree, cases):
@@ -127,10 +212,89 @@ def failing(model, tree, cases):
     return re.findall(r"^FAIL \S+ (\S+)", out, re.M)
 
 
+def spec_expect(model, inputs):
+    """Decisions from the specification, using the locally built engine."""
+    local = HERE / ".lake" / "build" / "bin" / "why"
+    d = WORK / "check" / uuid.uuid4().hex[:12]
+    d.mkdir(parents=True)
+    (d / "in.json").write_text(json.dumps([{"id": str(i), "input": x} for i, x in enumerate(inputs)]))
+    out = subprocess.run([str(local if local.exists() else ENGINE), "expect", model, str(d / "in.json")],
+                         capture_output=True, text=True, check=True).stdout
+    shutil.rmtree(d)
+    return [c["expected"] for c in json.loads(out)]
+
+
+def hidden_vectors(model):
+    return json.loads((HERE / "vectors" / f"hidden-{model}.json").read_text())
+
+
+def check_fixes(suite):
+    """Clean code passes the visible and hidden vectors; each fault passes
+    the visible ones its session sees but fails hidden ones; for a fault in
+    several places, every partial fix still fails hidden ones."""
+    ok = True
+    for model in suite_models(suite):
+        hid = hidden_vectors(model)
+        got = host_decide(host_tree(model, suite), model, [c["input"] for c in hid])
+        bad = sum(g != c["expected"] for g, c in zip(got, hid))
+        print(f"{suite} clean {model}: {bad} of {len(hid)} hidden failing; "
+              f"{len(quiet_vectors(model, suite))} visible vectors")
+        ok &= not bad
+    for t in reports(suite):
+        if t["verdict"] != "bug":
+            print(f"{suite} {t['id']} (no_bug)")
+            continue
+        m, hid = t["model"], hidden_vectors(t["model"])
+        variants = [("fault", t["edits"])]
+        if len(t["edits"]) > 1:
+            variants += [(f"only edit {i + 1}", [e]) for i, e in enumerate(t["edits"])]
+        for label, edits in variants:
+            tree, lines = plant({**t, "edits": edits}, suite)
+            got = host_decide(tree, m, [c["input"] for c in hid])
+            bad = sum(g != c["expected"] for g, c in zip(got, hid))
+            vis = failing(m, tree, quiet_vectors(m, suite))
+            good = bad > 0 and not vis
+            print(f"{suite} {t['id']} {label}: {fault_file(t)} lines {lines}, {bad} hidden failing, "
+                  f"{len(vis)} visible failing" + ("" if good else "  <-- PROBLEM"))
+            ok &= good
+    return ok
+
+
+def check_reports(suite):
+    ok = True
+    for model in suite_models(suite):
+        quiet = quiet_vectors(model, suite)
+        fails = failing(model, host_tree(model, suite), vectors(model))
+        print(f"{suite} clean {model}: {len(fails)} of {len(vectors(model))} failing; "
+              f"{len(quiet)} vectors that no fault changes")
+        ok &= not fails
+    for t in reports(suite):
+        m, case = t["model"], t["case"]
+        want = spec_expect(m, [case["input"]])[0]
+        clean = host_decide(host_tree(m, suite), m, [case["input"]])[0]
+        line = f"{suite} {t['id']} ({t['verdict']}): spec {want}, clean {clean}"
+        good = clean == want
+        if t["verdict"] == "bug":
+            tree, lines = plant(t, suite)
+            bad = host_decide(tree, m, [case["input"]])[0]
+            fails = failing(m, tree, quiet_vectors(m, suite))
+            line += f", with fault {bad} ({fault_file(t)} lines {lines}), {len(fails)} tests failing"
+            good &= bad != want and not fails
+        print(line + ("" if good else "  <-- PROBLEM"))
+        ok &= good
+    return ok
+
+
 def cmd_check(args):
     ok = True
     for suite in SUITES:
-        for model in SPEC:
+        if "reports" in SUITES[suite]:
+            ok &= check_reports(suite)
+            continue
+        if "fixes" in SUITES[suite]:
+            ok &= check_fixes(suite)
+            continue
+        for model in suite_models(suite):
             fails = failing(model, host_tree(model, suite), vectors(model))
             print(f"{suite} clean {model}: {len(fails)} failing")
             ok &= not fails
@@ -176,6 +340,54 @@ Answer from the specification. Do not change any file except answer.json. When y
 
 Work only inside this directory, and stop once answer.json is written."""
 
+REPORT_PROMPT = """You are on call for a {describe}.
+
+- {entry}
+- spec/{Spec}.lean is its specification (Lean 4: an `encode` step turns the JSON input into facts, then Datalog-style rules decide). The specification is the source of truth.
+- tests/{model}.json holds test vectors; their expected decisions come from the specification. `python3 run_tests.py` replays them (they all pass) and prints what the code decides for case {case_id}, which has no expected decisions.
+
+A user reported this; case {case_id} in tests/{model}.json is the exact situation:
+
+> {report}
+
+Either the code under host/ has a bug (it decides differently from the specification), or the code is right and the user's expectation is wrong.
+{tool}
+Find out which. Do not change any file except answer.json. When you are confident, write answer.json in this directory:
+
+{{"verdict": "bug" or "no_bug", "file": "host/<path of the faulty file>" or null, "line": <line number of the faulty code> or null, "cause": "<one sentence: the faulty code, or the condition that decides the case>"}}
+
+Work only inside this directory, and stop once answer.json is written."""
+
+FIX_PROMPT = """You are on call for a {describe}.
+
+- {entry}
+- spec/{Spec}.lean is its specification (Lean 4: an `encode` step turns the JSON input into facts, then Datalog-style rules decide). The specification is the source of truth.
+- tests/{model}.json holds test vectors; their expected decisions come from the specification. `python3 run_tests.py` replays them, and they all pass. `python3 run_tests.py <file.json>` replays a file of your own in the same format (cases without "expected" are only run, and the code's decisions printed).
+
+A user reported:
+
+> {report}
+
+Either the code under host/ disagrees with the specification, or the code is right and the user's expectation is wrong. If the code is wrong, fix it under host/ so that it agrees with the specification for every input, not only the reported situation: hidden tests will check. If the code is right, leave host/ unchanged. Do not change spec/, tests/ or run_tests.py; you may create other files.
+{tool}
+When you are done, write answer.json in this directory:
+
+{{"verdict": "bug" or "no_bug", "files": [<paths under host/ that you changed>], "cause": "<one sentence: what was wrong, or the condition that decides the reported situation>"}}
+
+Work only inside this directory, and stop once answer.json is written."""
+
+FIX_WHY_TOOL = """
+You also have `./why`, which answers questions from the specification for any case:
+
+- `./why <case-id>`: the expected decisions for that case, each with its why tree (the rules and facts that produce it).
+- `./why <case-id> whynot <decision...>`: why a decision does not follow, for example `./why {example}`.
+- `./why <case-id> why <predicate> [args...]`: why any fact holds (or, if it doesn't, why not).
+- `./why <case-id> facts`: the facts the specification's `encode` step produces from that case's input.
+- `./why --cases <file.json> <case-id> ...`: the same, for a case in a file of your own (same format as tests/, "expected" not needed).
+
+Asking `./why` about the reported situation is usually the quickest way to see which conditions decide it.
+"""
+
 WHY_TOOL = """
 You also have `./why`, which answers questions from the specification for any test case:
 
@@ -184,18 +396,27 @@ You also have `./why`, which answers questions from the specification for any te
 - `./why <case-id> why <predicate> [args...]`: why any fact holds (or, if it doesn't, why not).
 - `./why <case-id> facts`: the facts the specification's `encode` step produces from that case's input.
 
-Asking `./why` about a failing case is usually the quickest way to see which conditions decide it.
+Asking `./why` about {which} is usually the quickest way to see which conditions decide it.
 """
 
 EXAMPLES = {"irrigation": "irr-01 whynot water lawn", "library": "lib-01 whynot lend m1 i1",
-            "notify": "ntf-01 whynot deliver push"}
+            "notify": "ntf-01 whynot deliver push", "access": "acc-01 whynot open d-office-2",
+            "deploy": "dep-01 whynot deploy payments"}
 
 
 def prompt_for(task, arm, suite):
     model = task["model"]
-    tool = WHY_TOOL.format(example=EXAMPLES[model]) if arm == "logic" else ""
+    which = "the reported case" if "report" in task else "a failing case"
+    tool = WHY_TOOL.format(example=EXAMPLES[model], which=which) if arm == "logic" else ""
     common = dict(describe=DESCRIBE[model], model=model, Spec=SPEC[model], tool=tool,
                   entry=entry(model, suite))
+    if task.get("fix"):
+        first = quiet_vectors(model, suite)[0]["id"]  # an example id that is in tests/
+        example = " ".join([first] + EXAMPLES[model].split()[1:])
+        tool = FIX_WHY_TOOL.format(example=example) if arm == "logic" else ""
+        return FIX_PROMPT.format(report=task["report"], **{**common, "tool": tool})
+    if "report" in task:
+        return REPORT_PROMPT.format(case_id=task["case"]["id"], report=task["report"], **common)
     if "question" in task:
         shape = json.dumps({k: "<one sentence>" for k in task["grade"]})
         return QUESTION_PROMPT.format(case_id=task["case"]["id"], question=task["question"],
@@ -205,7 +426,13 @@ def prompt_for(task, arm, suite):
 
 def build(task, arm, suite, run_dir):
     model = task["model"]
-    if "question" in task:
+    if task.get("fix"):
+        tree = plant(task, suite)[0] if task["verdict"] == "bug" else host_tree(model, suite)
+        cases = quiet_vectors(model, suite)
+    elif "report" in task:
+        tree = plant(task, suite)[0] if task["verdict"] == "bug" else host_tree(model, suite)
+        cases = quiet_vectors(model, suite) + [task["case"]]
+    elif "question" in task:
         tree, cases = host_tree(model, suite), vectors(model) + [task["case"]]
     else:
         tree, _ = plant(task, suite)
@@ -213,13 +440,44 @@ def build(task, arm, suite, run_dir):
     write_workspace(run_dir, model, tree, cases)
     if arm == "logic":
         w = run_dir / "why"
-        w.write_text(f'#!/bin/sh\nexec "{ENGINE}" {model} "$(dirname "$0")/tests/{model}.json" "$@"\n')
+        if task.get("fix"):
+            w.write_text(f'#!/bin/sh\ncases="$(dirname "$0")/tests/{model}.json"\n'
+                         f'if [ "$1" = "--cases" ]; then cases="$2"; shift 2; fi\n'
+                         f'exec "{ENGINE}" {model} "$cases" "$@"\n')
+        else:
+            w.write_text(f'#!/bin/sh\nexec "{ENGINE}" {model} "$(dirname "$0")/tests/{model}.json" "$@"\n')
         w.chmod(0o755)
 
 
 # ---------------------------------------------------------------- grading
 
+def grade_fix(task, suite, run_dir):
+    """Fix tasks: replay the hidden vectors against the session's host/ and
+    compare it with the code the session was given."""
+    model = task["model"]
+    given = plant(task, suite)[0] if task["verdict"] == "bug" else host_tree(model, suite)
+    root = run_dir / "host"
+    final = {str(p.relative_to(root)): p.read_text(errors="replace")
+             for p in sorted(root.rglob("*.py")) if "__pycache__" not in p.parts}
+    changed = sorted(k for k in set(given) | set(final) if given.get(k) != final.get(k))
+    diff_lines = sum(1 for k in changed for l in difflib.unified_diff(
+        given.get(k, "").splitlines(), final.get(k, "").splitlines(), lineterm="", n=0)
+        if l[:1] in "+-" and not l.startswith(("+++", "---")))
+    hid = hidden_vectors(model)
+    got = host_decide(final, model, [c["input"] for c in hid])
+    failed = [c["id"] for g, c in zip(got, hid) if g != c["expected"]]
+    p = run_dir / "answer.json"
+    try:
+        ans = json.loads(p.read_text()) if p.exists() else None
+    except json.JSONDecodeError:
+        ans = None
+    return {"hidden_failed": len(failed), "hidden_failed_ids": failed[:20], "changed_files": changed,
+            "diff_lines": diff_lines, **grade_answer(task, suite, ans, hidden_failed=len(failed))}
+
+
 def grade(task, suite, run_dir):
+    if task.get("fix"):
+        return grade_fix(task, suite, run_dir)
     p = run_dir / "answer.json"
     if not p.exists():
         return {"correct": False, "answer": None, "why": "no answer.json"}
@@ -230,13 +488,33 @@ def grade(task, suite, run_dir):
     return grade_answer(task, suite, ans)
 
 
-def grade_answer(task, suite, ans):
+def grade_answer(task, suite, ans, hidden_failed=None):
     """Bug tasks: correct when the answer names the planted file and its cause
     matches the fault's `cause_pattern`. The line number is graded separately
     (`line_ok`, within one line of the planted lines), because sessions often
     miscount lines when they print several files at once."""
+    if task.get("fix"):
+        # Correct: the right verdict, and the code agrees with the spec on
+        # every hidden vector (a wrong "fix" of a no_bug task breaks some).
+        ans_d = ans if isinstance(ans, dict) else {}
+        verdict = str(ans_d.get("verdict", "")).strip().lower().replace("-", "_").replace(" ", "_")
+        verdict_ok = verdict == task["verdict"]
+        cause_ok = bool(re.search(task["cause_pattern"], str(ans_d.get("cause", "")), re.I))
+        problems = ([] if verdict_ok else [f"verdict {verdict!r}, not {task['verdict']}"]) + \
+                   ([] if hidden_failed == 0 else [f"{hidden_failed} hidden vectors fail"])
+        return {"correct": verdict_ok and hidden_failed == 0, "verdict_ok": verdict_ok,
+                "cause_ok": cause_ok, "answer": ans, "why": "; ".join(problems) or "ok"}
     if not isinstance(ans, dict):
         return {"correct": False, "answer": ans, "why": "no answer"}
+    if "report" in task:
+        verdict = str(ans.get("verdict", "")).strip().lower().replace("-", "_").replace(" ", "_")
+        verdict_ok = verdict == task["verdict"]
+        cause_ok = bool(re.search(task["cause_pattern"], str(ans.get("cause", "")), re.I))
+        if task["verdict"] == "no_bug":
+            problems = ([] if verdict_ok else [f"verdict {verdict!r}, not no_bug"]) + \
+                       ([] if cause_ok else ["cause doesn't name the deciding condition"])
+            return {"correct": verdict_ok and cause_ok, "verdict_ok": verdict_ok, "answer": ans,
+                    "why": "; ".join(problems) or "ok"}
     if "question" in task:
         missing = [k for k, pat in task["grade"].items()
                    if not re.search(pat, str(ans.get(k, "")), re.I)]
@@ -254,6 +532,10 @@ def grade_answer(task, suite, ans):
     problems = ([] if file_ok else [f"file is not {want_file}"]) + \
                ([] if cause_ok else ["cause doesn't name the fault"]) + \
                ([] if line_ok else [f"line {line} not near {lines}"])
+    if "report" in task:
+        problems = ([] if verdict_ok else [f"verdict {verdict!r}, not bug"]) + problems
+        return {"correct": verdict_ok and file_ok and cause_ok, "verdict_ok": verdict_ok,
+                "line_ok": line_ok, "answer": ans, "why": "; ".join(problems) or "ok"}
     return {"correct": file_ok and cause_ok, "line_ok": line_ok, "answer": ans,
             "why": "; ".join(problems) or "ok"}
 
@@ -337,7 +619,7 @@ def run_one(task, arm, suite, model, effort, rep, timeout):
     steps = s.get("steps", [])
     s["why_calls"] = sum(1 for x in steps if re.search(r"(^|[\s/;&|])\./why\b|/why ", x))
     s["run_dir"] = str(run_dir)
-    rec = {"run_id": run_id, "suite": suite, "task": task["id"], "kind": "question" if "question" in task else "bug",
+    rec = {"run_id": run_id, "suite": suite, "task": task["id"], "kind": "fix" if task.get("fix") else "report" if "report" in task else "question" if "question" in task else "bug",
            "category": task.get("category", "question"), "model": model, "effort": effort,
            "arm": arm, "rep": rep, "timed_out": timed_out, "wall_s": round(wall, 1),
            "claude_code": claude_version(), **s, **g}
@@ -433,7 +715,8 @@ def load_runs():
     for r in runs:
         r["strayed"] = strayed(r)
     for r in runs:  # grade again with the current rules, from the stored answer
-        r.update(grade_answer(tasks(r.get("suite", "small"))[r["task"]], r.get("suite", "small"), r.get("answer")))
+        r.update(grade_answer(tasks(r.get("suite", "small"))[r["task"]], r.get("suite", "small"), r.get("answer"),
+                              hidden_failed=r.get("hidden_failed")))
     return runs
 
 

@@ -1,0 +1,3901 @@
+[
+ {
+  "id": "acc-01",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "security",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-02",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 20,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-2",
+    "zone": "server",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-03",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e7",
+    "kind": "employee",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": true,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-04",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v3",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-2",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-05",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": true,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-06",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": true,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v4",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": {
+     "id": "e4",
+     "role": "facilities",
+     "on_site": true,
+     "training": []
+    }
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-07",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v7",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e3",
+     "role": "engineer",
+     "on_site": true,
+     "training": [
+      "lab_safety",
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-server-2",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-08",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v3",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e2",
+     "role": "engineer",
+     "on_site": true,
+     "training": []
+    }
+   },
+   "door": {
+    "id": "d-loading-3",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-09",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e8",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-10",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-2",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-11",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e7",
+    "kind": "employee",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-12",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v9",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e1",
+     "role": "engineer",
+     "on_site": false,
+     "training": [
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-13",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c1",
+    "kind": "contractor",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": -3,
+    "training": [
+     "server_access"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-3",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-14",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 20,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-1",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-15",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c4",
+    "kind": "contractor",
+    "role": "engineer",
+    "badge": "suspended",
+    "contract_days_left": 9,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-2",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-16",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-1",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-17",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 23,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e1",
+    "kind": "employee",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-3",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-18",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c9",
+    "kind": "contractor",
+    "role": "none",
+    "badge": "lost",
+    "contract_days_left": -3,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-2",
+    "zone": "server",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-19",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-3",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-20",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-21",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 12,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c1",
+    "kind": "contractor",
+    "role": "none",
+    "badge": "suspended",
+    "contract_days_left": 2,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-3",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-22",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 12,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": true,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-3",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-23",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 2,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c6",
+    "kind": "contractor",
+    "role": "lab_tech",
+    "badge": "lost",
+    "contract_days_left": 40,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-24",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c6",
+    "kind": "contractor",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": 0,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-1",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-25",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v1",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e3",
+     "role": "facilities",
+     "on_site": true,
+     "training": []
+    }
+   },
+   "door": {
+    "id": "d-lab-2",
+    "zone": "lab",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-26",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-1",
+    "zone": "server",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-27",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-1",
+    "zone": "loading",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-28",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "e6",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-3",
+    "zone": "loading",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-29",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c3",
+    "kind": "contractor",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": -3,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-3",
+    "zone": "server",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-30",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v7",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e4",
+     "role": "lab_tech",
+     "on_site": true,
+     "training": [
+      "lab_safety"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-loading-2",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-31",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c4",
+    "kind": "contractor",
+    "role": "facilities",
+    "badge": "suspended",
+    "contract_days_left": 2,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-1",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-32",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "e6",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-33",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c1",
+    "kind": "contractor",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": 0,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-3",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-34",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-35",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-3",
+    "zone": "loading",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-36",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c7",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": -3,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-2",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-37",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e7",
+    "kind": "employee",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-2",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-38",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c5",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": 0,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-2",
+    "zone": "lobby",
+    "after_hours": true,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-39",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 18,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "v9",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-2",
+    "zone": "loading",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-40",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e6",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-2",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-41",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v7",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": true,
+    "escort": {
+     "id": "e7",
+     "role": "engineer",
+     "on_site": true,
+     "training": [
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-server-1",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-42",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 20,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c1",
+    "kind": "contractor",
+    "role": "exec",
+    "badge": "suspended",
+    "contract_days_left": 9,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-43",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": true,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-1",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-44",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c6",
+    "kind": "contractor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": 2,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-3",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-45",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e7",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-3",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-46",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c8",
+    "kind": "contractor",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": 2,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-2",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-47",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-3",
+    "zone": "server",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-48",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c5",
+    "kind": "contractor",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": 9,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-1",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-49",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v3",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e2",
+     "role": "engineer",
+     "on_site": true,
+     "training": []
+    }
+   },
+   "door": {
+    "id": "d-lobby-2",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-50",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v4",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-51",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v3",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-2",
+    "zone": "roof",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-52",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "c2",
+    "kind": "contractor",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": 0,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-53",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-3",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-54",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-1",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-55",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-1",
+    "zone": "lobby",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-56",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e4",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-1",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-57",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c5",
+    "kind": "contractor",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": 2,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-1",
+    "zone": "roof",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-58",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e4",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-59",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e4",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-1",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-60",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 9,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-1",
+    "zone": "lobby",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-61",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-1",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-62",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 20,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "e8",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-2",
+    "zone": "server",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-63",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "security",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-1",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-64",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": true,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-65",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-2",
+    "zone": "server",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-66",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c8",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": 2,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-2",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-67",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-3",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-68",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-3",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-69",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e1",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-2",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-70",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 20,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "v2",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-1",
+    "zone": "lab",
+    "after_hours": true,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-71",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 20,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e6",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-1",
+    "zone": "roof",
+    "after_hours": true,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-72",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 7,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e1",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-1",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-73",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c7",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": 2,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-1",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-74",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 12,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-75",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e8",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-3",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-76",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v1",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": true,
+    "escort": {
+     "id": "e1",
+     "role": "lab_tech",
+     "on_site": true,
+     "training": [
+      "lab_safety",
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-roof-3",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-77",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e8",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-2",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-78",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e6",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-3",
+    "zone": "lab",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-79",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 2,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e8",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-1",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-80",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e1",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-81",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "c8",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": 120,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-3",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-82",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v5",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": {
+     "id": "e7",
+     "role": "lab_tech",
+     "on_site": true,
+     "training": []
+    }
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-83",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 23,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-84",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v9",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e6",
+     "role": "engineer",
+     "on_site": false,
+     "training": [
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-lobby-1",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-85",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e4",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-86",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-3",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-87",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e8",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-1",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-88",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e7",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-3",
+    "zone": "server",
+    "after_hours": true,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-89",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e4",
+    "kind": "employee",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-3",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-90",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-1",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-91",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c5",
+    "kind": "contractor",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": 0,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-2",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-92",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e1",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-93",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-94",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e4",
+    "kind": "employee",
+    "role": "security",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lobby-2",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-95",
+  "input": {
+   "now": {
+    "day": "fri",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e1",
+    "kind": "employee",
+    "role": "security",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": true,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-96",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e2",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-1",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-97",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "c3",
+    "kind": "contractor",
+    "role": "exec",
+    "badge": "lost",
+    "contract_days_left": 0,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-1",
+    "zone": "loading",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-98",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-2",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-99",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e9",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-roof-2",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-100",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c6",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": 120,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-3",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-101",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c5",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "active",
+    "contract_days_left": -3,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-102",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": true
+   },
+   "person": {
+    "id": "e4",
+    "kind": "employee",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-103",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 2,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c5",
+    "kind": "contractor",
+    "role": "security",
+    "badge": "suspended",
+    "contract_days_left": -3,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-1",
+    "zone": "lab",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-104",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": true,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-2",
+    "zone": "lab",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-105",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 2,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v1",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [],
+    "responder": false,
+    "escort": {
+     "id": "e3",
+     "role": "facilities",
+     "on_site": false,
+     "training": [
+      "lab_safety",
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-roof-1",
+    "zone": "roof",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-106",
+  "input": {
+   "now": {
+    "day": "sun",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-3",
+    "zone": "loading",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-107",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 16,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v1",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-1",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-108",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 9,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c7",
+    "kind": "contractor",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": 9,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-3",
+    "zone": "lab",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-109",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c5",
+    "kind": "contractor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": 0,
+    "training": [
+     "fall_protection",
+     "lab_safety"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-loading-1",
+    "zone": "loading",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-110",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c4",
+    "kind": "contractor",
+    "role": "facilities",
+    "badge": "active",
+    "contract_days_left": 40,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-111",
+  "input": {
+   "now": {
+    "day": "thu",
+    "hour": 19,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v6",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e6",
+     "role": "facilities",
+     "on_site": true,
+     "training": [
+      "lab_safety",
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-lobby-3",
+    "zone": "lobby",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-112",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e7",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-2",
+    "zone": "server",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-113",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e5",
+    "kind": "employee",
+    "role": "lab_tech",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": true,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-114",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 7,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c3",
+    "kind": "contractor",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": 40,
+    "training": [
+     "fall_protection"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-server-3",
+    "zone": "server",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-115",
+  "input": {
+   "now": {
+    "day": "mon",
+    "hour": 18,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e7",
+    "kind": "employee",
+    "role": "none",
+    "badge": "lost",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": true
+   }
+  }
+ },
+ {
+  "id": "acc-116",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 12,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e1",
+    "kind": "employee",
+    "role": "engineer",
+    "badge": "suspended",
+    "contract_days_left": null,
+    "training": [
+     "lab_safety",
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-2",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-117",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 23,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "e3",
+    "kind": "employee",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-118",
+  "input": {
+   "now": {
+    "day": "sat",
+    "hour": 12,
+    "holiday": true
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c4",
+    "kind": "contractor",
+    "role": "exec",
+    "badge": "active",
+    "contract_days_left": 40,
+    "training": [],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-office-3",
+    "zone": "office",
+    "after_hours": false,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-119",
+  "input": {
+   "now": {
+    "day": "tue",
+    "hour": 9,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "c9",
+    "kind": "contractor",
+    "role": "lab_tech",
+    "badge": "active",
+    "contract_days_left": 40,
+    "training": [
+     "lab_safety"
+    ],
+    "responder": false,
+    "escort": null
+   },
+   "door": {
+    "id": "d-lab-1",
+    "zone": "lab",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ },
+ {
+  "id": "acc-120",
+  "input": {
+   "now": {
+    "day": "wed",
+    "hour": 2,
+    "holiday": false
+   },
+   "site": {
+    "lockdown": false,
+    "fire_alarm": false
+   },
+   "person": {
+    "id": "v7",
+    "kind": "visitor",
+    "role": "none",
+    "badge": "active",
+    "contract_days_left": null,
+    "training": [
+     "server_access"
+    ],
+    "responder": false,
+    "escort": {
+     "id": "e7",
+     "role": "facilities",
+     "on_site": true,
+     "training": [
+      "lab_safety",
+      "server_access"
+     ]
+    }
+   },
+   "door": {
+    "id": "d-lab-1",
+    "zone": "lab",
+    "after_hours": true,
+    "egress": false
+   }
+  }
+ }
+]

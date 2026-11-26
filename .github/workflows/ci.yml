@@ -32,9 +32,9 @@ jobs:
         run: |
           cd bench/why-queries
           lake build
-          for m in irrigation library notify; do
-            .lake/build/bin/why expect "$m" "inputs/$m.json" > "/tmp/$m.json"
-            diff -u "vectors/$m.json" "/tmp/$m.json"
+          for f in irrigation library notify access deploy hidden-access hidden-deploy; do
+            .lake/build/bin/why expect "${f#hidden-}" "inputs/$f.json" > "/tmp/$f.json"
+            diff -u "vectors/$f.json" "/tmp/$f.json"
           done
           python3 bench.py check
       - name: No sorry or new axioms

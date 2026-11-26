@@ -1,0 +1,128 @@
+[
+ {
+  "id": "dep-fix-self-approval",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "two-place fault",
+  "report": "It looks like authors can sometimes sign off their own changes.",
+  "edits": [
+   {
+    "file": "deploy/approvals.py",
+    "find": "    return [a for a in approvals if a.by != change.author]",
+    "replace": "    return list(approvals)"
+   },
+   {
+    "file": "deploy/approvals.py",
+    "find": "    return any(a.role == SRE and a.by != change.author for a in approvals)",
+    "replace": "    return any(a.role == SRE for a in approvals)"
+   }
+  ],
+  "cause_pattern": "author|self|independent"
+ },
+ {
+  "id": "dep-fix-closing-time",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "wrong comparison",
+  "report": "A couple of changes shipped after the deploy window had closed.",
+  "edits": [
+   {
+    "file": "deploy/window.py",
+    "find": "    return start <= cal.hour < end",
+    "replace": "    return start <= cal.hour <= end"
+   }
+  ],
+  "cause_pattern": "<=|inclusive|exclusive|clos|end"
+ },
+ {
+  "id": "acc-fix-afterhours",
+  "model": "access",
+  "verdict": "no_bug",
+  "category": "user was wrong",
+  "report": "People using the after-hours side doors get turned away late at night, which is exactly what those doors are for. Please fix it.",
+  "cause_pattern": "night|22|6"
+ },
+ {
+  "id": "dep-fix-budget-boundary",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "wrong comparison",
+  "report": "Now and then a change goes to the canary even though its service looks healthy.",
+  "edits": [
+   {
+    "file": "deploy/slo.py",
+    "find": "        return self.remaining_pct >= HEALTHY_BUDGET_PCT",
+    "replace": "        return self.remaining_pct > HEALTHY_BUDGET_PCT"
+   }
+  ],
+  "cause_pattern": ">=|exactly|20|boundary|inclusive"
+ },
+ {
+  "id": "acc-fix-holiday",
+  "model": "access",
+  "verdict": "bug",
+  "category": "dropped condition",
+  "report": "On last month's public holiday, the lab and server doors opened without asking for a second factor.",
+  "edits": [
+   {
+    "file": "access/clock.py",
+    "find": "    if now.holiday:\n        return False\n",
+    "replace": ""
+   }
+  ],
+  "cause_pattern": "holiday"
+ },
+ {
+  "id": "dep-fix-double-rollout",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "dropped condition",
+  "report": "Some changes went to the canary and to everyone at the same time.",
+  "edits": [
+   {
+    "file": "deploy/gate.py",
+    "find": "    if budget.healthy and (ch.risk != \"high\" or not svc.canary):",
+    "replace": "    if ch.risk != \"high\" or not svc.canary:"
+   }
+  ],
+  "cause_pattern": "budget|healthy"
+ },
+ {
+  "id": "acc-fix-lockdown-responder",
+  "model": "access",
+  "verdict": "bug",
+  "category": "wrong order",
+  "report": "During the lockdown drill, some of our responders couldn't get through doors they needed.",
+  "edits": [
+   {
+    "file": "access/decision.py",
+    "find": "    if site.lockdown:\n        return (True, \"responder\") if p.responder else (False, \"lockdown\")\n    if not training.cleared(p, d.zone, policy):\n        return False, \"zone or training\"\n",
+    "replace": "    if not training.cleared(p, d.zone, policy):\n        return False, \"zone or training\"\n    if site.lockdown:\n        return (True, \"responder\") if p.responder else (False, \"lockdown\")\n"
+   }
+  ],
+  "cause_pattern": "responder|lockdown|order|training"
+ },
+ {
+  "id": "dep-fix-migration",
+  "model": "deploy",
+  "verdict": "no_bug",
+  "category": "user was wrong",
+  "report": "A tier 2 migration with an owner approval and green checks was blocked midweek. The settings say only tier 1 migrations involve SRE, so the gate is wrong to ask for one.",
+  "cause_pattern": "sre|every tier|any tier|all tiers"
+ },
+ {
+  "id": "acc-fix-expiry-notice",
+  "model": "access",
+  "verdict": "bug",
+  "category": "wrong comparison",
+  "report": "Some contractors never got the reminder that their contract is about to end.",
+  "edits": [
+   {
+    "file": "access/contracts.py",
+    "find": "    return days is not None and 0 < days <= policy.expiring_within_days",
+    "replace": "    return days is not None and 0 < days < policy.expiring_within_days"
+   }
+  ],
+  "cause_pattern": "<=|7|inclusive|boundary|expiring"
+ }
+]
