@@ -1,0 +1,6 @@
+# A stand-in for the real Go instrument's descriptor.
+name = "tribrach-go"
+kind = "instrument"
+formats = { manifest = "1", vectors = "1", diagnostics = "1" }
+owns-links = ["tribrach.go"]
+diagnostics = "TRG"

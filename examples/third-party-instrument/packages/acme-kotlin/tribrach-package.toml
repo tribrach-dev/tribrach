@@ -1,0 +1,5 @@
+# A third-party instrument. Nothing in Tribrach core names it.
+name = "acme-kotlin"
+kind = "instrument"
+owns-links = ["acme.kotlin"]   # links say `owner = "acme.kotlin"`
+diagnostics = "ACK"

@@ -1,0 +1,10 @@
+name = "third-party-instrument"
+defaultTargets = ["owners"]
+
+[[require]]
+name = "tribrach"
+path = "../.."
+
+[[lean_exe]]
+name = "owners"
+root = "Main"
