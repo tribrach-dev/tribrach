@@ -1,1 +1,15 @@
-{ "format": "tribrach.graph.v1", "package": "counter", "nodes": [] }
+{"format": "tribrach.graph.v1",
+ "package": "counter",
+ "nodes":
+ [{"name": "Counter.CounterOp", "hash": "18388f4d3b321543",
+   "uses": ["Counter.CounterOp.incr", "Counter.CounterOp.reset"]},
+  {"name": "Counter.CounterOp.casesOn", "hash": "f2de0340bc7f000d",
+   "uses": ["Counter.CounterOp", "Counter.CounterOp.incr", "Counter.CounterOp.rec", "Counter.CounterOp.reset"]},
+  {"name": "Counter.CounterOp.incr", "hash": "84e53cd2279c51dd", "uses": ["Counter.CounterOp"]},
+  {"name": "Counter.CounterOp.rec", "hash": "4d03ee72f0be75f9",
+   "uses": ["Counter.CounterOp", "Counter.CounterOp.incr", "Counter.CounterOp.reset"]},
+  {"name": "Counter.CounterOp.reset", "hash": "cc8d43b30bbb176b", "uses": ["Counter.CounterOp"]},
+  {"name": "Counter.counterStep", "hash": "039253c9125f67c4",
+   "uses": ["Counter.CounterOp", "Counter.counterStep.match_1"]},
+  {"name": "Counter.counterStep.match_1", "hash": "7aeb3430d77eeea6",
+   "uses": ["Counter.CounterOp", "Counter.CounterOp.casesOn", "Counter.CounterOp.incr", "Counter.CounterOp.reset"]}]}

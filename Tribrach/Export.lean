@@ -286,7 +286,7 @@ def refreshJson (package : String) (oldGraph newGraph : List (String × String))
   let findOld (l : String × String × String × String) :=
     oldLinks.find? fun o => key o == key l
   let because (lean : String) : List String :=
-    ((closures.lookup lean).getD []).filter changed.contains
+    (((closures.lookup lean).getD []).filter changed.contains).toArray.qsort (· < ·) |>.toList
   let item (o lean sym status : String) (extra : List (String × Json)) : Json :=
     Json.mkObj ([("owner", Json.str o), ("lean", Json.str lean), ("symbol", Json.str sym),
       ("status", Json.str status)] ++ extra)

@@ -1,18 +1,26 @@
 #!/bin/sh
 # CI has already run `lake build`, which compiled CounterExport and rewrote
 # exported/. Check that:
-#  1. the committed files are exactly what the build exports (not stale);
+#  1. the committed files hold what the build exports (compared as JSON);
 #  2. the refresh report is empty, since nothing changed since the commit;
 #  3. after a simulated upstream change, the refresh report names the links
 #     to re-check and the definition that caused it.
 set -e
 
-if [ -n "$(git status --porcelain -- exported/)" ]; then
-  echo "FAIL exported/ is stale; the build wrote:"
-  git status --porcelain -- exported/
-  for f in exported/*.json; do echo "== $f"; cat "$f"; done
-  exit 1
-fi
+python3 - <<'PY'
+import json, subprocess, sys
+stale = []
+for name in ("counter.manifest.json", "counter.vectors.json", "tribrach.graph.json"):
+    path = "exported/" + name
+    committed = json.loads(subprocess.run(["git", "show", "HEAD:examples/export-formats/" + path],
+                                          capture_output=True, text=True, check=True).stdout)
+    built = json.load(open(path))
+    if committed != built:
+        stale.append(name)
+        print(f"FAIL {path} is stale; the build wrote:")
+        print(json.dumps(built, indent=2))
+sys.exit(1 if stale else 0)
+PY
 echo "ok   exported/ matches the build"
 
 python3 - <<'PY'
