@@ -8,7 +8,8 @@ It holds one exact point over the ground, and lets you swap instruments
 way: one proved model of your system is the fixed point, and *instruments* for
 each language or domain check that real code matches it.
 
-> Status: pre-alpha, private. Tribrach is an independent project. Apps adopt
+> Status: pre-alpha, public. APIs and formats may change without notice.
+> Tribrach is an independent project. Apps adopt
 > it as an ordinary dependency (a Lake package, a Go module, a Swift package);
 > it never depends on, or contains code from, any app that uses it.
 
@@ -56,4 +57,5 @@ by `Tribrach.Model.run_preserves`.
 
 Apache-2.0, with no paid edition. See [LICENSE](LICENSE), [NOTICE](NOTICE),
 [GOVERNANCE.md](GOVERNANCE.md) and [CONTRIBUTING.md](CONTRIBUTING.md)
-(contributions are signed off under the DCO).
+(contributions are welcome and signed off under the DCO; open an issue before
+a large change).

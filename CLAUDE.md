@@ -6,7 +6,8 @@
 - Write code fresh against docs/architecture.md and neutral examples. Do not
   copy files from application repositories, even ones you can read.
 - Changes that only matter to one application belong in that application.
-- The repo stays private until the maintainers decide to publish.
+- The repo is public and pre-alpha; outside contributions follow
+  CONTRIBUTING.md.
 - Lean toolchain is pinned in `lean-toolchain`; build with `lake build`.
   No `sorry`, no new `axiom`.
 - Instruments go in separate repos: tribrach-go, tribrach-swift,
