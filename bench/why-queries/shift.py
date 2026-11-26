@@ -364,13 +364,19 @@ def snapshot(run_dir):
             for p in sorted(root.rglob("*.py")) if "__pycache__" not in p.parts}
 
 
-def grade_feature(t, tr, version):
+def grade_feature(t, tr, version, prev_fails):
+    """Strict: every vector passes. `carried` counts failing vectors that
+    already failed after the model's previous ticket (left over from an
+    earlier mistake), so `own_ok` judges this ticket's change alone."""
     m = t["model"]
     feat = feature_fails(tr, m, version[m])
     old = hidden_fails(tr)[m]
+    carried = feat & prev_fails.get(m, set())
+    prev_fails[m] = feat
     ok = not feat and not old
-    why = [] if ok else [f"{len(feat)} feature and {len(old)} older hidden vectors fail"]
-    return {"code_ok": ok, "correct": ok, "feature_failed": len(feat), "hidden_failed": len(old),
+    why = [] if ok else [f"{len(feat)} feature ({len(carried)} carried over) and {len(old)} older hidden vectors fail"]
+    return {"code_ok": ok, "correct": ok, "feature_failed": len(feat), "carried_over": len(carried),
+            "own_ok": not (feat - carried) and not old, "hidden_failed": len(old),
             "why": "; ".join(why) or "ok"}
 
 
@@ -410,6 +416,7 @@ def run_shift(arm, model, effort, rep, timeout):
     session, turns, transcript = None, [], []
     prev_out, prev_cost = 0, 0.0  # a resumed session reports usage and cost cumulatively
     before = hidden_fails(snapshot(run_dir)) if MODE == "bugs" else None
+    prev_fails = {}
     t0 = time.time()
     for k, t in enumerate(tickets()):
         if t["verdict"] == "feature":  # the spec moves to the ticket's version first
@@ -449,7 +456,7 @@ def run_shift(arm, model, effort, rep, timeout):
             ans = None
         if MODE == "features":
             after = None
-            g = grade_feature(t, snapshot(run_dir), version)
+            g = grade_feature(t, snapshot(run_dir), version, prev_fails)
             extra = {}
         else:
             after = hidden_fails(snapshot(run_dir))
