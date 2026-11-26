@@ -1,0 +1,196 @@
+[
+  {
+    "format": "tribrach.report.v1",
+    "id": "github-issue-form-12",
+    "model": "todo.v1",
+    "source": {
+      "service": "github-issue-form",
+      "ref": "12",
+      "url": "https://github.com/example-org/todo-app/issues/12"
+    },
+    "app": {
+      "version": "2.3.0",
+      "platform": "ios"
+    },
+    "privacy": [
+      "operation-names",
+      "item-ids"
+    ],
+    "start": [],
+    "ops": [
+      {
+        "op": "add",
+        "id": 1
+      },
+      {
+        "op": "add",
+        "id": 1
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": false
+      },
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
+    "note": "I added the same item twice and now I see two of them."
+  },
+  {
+    "format": "tribrach.report.v1",
+    "id": "github-issue-form-16",
+    "model": "todo.v1",
+    "source": {
+      "service": "github-issue-form",
+      "ref": "16",
+      "url": "https://github.com/example-org/todo-app/issues/16"
+    },
+    "app": {
+      "version": "2.3.0",
+      "platform": "ios"
+    },
+    "privacy": [
+      "operation-names",
+      "item-ids"
+    ],
+    "start": [],
+    "ops": [
+      {
+        "op": "add",
+        "id": 1
+      },
+      {
+        "op": "add",
+        "id": 1
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": false
+      },
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
+    "note": "Tapped add twice quickly, got two copies."
+  },
+  {
+    "format": "tribrach.report.v1",
+    "id": "crash-reporter-6f1b0c2e9d4a4f8a",
+    "model": "todo.v1",
+    "source": {
+      "service": "crash-reporter",
+      "ref": "6f1b0c2e9d4a4f8a"
+    },
+    "app": {
+      "version": "2.2.9",
+      "platform": "android"
+    },
+    "privacy": [
+      "operation-names",
+      "item-ids"
+    ],
+    "start": [
+      {
+        "id": 1,
+        "done": true
+      }
+    ],
+    "ops": [
+      {
+        "op": "add",
+        "id": 1
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": true
+      }
+    ],
+    "expected": [
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
+    "note": "I re-added a finished item and expected it to come back unticked."
+  },
+  {
+    "format": "tribrach.report.v1",
+    "id": "helpdesk-4471",
+    "model": "todo.v1",
+    "source": {
+      "service": "helpdesk",
+      "ref": "4471",
+      "url": "https://help.example.com/tickets/4471"
+    },
+    "app": {
+      "version": "2.3.0",
+      "platform": "ios"
+    },
+    "privacy": [
+      "operation-names",
+      "item-ids",
+      "item-flags"
+    ],
+    "start": [
+      {
+        "id": 1,
+        "done": false,
+        "pinned": true
+      }
+    ],
+    "ops": [
+      {
+        "op": "complete",
+        "id": 1
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": true,
+        "pinned": false
+      }
+    ],
+    "note": "My pinned item lost its pin"
+  },
+  {
+    "format": "tribrach.report.v1",
+    "id": "helpdesk-4480",
+    "model": "todo.v0",
+    "source": {
+      "service": "helpdesk",
+      "ref": "4480",
+      "url": "https://help.example.com/tickets/4480"
+    },
+    "app": {
+      "version": "1.9.0",
+      "platform": "android"
+    },
+    "privacy": [
+      "operation-names",
+      "item-ids"
+    ],
+    "start": [],
+    "ops": [
+      {
+        "op": "add",
+        "id": 3
+      }
+    ],
+    "observed": [
+      {
+        "id": 3,
+        "done": false
+      }
+    ],
+    "note": "Old version"
+  }
+]

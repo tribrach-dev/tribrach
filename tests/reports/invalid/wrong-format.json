@@ -1,0 +1,8 @@
+{
+  "format": "tribrach.report.v2",
+  "id": "r1",
+  "model": "todo.v1",
+  "source": { "service": "github-issue-form", "ref": "1" },
+  "ops": [],
+  "observed": []
+}

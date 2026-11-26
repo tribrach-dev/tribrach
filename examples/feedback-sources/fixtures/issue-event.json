@@ -1,0 +1,17 @@
+{
+  "action": "opened",
+  "issue": {
+    "number": 16,
+    "html_url": "https://github.com/example-org/todo-app/issues/16",
+    "title": "Duplicate entries after adding",
+    "labels": [
+      {
+        "name": "feedback"
+      }
+    ],
+    "body": "### What happened?\n\nTapped add twice quickly, got two copies.\n\n### App version\n\n2.3.0 (ios)\n\n### Report\n\n```tribrach-report\n{\"model\": \"todo.v1\", \"start\": [], \"ops\": [{\"op\": \"add\", \"id\": 1}, {\"op\": \"add\", \"id\": 1}], \"observed\": [{\"id\": 1, \"done\": false}, {\"id\": 1, \"done\": false}], \"privacy\": [\"operation-names\", \"item-ids\"]}\n```\n"
+  },
+  "repository": {
+    "full_name": "example-org/todo-app"
+  }
+}

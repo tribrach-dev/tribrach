@@ -1,0 +1,9 @@
+{
+  "format": "tribrach.triage.v1",
+  "report": "issue-12",
+  "model": "todo.v1",
+  "verdict": "bug",
+  "reason": "x",
+  "evidence": [],
+  "group": "bug-1"
+}

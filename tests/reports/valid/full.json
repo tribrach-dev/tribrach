@@ -1,0 +1,15 @@
+{
+  "format": "tribrach.report.v1",
+  "id": "helpdesk-4471",
+  "model": "todo.v1",
+  "stamp": "9c1e",
+  "source": { "service": "helpdesk", "ref": "4471", "url": "https://help.example.com/tickets/4471" },
+  "app": { "version": "2.3.0", "platform": "ios" },
+  "privacy": ["operation-names", "item-ids"],
+  "start": [],
+  "ops": [{ "op": "add", "id": 1 }, { "op": "complete", "id": 1 }],
+  "observed": [{ "id": 1, "done": true }],
+  "expected": [{ "id": 1, "done": true }],
+  "note": "Looks fine now.",
+  "triage": "cannot-reproduce"
+}

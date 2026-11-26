@@ -1,0 +1,89 @@
+# Template: copy to .github/workflows/ in an app's repository, next to the
+# Lean project that holds its model and Triage.Subject (here, `triage/`).
+#
+# When an issue is opened or edited, read the report attached to it, triage
+# it, and keep one digest comment and its labels up to date.
+#
+# Safety: the issue body is untrusted. It is only read from the event file
+# and parsed as JSON by feedback.py; it is never interpolated into a shell
+# command (`${{ github.event.issue.body }}` must not appear below) and no
+# code from the issue author is checked out or run. `issues` events run this
+# file from the default branch. Only GitHub-made actions are used.
+
+name: Triage feedback issues
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: triage-issue-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    if: contains(github.event.issue.labels.*.name, 'feedback')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: triage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the Lean toolchain manager
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      # The main-branch build fills this cache, so issue runs take seconds.
+      - uses: actions/cache@v4
+        with:
+          path: triage/.lake
+          key: lake-${{ hashFiles('triage/lean-toolchain', 'triage/lake-manifest.json', 'triage/**/*.lean') }}
+          restore-keys: lake-
+
+      - name: Build the triage command
+        run: lake build triage
+
+      - name: Read the report and triage it
+        run: |
+          python3 feedback.py pull --event "$GITHUB_EVENT_PATH"
+          lake exe triage --json out/reports.json > out/triage.jsonl
+          python3 feedback.py digest
+
+      - name: Post or update the digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          body="out/digests/$ISSUE.md"
+          if [ ! -f "$body" ]; then
+            echo "No report attached; nothing to post."
+            exit 0
+          fi
+          labels=$(cat "out/digests/$ISSUE.labels")
+          group=$(tr ',' '\n' < "out/digests/$ISSUE.labels" | grep '^group:' || true)
+          # Earlier issues with the same trace, found by their group label.
+          if [ -n "$group" ]; then
+            others=$(gh issue list --repo "$REPO" --state all --label "$group" \
+              --json number --jq '.[].number' | grep -vx "$ISSUE" | sed 's/^/#/' | paste -sd, - | sed 's/,/, /g')
+            if [ -n "$others" ]; then
+              printf '\nSame trace as %s.\n' "$others" >> "$body"
+            fi
+          fi
+          for l in $(echo "$labels" | tr ',' ' '); do
+            gh label create "$l" --repo "$REPO" --force >/dev/null 2>&1 || true
+          done
+          gh issue edit "$ISSUE" --repo "$REPO" --add-label "$labels"
+          existing=$(gh api "repos/$REPO/issues/$ISSUE/comments" --paginate \
+            --jq '[.[] | select(.body | startswith("<!-- tribrach-triage -->")) | .id] | first // empty')
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@"$body" >/dev/null
+          else
+            gh issue comment "$ISSUE" --repo "$REPO" --body-file "$body"
+          fi

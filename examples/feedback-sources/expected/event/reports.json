@@ -1,0 +1,42 @@
+[
+  {
+    "format": "tribrach.report.v1",
+    "id": "github-issue-form-16",
+    "model": "todo.v1",
+    "source": {
+      "service": "github-issue-form",
+      "ref": "16",
+      "url": "https://github.com/example-org/todo-app/issues/16"
+    },
+    "app": {
+      "version": "2.3.0",
+      "platform": "ios"
+    },
+    "privacy": [
+      "operation-names",
+      "item-ids"
+    ],
+    "start": [],
+    "ops": [
+      {
+        "op": "add",
+        "id": 1
+      },
+      {
+        "op": "add",
+        "id": 1
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": false
+      },
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
+    "note": "Tapped add twice quickly, got two copies."
+  }
+]

@@ -1,0 +1,11 @@
+name = "feedback-sources"
+defaultTargets = ["triage"]
+
+# The to-do model and its triage adapter come from the feedback-triage example.
+[[require]]
+name = "feedback-triage"
+path = "../feedback-triage"
+
+[[lean_exe]]
+name = "triage"
+root = "Main"
