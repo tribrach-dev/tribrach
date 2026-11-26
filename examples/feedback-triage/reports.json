@@ -4,12 +4,39 @@
     "note": "I ticked the first item and the second one got ticked too.",
     "start": [],
     "ops": [
-      {"op": "add", "id": 1},
-      {"op": "add", "id": 2},
-      {"op": "complete", "id": 1}
+      {
+        "op": "add",
+        "id": 1
+      },
+      {
+        "op": "add",
+        "id": 2
+      },
+      {
+        "op": "complete",
+        "id": 1
+      }
     ],
-    "observed": [{"id": 1, "done": true}, {"id": 2, "done": true}],
-    "expected": [{"id": 1, "done": true}, {"id": 2, "done": false}],
+    "observed": [
+      {
+        "id": 1,
+        "done": true
+      },
+      {
+        "id": 2,
+        "done": true
+      }
+    ],
+    "expected": [
+      {
+        "id": 1,
+        "done": true
+      },
+      {
+        "id": 2,
+        "done": false
+      }
+    ],
     "triage": "code-bug"
   },
   {
@@ -17,10 +44,25 @@
     "note": "The same item shows up twice.",
     "start": [],
     "ops": [
-      {"op": "add", "id": 1},
-      {"op": "add", "id": 1}
+      {
+        "op": "add",
+        "id": 1
+      },
+      {
+        "op": "add",
+        "id": 1
+      }
     ],
-    "observed": [{"id": 1, "done": false}, {"id": 1, "done": false}],
+    "observed": [
+      {
+        "id": 1,
+        "done": false
+      },
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
     "triage": "code-bug"
   },
   {
@@ -28,29 +70,171 @@
     "note": "I added a finished item again and expected it to be unticked.",
     "start": [],
     "ops": [
-      {"op": "add", "id": 1},
-      {"op": "complete", "id": 1},
-      {"op": "add", "id": 1}
+      {
+        "op": "add",
+        "id": 1
+      },
+      {
+        "op": "complete",
+        "id": 1
+      },
+      {
+        "op": "add",
+        "id": 1
+      }
     ],
-    "observed": [{"id": 1, "done": true}],
-    "expected": [{"id": 1, "done": false}],
+    "observed": [
+      {
+        "id": 1,
+        "done": true
+      }
+    ],
+    "expected": [
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
     "triage": "expectation-mismatch"
   },
   {
-    "id": "r4-unknown-operation",
+    "id": "r4-model-gap-operation",
     "note": "Archiving did something odd.",
-    "start": [{"id": 1, "done": true}],
-    "ops": [{"op": "archive", "id": 1}],
+    "start": [
+      {
+        "id": 1,
+        "done": true
+      }
+    ],
+    "ops": [
+      {
+        "op": "archive",
+        "id": 1
+      }
+    ],
     "observed": [],
-    "triage": "cannot-reproduce"
+    "triage": "model-gap"
   },
   {
     "id": "r5-all-agree",
     "note": "Removing an item looked wrong.",
-    "start": [{"id": 1, "done": false}, {"id": 2, "done": true}],
-    "ops": [{"op": "remove", "id": 2}],
-    "observed": [{"id": 1, "done": false}],
-    "expected": [{"id": 1, "done": false}],
+    "start": [
+      {
+        "id": 1,
+        "done": false
+      },
+      {
+        "id": 2,
+        "done": true
+      }
+    ],
+    "ops": [
+      {
+        "op": "remove",
+        "id": 2
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
+    "expected": [
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
     "triage": "cannot-reproduce"
+  },
+  {
+    "id": "r6-model-gap-field",
+    "note": "My pinned item lost its pin.",
+    "model": "todo.v1",
+    "start": [
+      {
+        "id": 1,
+        "done": false,
+        "pinned": true
+      }
+    ],
+    "ops": [
+      {
+        "op": "complete",
+        "id": 1
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": true,
+        "pinned": false
+      }
+    ],
+    "triage": "model-gap"
+  },
+  {
+    "id": "r7-malformed",
+    "note": "Something went wrong.",
+    "ops": [
+      {
+        "op": "add"
+      }
+    ],
+    "observed": [],
+    "triage": "malformed"
+  },
+  {
+    "id": "r8-older-model",
+    "note": "Re-adding didn't work like before.",
+    "model": "todo.v0",
+    "start": [],
+    "ops": [
+      {
+        "op": "add",
+        "id": 1
+      },
+      {
+        "op": "add",
+        "id": 1
+      }
+    ],
+    "observed": [
+      {
+        "id": 1,
+        "done": false
+      }
+    ],
+    "triage": "version-mismatch"
+  },
+  {
+    "id": "r9-still-code-bug",
+    "note": "Removing one item removed both.",
+    "model": "todo.v1",
+    "start": [
+      {
+        "id": 1,
+        "done": false
+      },
+      {
+        "id": 2,
+        "done": false
+      }
+    ],
+    "ops": [
+      {
+        "op": "remove",
+        "id": 1
+      }
+    ],
+    "observed": [],
+    "expected": [
+      {
+        "id": 2,
+        "done": false
+      }
+    ],
+    "triage": "code-bug"
   }
 ]
