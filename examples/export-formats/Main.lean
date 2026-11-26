@@ -21,7 +21,7 @@ def manifest : Manifest :=
   { package := "counter",
     links := [
       link (lean% Counter.counterStep) InstrumentId.go "example.com/counter.Step",
-      link (lean% Counter.counterStep) InstrumentId.swift "Counter.step(_:max:)" ] }
+      link (lean% Counter.counterStep) InstrumentId.swift "Counter.step(_:in:max:)" ] }
 
 /-- States are numbers; operations are `{"op": name}` objects. -/
 def codec : Codec model where
