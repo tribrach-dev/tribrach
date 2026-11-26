@@ -118,6 +118,6 @@ theorem shipments_total : shipments.Total := by
       refine ⟨.done { s with cancelled := true }, ?_⟩
       show cancelAllowed s (.done { s with cancelled := true }) = true
       simp only [cancelAllowed, decide_eq_true_eq]
-      exact ⟨by simpa using h1, by omega, rfl⟩
+      exact ⟨by simpa using h1, by omega, by simp⟩
 
 end Shipments
