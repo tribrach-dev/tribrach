@@ -202,7 +202,7 @@ def defaultPolicy : Policy :=
 
 def templates : Templates := [
   ("uses", "$1 $3 $2"),
-  ("change", "the revisions of $2 that $1 skipped are a $3 change"),
+  ("change", "the revisions of $2 that $1 skipped are of kind $3"),
   ("evidence", "the evidence for that change is $3"),
   ("direction", "the extension is compatible $3"),
   ("relies", "$1 relies on $2"),
