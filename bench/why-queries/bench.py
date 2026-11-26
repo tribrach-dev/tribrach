@@ -767,7 +767,7 @@ def cmd_summarize(_args):
                     continue
                 cells = [f"{fmt(med([r[k] for r in rs]))} ({spread([r[k] for r in rs])})" for k, _ in METRICS]
                 used = "-" if arm == "baseline" else f"{sum(1 for r in rs if r.get('why_calls'))}/{len(rs)}"
-                bugs = [r for r in rs if r["kind"] == "bug"]
+                bugs = [r for r in rs if "line_ok" in r]  # tasks with a planted line
                 cost = med([r["cost_usd_list"] for r in rs if r.get("cost_usd_list") is not None])
                 out.append(f"| {suite} | {m} | {arm} | {len(rs)} | {sum(r['correct'] for r in rs)}/{len(rs)} | "
                            f"{sum(bool(r.get('line_ok')) for r in bugs)}/{len(bugs)} | "

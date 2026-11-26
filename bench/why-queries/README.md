@@ -7,37 +7,53 @@ full numbers are in [results/RESULTS.md](results/RESULTS.md).
 
 ## What it shows so far (2026-11-26)
 
-418 runs: Claude Sonnet 5.5 and Claude Opus 5.5 on all 11 tasks (5 repeats
-on the large suite, 3 on the small), and Claude Fable 5.2 on the large suite
-(3 repeats). Claude Code 2.1.332, effort `high`.
+678 counted runs on three task suites, Claude Code 2.1.332, effort `high`:
 
-- **Correctness doesn't separate the arms.** Every run found the right cause
-  in both arms, so these tasks are too easy to show a difference there.
+- **large and small** (planted faults with failing tests): Claude Sonnet 5.5
+  and Claude Opus 5.5 on all 11 tasks (5 repeats on the large suite, 3 on
+  the small), and Claude Fable 5.2 on the large suite (3 repeats).
+- **hard** (user reports, no failing test, some reports wrong): Sonnet and
+  Opus at 5 repeats, Fable at 3.
+
+Findings:
+
+- **Correctness doesn't separate the arms.** Every counted run found the
+  right answer in both arms. Harder variants didn't change that either (see
+  [Pilots](#pilots)): misleading reports, fixes graded on hidden vectors, a
+  bug that needs two edits, and Claude Haiku 5.5 all came out at 100%. At
+  this size (up to about 1,150 lines of code and 25 rules) every model can
+  read the whole program and specification.
 - **Less context, consistently.** With `./why`, the context a session pulled
-  in to do the work fell by a median of about 30% per task for every model
-  and both sizes (large suite: Sonnet 0.58×, Opus 0.71×, Fable 0.81×;
-  small: Sonnet 0.69×, Opus 0.70×), and went down on 10 or 11 of the 11
-  tasks in each case. In
-  absolute terms that is roughly 1,100-2,800 tokens per task (medians).
-- **Output tokens depend on the model.** Sonnet wrote less with `./why`
-  (0.86× on the large suite, lower on all 11 tasks); Opus wrote more (1.16×,
-  lower on 2 of 11).
-  Fable wrote about the same (0.98×, lower on 6 of 11).
-- **Sonnet often skipped the tool.** It called `./why` in 35 of 55 large-suite
-  runs and 15 of 33 small ones; Opus in 51 of 55 and 31 of 33; Fable in 32 of
-  33. The context figures above include the runs that didn't use it.
-- **No time saved.** Sessions made about one extra tool call (the `./why`
-  query), and wall time was flat.
-- **The fixed overhead dominates.** Each request starts with roughly 37-40k
-  tokens of system prompt and tool definitions, so per run the list-price
-  cost barely moves (for example $0.09 vs $0.08 for Opus on the large suite).
+  in fell for every model on every suite, as the median over tasks of
+  (logic median / baseline median):
+
+  | Suite | Sonnet 5.5 | Opus 5.5 | Fable 5.2 |
+  | --- | ---: | ---: | ---: |
+  | small | 0.69× | 0.70× | - |
+  | large | 0.58× | 0.71× | 0.81× |
+  | hard | 0.79× | 0.65× | 0.66× |
+
+  It went down on 9 to 11 tasks out of 10 or 11 in every row. Per task, the
+  median saving was about 1,300-2,000 tokens on the small and large suites
+  and 1,600-4,600 on the hard suite.
+- **Output tokens depend on the model and the suite**, from 0.86× (Sonnet,
+  large) to 1.16× (Opus, large); on the hard suite 0.91-0.97×.
+- **The tool gets used when there is a case to ask about.** On the hard
+  suite every logic-arm run called `./why`. On the large suite Sonnet called
+  it in 35 of 55 runs; in the fix pilot, where the report names no case,
+  Sonnet never called it and read the specification instead.
+- **No time saved.** Sessions made about one extra tool call, and wall time
+  was flat.
+- **The fixed overhead dominates single tasks.** Each request starts with
+  roughly 37-40k tokens of system prompt and tool definitions, so per run the
+  list-price cost moves only a little (on the hard suite, for example, $0.32
+  vs $0.21 per run for Fable, $0.12 vs $0.10 for Opus).
 
 The earlier single-run figure (about 1,500 tokens of reading against about
 400 with a why-query) is not reproduced: the saving in context is real and
-repeatable, but it is about a third, not three quarters, and it doesn't
-carry over to output tokens on every model. Harder tasks (larger code, faults
-spread over several files, or questions where code reading goes wrong) are
-the next step before quoting anything stronger.
+repeatable, but it is a fifth to two fifths, not three quarters. Because
+context carries forward, the saving should matter more in long sessions
+that handle many tasks; measuring that is the next step.
 
 ## Tasks
 
@@ -85,6 +101,50 @@ the user on no channel; for each channel, why not?".
 
 `python bench.py check` confirms that the clean code passes every vector,
 that each fault fails at least one, and that the questions' cases pass.
+
+### Report suite (`hard`)
+
+Two bigger made-up models, building access ([Access.lean](Bench/Access.lean),
+23 rules) and a deploy gate ([Deploy.lean](Bench/Deploy.lean), 26 rules),
+with Python packages of about 720 and 430 lines ([host_hard/](host_hard)),
+including code that looks relevant but isn't (a renewal reminder, a burn
+alert, a report window).
+
+Each task ([tasks_hard.json](tasks_hard.json)) is a user report about one
+situation, given as a test case without expected decisions. In seven the
+code has a planted fault; in three the code is right and the user is wrong.
+Every report also carries the user's own guess, which is always wrong. No
+test fails: the tests are filtered to the vectors no fault changes, so the
+report is the only evidence. The session answers `bug` or `no_bug`; a bug
+answer must also name the file and match the fault's cause.
+
+### Fix suite (`fix`)
+
+The same two packages, but the report is vague and names no case ("now and
+then a change goes to the canary even though its service looks healthy").
+The session must fix the code, or leave it alone if the user is wrong, and
+is graded on 800 hidden vectors per model that it never sees
+([gen_inputs.py](gen_inputs.py) `*_wide`, dense in boundary values). One
+fault needs edits in two places; `bench.py check` confirms that fixing
+either alone still fails hidden vectors. In the logic arm, `./why --cases`
+answers for cases the session writes itself.
+
+
+## Pilots
+
+Calibration runs, kept in [results/pilot/](results/pilot) and not counted
+above. Each was one repeat of every task in both arms.
+
+| Pilot | Model | Runs | Correct | ./why used | Context, logic / baseline |
+| --- | --- | ---: | ---: | ---: | ---: |
+| hard, plain reports (v1) | Sonnet 5.5 | 20 | 20 | 10/10 | - |
+| hard, reports with a wrong guess (v2) | Sonnet 5.5 | 20 | 20 | 10/10 | - |
+| hard (v2) | Haiku 5.5 | 20 | 20 | 10/10 | 0.80× (10/10 down) |
+| fix | Sonnet 5.5 | 18 | 18 | 0/9 | 1.15× (2/9 down) |
+| fix | Haiku 5.5 | 18 | 18 | 9/9 | 0.98× (5/9 down) |
+
+The v2 report text is the one in tasks_hard.json; v1 is kept beside the
+pilot results.
 
 ## Arms
 
@@ -148,6 +208,7 @@ lake build                                     # builds the `why` tool
 mkdir -p /opt/why-bench && cp .lake/build/bin/why /opt/why-bench/why
 python3 bench.py check
 python3 bench.py run --suite large --model claude-sonnet-5-5 --reps 3
+python3 bench.py run --suite hard --model claude-sonnet-5-5 --reps 5   # or --suite fix
 python3 bench.py summarize                     # writes results/RESULTS.md
 ```
 
