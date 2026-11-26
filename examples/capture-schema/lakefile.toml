@@ -1,0 +1,11 @@
+name = "capture-schema"
+defaultTargets = ["CaptureSchema"]
+
+[[require]]
+name = "tribrach"
+path = "../.."
+
+# Compiling this module writes ../../schema/capture.schema.json
+# (see #tribrach_write).
+[[lean_lib]]
+name = "CaptureSchema"

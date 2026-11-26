@@ -10,6 +10,7 @@ core CI, so the cases stay consistent with each other.
 | `annotations.json` | Reading one comment line: directive, argument or error (`missing-argument`, `extra-argument`, `bad-stamp`, `unknown-directive`); lines that aren't directives give `null` |
 | `drift.json` | Comparing host links with the manifest for one owner: `ok`, `drift`, `unstamped`, `unknown`, `symbol-mismatch`, `missing` |
 | `replay.json` | Replaying vectors: JSON equality rules, stopping at the first differing step, and what the report names |
+| `patterns.json` | String patterns a schema may use: the exported regex, and strings it must accept and reject. Regexes follow ECMA-262, so `$` matches only at the very end |
 
 Outcome names are shared; diagnostic codes are each instrument's own
 (`TRG…` for Go, `TRS…` for Swift). Whatever the code, each diagnostic

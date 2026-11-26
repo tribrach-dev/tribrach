@@ -12,6 +12,7 @@ they never contain code or data from a real application.
 | [feedback-triage](feedback-triage) | Replaying user feedback against the model to sort code bugs from spec questions |
 | [data-flow](data-flow) | The logic layer: asking "does personal data reach telemetry?" and getting checked, plain-English why trees |
 | [third-party-instrument](third-party-instrument) | An outside package owning links through its `tribrach-package.toml`, and the diagnostics for missing and conflicting owners |
+| [capture-schema](capture-schema) | Describing the capture format in Lean and generating `schema/capture.schema.json` from it, with the Lean checker run on the goldens |
 | [export-formats](export-formats) | Exporting the manifest, replay vectors and dependency graph on `lake build`, and the refresh report after an upstream change |
 | [contract-impact](contract-impact) | Stable contract ids, dependency and refinement edges, and an impact report for an upstream change |
 | [guardrail-lab](guardrail-lab) | Planted incidents for testing guardrails (planned) |

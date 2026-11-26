@@ -134,6 +134,18 @@ formats the same way by passing `tests/conformance` (see its README);
   to re-check, with the upstream definitions that caused it, for people and
   CI comments. Instruments report the drift themselves; the refresh report
   explains it in one place.
+- **Schemas** (`Tribrach.Schema`): a JSON document type described once in
+  Lean, as a shape (`Ty`: booleans, bounded integers, strings with lengths
+  and patterns, constants, enums, arrays, closed objects) plus rules the
+  shape can't say. From it come a JSON Schema (draft 2020-12) for other tools
+  and a checker in Lean (`Schema.accepts`). Rules appear in the schema under
+  `x-tribrach` by Lean name and stamp. String patterns come from a closed
+  list (`Pat`), each with a regex and a Lean check that
+  `tests/conformance/patterns.json` and a fuzz run keep in step.
+  `#tribrach_write files` writes the schema on build, like
+  `#tribrach_export`. `schema/capture.schema.json` is generated this way
+  (example: `examples/capture-schema`); the other schemas are still written
+  by hand.
 - **Claims** (planned next): which properties are proved, which are tested,
   and by what.
 
