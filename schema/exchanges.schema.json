@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tribrach-dev/tribrach/schema/exchanges.schema.json",
+  "title": "Tribrach exchanges, version 1",
+  "description": "Messages a service handled, for hosts to replay: what the server was given, the request, the calls it made with their answers, and the HTTP status and response. A 400 status means the request doesn't decode; such cases have no calls and no response.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "contract", "version", "cases"],
+  "properties": {
+    "format": { "const": "tribrach.exchanges.v1" },
+    "contract": { "type": "string", "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)+$" },
+    "version": { "type": "integer", "minimum": 1 },
+    "cases": { "type": "array", "items": { "$ref": "#/$defs/case" } }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "given", "request", "status", "calls"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "given": { "type": "object", "description": "Clock, ids and stubbed answers the server uses besides the request." },
+        "request": {},
+        "status": { "enum": [200, 400] },
+        "calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["contract", "request", "response"],
+            "properties": {
+              "contract": { "type": "string", "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)+$" },
+              "request": {},
+              "response": {}
+            }
+          }
+        },
+        "response": {}
+      },
+      "if": { "properties": { "status": { "const": 200 } } },
+      "then": { "required": ["response"] },
+      "else": { "properties": { "calls": { "maxItems": 0 }, "response": false } }
+    }
+  }
+}

@@ -218,9 +218,11 @@ competing with them.
   hand-written schema in `schema/` becomes generated. Started:
   `Tribrach.Schema` and `examples/capture-schema` generate the capture
   schema, and the Lean checker, the regexes and the goldens are checked
-  against each other in CI. The proof of exactness, sums (`oneOf`), the
-  mapping layer and OpenAPI come next, driven by a parking example (meters
-  and payments services and a Swift client).
+  against each other in CI. `Tribrach.Wire` and `examples/dto-parking` add
+  codecs, tagged unions, the mapping layer and exchanges, with cross-service
+  and versioning proofs on Lean values; the JSON layer is tested on
+  generated and mutated messages. Next: Go and Swift generators, contract
+  ids in the manifest, proving the JSON layer, and OpenAPI.
 - **Generated boundary types:** Go and Swift DTOs plus decoders that run the
   generated checker, so invalid data is rejected at the edge. DTOs stay plain
   data.

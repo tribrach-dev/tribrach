@@ -1,0 +1,10 @@
+name = "dto-parking"
+defaultTargets = ["Parking"]
+
+[[require]]
+name = "tribrach"
+path = "../.."
+
+# Compiling Parking.Export writes exported/ (see #tribrach_write).
+[[lean_lib]]
+name = "Parking"

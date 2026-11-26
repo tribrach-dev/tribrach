@@ -17,6 +17,11 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the JSON Schema validator for example checks
+        run: pip install --quiet "jsonschema==4.26.0"
       - name: Build core
         run: lake build
       - name: Build examples

@@ -146,6 +146,18 @@ formats the same way by passing `tests/conformance` (see its README);
   `#tribrach_export`. `schema/capture.schema.json` is generated this way
   (example: `examples/capture-schema`); the other schemas are still written
   by hand.
+- **Wire codecs** (`Tribrach.Wire`): a `Codec` puts a message's schema
+  shape, writer and reader side by side, built field by field (`Obj`) and
+  case by case (`Codec.tagged`), so a message is described once. Every
+  decoder checks the shape before reading, so it accepts what the schema
+  accepts. The wire mapping lives here, not in the model: money and 64-bit
+  ids as decimal strings (`Ty.decimal`, bounds under `x-tribrach`), RFC 3339
+  instants read at any offset and written in UTC, and optional fields left
+  out rather than `null`. Example: `examples/dto-parking`.
+- **Exchanges** (`tribrach.exchanges.v1`, `schema/exchanges.schema.json`):
+  requests a service handled, what it was given besides the request (clock,
+  ids, stubbed answers), the calls it made with their answers, and the
+  status and response. Hosts replay them against their handlers.
 - **Claims** (planned next): which properties are proved, which are tested,
   and by what.
 

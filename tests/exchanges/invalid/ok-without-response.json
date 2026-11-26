@@ -1,0 +1,25 @@
+{
+  "format": "tribrach.exchanges.v1",
+  "contract": "lamps.switch",
+  "version": 1,
+  "cases": [
+    {
+      "id": "on",
+      "given": {},
+      "request": {
+        "on": true
+      },
+      "status": 200,
+      "calls": []
+    },
+    {
+      "id": "not-a-bool",
+      "given": {},
+      "request": {
+        "on": "yes"
+      },
+      "status": 400,
+      "calls": []
+    }
+  ]
+}

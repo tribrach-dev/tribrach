@@ -1,0 +1,31 @@
+{
+  "format": "tribrach.exchanges.v1",
+  "contract": "lamps.schedule",
+  "version": 1,
+  "cases": [
+    {
+      "id": "later",
+      "given": {
+        "now": "2026-11-26T19:30:00Z"
+      },
+      "request": {
+        "at": "2026-11-26T22:00:00Z"
+      },
+      "status": 200,
+      "calls": [
+        {
+          "contract": "clock.alarm",
+          "request": {
+            "at": "2026-11-26T22:00:00Z"
+          },
+          "response": {
+            "set": true
+          }
+        }
+      ],
+      "response": {
+        "scheduled": true
+      }
+    }
+  ]
+}
