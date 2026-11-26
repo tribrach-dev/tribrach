@@ -27,8 +27,9 @@ def main (paths : List String) : IO UInt32 := do
   for (lean, ownerField, symbol) in manifest do
     match ownerOfManifest? ownerField with
     | none =>
-      diags := diags ++ [{ code := "TR0103", message := s!"link owner `{ownerField}` is not an instrument id",
-                          hint := "Use publisher.name, for example tribrach.go" }]
+      let msg := "link owner " ++ ownerField ++ " is not an instrument id"
+      let d : Diagnostic := { code := "TR0103", message := msg, hint := "Use publisher.name, for example tribrach.go" }
+      diags := diags ++ [d]
     | some (id, legacy) =>
       if legacy then
         IO.println s!"note: `{ownerField}` is a legacy owner name; write `{id}` instead"
