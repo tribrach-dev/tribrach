@@ -107,12 +107,14 @@ formats the same way by passing `tests/conformance` (see its README);
 - **Manifest** (`tribrach.manifest.v1`, `schema/manifest.schema.json`): one
   entry per link with the Lean name, owner id, host symbol and stamp. Built
   with `lean% Name`, which gives the name and its stamp.
-- **Stamps:** `stamp% Name` hashes the definition's type and value, and
-  everything it uses from the same Lean file, as 16 hex digits. They are
-  stable for one toolchain, so a toolchain bump re-stamps on purpose. On the
-  host side the stamp sits next to the symbol it covers
-  (`//tribrach:stamp`), never in a shared file, so stamping one target can't
-  disturb another.
+- **Stamps:** `stamp% Name` hashes the definition and every project
+  constant it uses, followed across files, as 16 hex digits. The toolchain,
+  Tribrach and common libraries are referred to by name only. So a change
+  anywhere upstream in the project moves the stamps of everything
+  downstream. Stamps are stable for one toolchain, so a toolchain bump
+  re-stamps on purpose. On the host side the stamp sits next to the symbol it
+  covers (`//tribrach:stamp`), never in a shared file, so stamping one target
+  can't disturb another.
 - **Vectors** (`tribrach.vectors.v1`, `schema/vectors.schema.json`): cases
   with a start state, operations as `{"op": name, ...}` objects, and the state
   after every step. `Model.trace` produces them and `Model.trace_preserves`
@@ -120,6 +122,18 @@ formats the same way by passing `tests/conformance` (see its README);
 - **Annotations:** `//tribrach:link <LeanName>`, `//tribrach:pure`,
   `//tribrach:stamp <hex>`; one grammar for every language with `//` line
   comments, and no space after the `//`, like `//go:` directives.
+- **Export on build:** `#tribrach_export bundle` writes the files while Lean
+  compiles the module holding it. Lake recompiles that module whenever
+  anything it imports changes, so `lake build` keeps the exported files
+  current. CI re-exports and fails if the committed files differ.
+- **Graph** (`tribrach.graph.v1`, committed): every project constant behind
+  the links, with its own hash and what it uses. It is the invalidation
+  graph from Lean definitions to links to host symbols.
+- **Refresh** (`tribrach.refresh.v1`, a build output): what changed since
+  the committed graph and manifest. For each instrument it lists the links
+  to re-check, with the upstream definitions that caused it, for people and
+  CI comments. Instruments report the drift themselves; the refresh report
+  explains it in one place.
 - **Claims** (planned next): which properties are proved, which are tested,
   and by what.
 

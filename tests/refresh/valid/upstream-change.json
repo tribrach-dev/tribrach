@@ -1,0 +1,6 @@
+{ "format": "tribrach.refresh.v1", "package": "shop", "changed": ["Shop.price"],
+  "items": [
+    { "owner": "tribrach.go", "lean": "Shop.checkout", "symbol": "example.com/shop.Checkout", "status": "changed",
+      "from": "0123456789abcdef", "to": "fedcba9876543210", "because": ["Shop.price"] },
+    { "owner": "tribrach.swift", "lean": "Shop.refund", "symbol": "Shop.refund(_:)", "status": "new", "to": "1111111111111111" },
+    { "owner": "tribrach.swift", "lean": "Shop.legacy", "symbol": "Shop.legacy()", "status": "removed", "from": "2222222222222222" } ] }

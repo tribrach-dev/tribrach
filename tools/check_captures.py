@@ -26,6 +26,8 @@ SCHEMAS = {
         "triage.schema.json",
         "manifest.schema.json",
         "vectors.schema.json",
+        "graph.schema.json",
+        "refresh.schema.json",
     )
 }
 REGISTRY = Registry().with_resources(
@@ -44,6 +46,8 @@ REPORT = validator("report.schema.json")
 TRIAGE = validator("triage.schema.json")
 MANIFEST = validator("manifest.schema.json")
 VECTORS = validator("vectors.schema.json")
+GRAPH = validator("graph.schema.json")
+REFRESH = validator("refresh.schema.json")
 
 
 def problems(capture):
@@ -88,6 +92,20 @@ def vectors_problems(doc):
     return errs
 
 
+def graph_problems(doc):
+    errs = [e.message for e in GRAPH.iter_errors(doc)]
+    if errs:
+        return errs
+    names = [n["name"] for n in doc["nodes"]]
+    if len(set(names)) != len(names):
+        errs.append("a node appears twice")
+    for n in doc["nodes"]:
+        for u in n["uses"]:
+            if u not in names:
+                errs.append(f"{n['name']} uses {u}, which isn't a node")
+    return errs
+
+
 def schema_only(v):
     return lambda doc: [e.message for e in v.iter_errors(doc)]
 
@@ -125,10 +143,11 @@ def check_exports():
     """The export example's committed outputs and the replay conformance
     vectors follow the manifest and vectors formats."""
     failed = False
-    out = ROOT / "examples" / "export-formats" / "expected"
+    out = ROOT / "examples" / "export-formats" / "exported"
     docs = [
-        ("export-formats/expected/counter.manifest.json", manifest_problems, json.loads((out / "counter.manifest.json").read_text())),
-        ("export-formats/expected/counter.vectors.json", vectors_problems, json.loads((out / "counter.vectors.json").read_text())),
+        ("export-formats/exported/counter.manifest.json", manifest_problems, json.loads((out / "counter.manifest.json").read_text())),
+        ("export-formats/exported/counter.vectors.json", vectors_problems, json.loads((out / "counter.vectors.json").read_text())),
+        ("export-formats/exported/tribrach.graph.json", graph_problems, json.loads((out / "tribrach.graph.json").read_text())),
         ("conformance/replay.json vectors", vectors_problems, json.loads((ROOT / "tests" / "conformance" / "replay.json").read_text())["vectors"]),
     ]
     for name, check, doc in docs:
@@ -144,6 +163,8 @@ def main():
     failed |= check_goldens("triage", schema_only(TRIAGE))
     failed |= check_goldens("manifests", manifest_problems)
     failed |= check_goldens("vectors", vectors_problems)
+    failed |= check_goldens("graphs", graph_problems)
+    failed |= check_goldens("refresh", schema_only(REFRESH))
     failed |= check_outputs()
     failed |= check_exports()
     sys.exit(1 if failed else 0)

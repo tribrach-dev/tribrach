@@ -1,0 +1,1 @@
+{ "format": "tribrach.graph.v1", "package": "counter", "nodes": [ { "name": "Counter.CounterOp", "hash": "0123", "uses": [] } ] }

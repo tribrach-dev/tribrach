@@ -6,9 +6,13 @@ import Tribrach.Export
 
 The exporter a project writes once. It names the host symbols that implement
 `Counter.counterStep`, stamps the definition, and writes replay vectors for
-the counter with `max = 3`. Instruments read only these two files.
+the counter with `max = 3`. Instruments read only the exported files.
 
-    lake exe export out    # writes out/counter.manifest.json and out/counter.vectors.json
+`#tribrach_export bundle` at the end writes them into `exported/` whenever
+this module is compiled, so `lake build` keeps them current: change anything
+`Counter.counterStep` depends on and the next build moves its stamp, updates
+`exported/tribrach.graph.json`, and lists what to re-check, and why, in
+`exported/tribrach.refresh.json`.
 -/
 
 open Lean Tribrach Tribrach.Export Counter
@@ -47,10 +51,12 @@ theorem vectors_keep_rule (ops : List model.Op) (s : model.State) (h : model.Inv
 
 end CounterExport
 
-def main (args : List String) : IO Unit := do
-  let dir : System.FilePath := args.headD "out"
-  IO.FS.createDirAll dir
-  IO.FS.writeFile (dir / "counter.manifest.json") CounterExport.manifest.render
-  IO.FS.writeFile (dir / "counter.vectors.json")
-    (vectors CounterExport.codec CounterExport.cases).render
-  IO.println s!"wrote {dir}/counter.manifest.json and {dir}/counter.vectors.json"
+namespace CounterExport
+
+def bundle : Bundle :=
+  { manifest, manifestPath := "exported/counter.manifest.json",
+    files := [(vectors codec cases).file "exported/counter.vectors.json"] }
+
+end CounterExport
+
+#tribrach_export CounterExport.bundle

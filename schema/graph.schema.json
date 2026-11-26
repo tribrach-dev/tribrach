@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tribrach-dev/tribrach/schema/graph.schema.json",
+  "title": "Tribrach dependency graph, version 1",
+  "description": "Every project constant behind a package's links: its own hash (type and value) and the project constants it uses. Written by #tribrach_export next to the manifest and committed, so the next export can say what changed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "package", "nodes"],
+  "properties": {
+    "format": { "const": "tribrach.graph.v1" },
+    "package": { "type": "string", "minLength": 1 },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "hash", "uses"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "hash": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+          "uses": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    }
+  }
+}
