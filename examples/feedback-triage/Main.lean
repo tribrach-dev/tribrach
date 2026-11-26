@@ -14,16 +14,15 @@ def main (args : List String) : IO UInt32 := do
   | .ok arr => do
     let mut failures : Nat := 0
     for j in arr do
-      match Todo.Report.ofJson j with
-      | .error e => do
-        IO.println s!"FAIL unreadable report: {e}"
+      -- Read the id and expected triage leniently, so malformed reports
+      -- can still be listed and checked.
+      let id := (j.getObjValAs? String "id").toOption.getD "(no id)"
+      let want := (j.getObjValAs? String "triage").toOption
+      let (t, why) := Todo.classify j
+      let mark := match want with
+        | some w => if w == t.name then "ok  " else "FAIL"
+        | none => "    "
+      if mark == "FAIL" then
         failures := failures + 1
-      | .ok r => do
-        let (t, why) := Todo.classify r
-        let mark := match r.triage with
-          | some want => if want == t.name then "ok  " else "FAIL"
-          | none => "    "
-        if mark == "FAIL" then
-          failures := failures + 1
-        IO.println s!"{mark} {r.id}: {t.name} ({why})"
+      IO.println s!"{mark} {id}: {t.name} ({why})"
     return (if failures == 0 then 0 else 1)

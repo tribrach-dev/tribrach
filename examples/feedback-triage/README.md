@@ -2,20 +2,24 @@
 
 A user taps "this is wrong". Instead of a vague bug report, the app attaches
 the operations they performed, the state it showed, and what they expected.
-Replaying that against the model sorts every report into one of three groups:
+Replaying that against the model sorts every report into one of these groups,
+checked in this order:
 
 | Triage | Meaning | Goes to |
 | --- | --- | --- |
+| `malformed` | The report can't be read (a missing or mistyped field) | The app team: the capture itself is broken |
+| `version-mismatch` | The report names another model version, so replaying it here proves nothing | Replay against that version, or drop |
+| `model-gap` | The report is well formed but shows something the model doesn't represent: an unknown operation or state field, named in the evidence | The architect: the model needs to grow first |
 | `code-bug` | The app did something the model doesn't allow, or broke a rule | Engineering, with a ready-made test case |
 | `expectation-mismatch` | The app followed the rules exactly; the user expected something else | The architect: a spec question, maybe a rule change or a guardrail |
-| `cannot-reproduce` | The report doesn't replay, or nothing differs | A dashboard, to spot missing context |
+| `cannot-reproduce` | Nothing differs: the app, the model and the expectation agree | A dashboard, to spot missing context |
 
 ```sh
 lake build
 lake exe triage reports.json
 ```
 
-`reports.json` holds five sample reports with the triage each should get; the
+`reports.json` holds nine sample reports with the triage each should get; the
 command exits non-zero if any are sorted differently. The model is a tiny
 to-do list (add, complete, remove) whose rule is that item ids are unique. The
 rule is checked here rather than proved; see `examples/counter` for proofs.
