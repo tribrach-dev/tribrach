@@ -41,3 +41,5 @@ Group: code-bug-afe0a465eb1e262e
 ## What the user said
 
 I added the same item twice and now I see two of them.
+
+Also reported as github-issue-form-16.

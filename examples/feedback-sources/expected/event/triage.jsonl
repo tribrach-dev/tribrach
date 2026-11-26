@@ -1,0 +1,1 @@
+{"evidence":["the app's state breaks the unique-id rule"],"format":"tribrach.triage.v1","group":"code-bug-afe0a465eb1e262e","model":"todo.v1","reason":"the app's state breaks the unique-id rule","report":"github-issue-form-16","source":{"ref":"16","service":"github-issue-form","url":"https://github.com/example-org/todo-app/issues/16"},"verdict":"code-bug"}

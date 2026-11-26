@@ -48,6 +48,35 @@ Duplicates (same `group`) are added to the item already filed. Here,
 "filing" writes what would be created into `out/outbox/`, and CI compares
 everything with `expected/`.
 
+## Issue digests
+
+`python3 feedback.py digest` writes, for each report that came from a GitHub
+issue, the comment a bot would post (`out/digests/<issue>.md`) and its
+labels (`<issue>.labels`). Each digest has:
+
+- the verdict and what it means for the reporter;
+- the evidence;
+- for a code bug, the replay as a ready-made test case;
+- for an expectation mismatch, a link to the rule cards;
+- "Same trace as #12" when another issue has the same `group`.
+
+The labels are the route's labels plus `triage:<verdict>` and
+`group:<key>`, so duplicates can be found across runs.
+
+[`workflows/triage-issues.yml`](workflows/triage-issues.yml) is a template
+for an app's repository. It runs on `issues: [opened, edited]` with only the
+built-in `GITHUB_TOKEN` (`issues: write`). It reads the issue from the event
+file with `pull --event`, restores the Lean build from the cache that main's
+CI fills, triages, and then:
+
+- keeps a single digest comment up to date, found by its hidden marker;
+- adds the labels;
+- links earlier issues that carry the same group label.
+
+The issue body is treated as untrusted data: it is parsed as JSON and never
+interpolated into a shell command. Only GitHub-made actions are used. CI
+here runs the same path on `fixtures/issue-event.json`.
+
 ## Access
 
 `tribrach-triage.toml` never holds secrets. Each source and sink names the

@@ -3,14 +3,33 @@
     "number": 12,
     "html_url": "https://github.com/example-org/todo-app/issues/12",
     "title": "Same item shows up twice",
-    "labels": [{ "name": "feedback" }],
+    "labels": [
+      {
+        "name": "feedback"
+      }
+    ],
     "body": "### What happened?\n\nI added the same item twice and now I see two of them.\n\n### App version\n\n2.3.0 (ios)\n\n### Report\n\n```tribrach-report\n{\"model\": \"todo.v1\", \"start\": [], \"ops\": [{\"op\": \"add\", \"id\": 1}, {\"op\": \"add\", \"id\": 1}], \"observed\": [{\"id\": 1, \"done\": false}, {\"id\": 1, \"done\": false}], \"privacy\": [\"operation-names\", \"item-ids\"]}\n```\n"
   },
   {
     "number": 15,
     "html_url": "https://github.com/example-org/todo-app/issues/15",
     "title": "App crashed after sync",
-    "labels": [{ "name": "feedback" }],
+    "labels": [
+      {
+        "name": "feedback"
+      }
+    ],
     "body": "### What happened?\n\nNo report attached, the app crashed first.\n\n### App version\n\n2.3.0 (android)\n"
+  },
+  {
+    "number": 16,
+    "html_url": "https://github.com/example-org/todo-app/issues/16",
+    "title": "Duplicate entries after adding",
+    "labels": [
+      {
+        "name": "feedback"
+      }
+    ],
+    "body": "### What happened?\n\nTapped add twice quickly, got two copies.\n\n### App version\n\n2.3.0 (ios)\n\n### Report\n\n```tribrach-report\n{\"model\": \"todo.v1\", \"start\": [], \"ops\": [{\"op\": \"add\", \"id\": 1}, {\"op\": \"add\", \"id\": 1}], \"observed\": [{\"id\": 1, \"done\": false}, {\"id\": 1, \"done\": false}], \"privacy\": [\"operation-names\", \"item-ids\"]}\n```\n"
   }
 ]

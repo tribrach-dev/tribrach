@@ -7,6 +7,9 @@
 
 model = "todo.v1"
 
+# Linked from issue digests for expectation mismatches.
+rules_url = "https://github.com/tribrach-dev/tribrach/blob/main/examples/feedback-triage/RULES.md"
+
 [[source]]
 name = "github-issues"
 kind = "github-issue-form"
