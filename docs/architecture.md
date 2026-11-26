@@ -104,6 +104,48 @@ core; `examples/third-party-instrument` shows one.
 - Claims: which properties are proved, which are tested, and by what.
 - Annotation syntax: `//tribrach:link`, `//tribrach:pure`, `//tribrach:stamp`.
 
+## Contract identity and dependencies
+
+Links point at Lean names and carry stamps, which show that something changed
+but not what else needs review. `Tribrach.Contract` adds the missing pieces
+(example: `examples/contract-impact`):
+
+- **Stable ids.** Each contract has a `ContractId` (`shipping.orders`) that
+  survives renaming the Lean definition. A **revision** counts accepted
+  changes in meaning; the stamp still catches every change.
+- **Typed edges.**
+  - `dependsOn` means the downstream contract uses the upstream's
+    guarantees, so those uses must be re-checked.
+  - `refines` means everything the downstream allows, the upstream allows,
+    so the refinement must be re-established.
+
+  Each edge records the upstream revision it was established against. Edges
+  must form a DAG. The checks are `TR0201` (missing contract), `TR0202`
+  (cycle) and `TR0203` (reliance on a revision that doesn't exist yet).
+- **Compatibility, weakest first.**
+  - `structural`: changed, nothing more is known.
+  - `declared`: an author says it is compatible; not verified.
+  - `checked`: backed by named evidence, such as a theorem or a vector suite
+    run in CI.
+
+  Over a range of revisions, the weakest step decides. The impact report
+  lists direct dependents with that verdict, and lists their own dependents
+  as possibly affected when the direct one needs review.
+
+**Effect on formats.** This is a format change, so it ships as new major
+versions.
+
+- *Manifest v2:* each entry gains `contract` (the id) and `revision`. Links
+  refer to the contract id; the Lean name stays as information. A v1
+  manifest is read by using the Lean name as the id, with a warning
+  suggesting a real id.
+- *Claims v2:* a claim records `id@revision` for the contract it is about
+  and for each dependency it relied on, so a claim made against an older
+  revision is visibly stale.
+- *Revision records* (the `history` of the graph) are a new file next to the
+  manifest, one entry per accepted revision, with its compatibility and
+  evidence.
+
 ## Build plan
 
 Tribrach is written fresh against this design and its own neutral examples.

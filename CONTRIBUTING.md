@@ -1,7 +1,16 @@
 # Contributing
 
-Tribrach is private and pre-alpha. Outside contributions open when the
-repository goes public; until then this describes how maintainers work.
+Tribrach is public and pre-alpha: APIs, formats and file layouts may change
+without notice, and there are no releases yet.
+
+Outside contributions are welcome:
+
+- **Issues** for bugs, questions and ideas, at any size.
+- **Pull requests** for fixes, documentation and neutral examples. For a new
+  feature, a format change or anything that touches the core model, open an
+  issue first so the design can be agreed before code is written.
+- Every pull request needs the `lean`, `formats` and `dco` checks to pass and
+  a maintainer's review before it is merged.
 
 ## Sign your commits (DCO)
 
