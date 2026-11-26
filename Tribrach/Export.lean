@@ -364,5 +364,30 @@ elab "#tribrach_export " id:ident : command => do
     let n ← Elab.realizeGlobalConstNoOverloadWithInfo id
     exportBundle n
 
+/-- Files with no manifest, such as a generated JSON Schema. -/
+structure Files where
+  files : List File
+
+unsafe def evalFilesImpl (env : Environment) (opts : Options) (n : Name) : Except String Files :=
+  env.evalConstCheck Files opts ``Files n
+
+@[implemented_by evalFilesImpl]
+opaque evalFiles (env : Environment) (opts : Options) (n : Name) : Except String Files
+
+/-- `#tribrach_write files` writes the files, relative to this module's
+directory, when this module is compiled. Unlike `#tribrach_export` it writes
+no manifest, graph or refresh report. -/
+elab "#tribrach_write " id:ident : command => do
+  Elab.Command.liftCoreM do
+    let n ← Elab.realizeGlobalConstNoOverloadWithInfo id
+    let fs ← match evalFiles (← getEnv) (← getOptions) n with
+      | .ok fs => pure fs
+      | .error e => throwError "#tribrach_write: {e}"
+    let dir := (System.FilePath.mk (← read).fileName).parent.getD "."
+    for f in fs.files do
+      let p := dir / f.path
+      if let some parent := p.parent then IO.FS.createDirAll parent
+      IO.FS.writeFile p f.text
+
 end Export
 end Tribrach

@@ -112,6 +112,13 @@ def replay(vectors, host):
     return out
 
 
+def matches(regex, s):
+    """ECMA-262 anchoring: Python's $ also matches before a final newline,
+    so the closing $ becomes \\Z."""
+    assert regex.endswith("$")
+    return re.search(regex[:-1] + r"\Z", s) is not None
+
+
 def report(label, got, want):
     ok = got == want
     print(f"{'ok  ' if ok else 'FAIL'} {label}")
@@ -130,6 +137,12 @@ def main():
         failed |= report(f"drift: {c['id']}", drift(dr["owner"], c["manifest"], c["host"]), c["expect"])
     rp = json.loads((CASES / "replay.json").read_text())
     failed |= report("replay: counter", replay(rp["vectors"], rp["host"]), rp["expect"])
+    pt = json.loads((CASES / "patterns.json").read_text())
+    for c in pt["cases"]:
+        for s in c["accept"]:
+            failed |= report(f"patterns: {c['name']} accepts {s!r}", matches(c["regex"], s), True)
+        for s in c["reject"]:
+            failed |= report(f"patterns: {c['name']} rejects {s!r}", matches(c["regex"], s), False)
     sys.exit(1 if failed else 0)
 
 

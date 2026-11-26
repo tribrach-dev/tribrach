@@ -215,7 +215,12 @@ competing with them.
 - **Exporters:** JSON Schema and OpenAPI from Lean definitions, with a proof
   (or exhaustive check) that the exported schema accepts exactly the values
   the Lean type and its rules accept. First test: the capture format, whose
-  hand-written schema in `schema/` becomes generated.
+  hand-written schema in `schema/` becomes generated. Started:
+  `Tribrach.Schema` and `examples/capture-schema` generate the capture
+  schema, and the Lean checker, the regexes and the goldens are checked
+  against each other in CI. The proof of exactness, sums (`oneOf`), the
+  mapping layer and OpenAPI come next, driven by a parking example (meters
+  and payments services and a Swift client).
 - **Generated boundary types:** Go and Swift DTOs plus decoders that run the
   generated checker, so invalid data is rejected at the edge. DTOs stay plain
   data.
