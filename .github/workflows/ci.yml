@@ -28,9 +28,18 @@ jobs:
               echo "::endgroup::"
             fi
           done
+      - name: Build the why-query benchmark and check its tasks
+        run: |
+          cd bench/why-queries
+          lake build
+          for m in irrigation library notify; do
+            .lake/build/bin/why expect "$m" "inputs/$m.json" > "/tmp/$m.json"
+            diff -u "vectors/$m.json" "/tmp/$m.json"
+          done
+          python3 bench.py check
       - name: No sorry or new axioms
         run: |
-          if grep -rnE '\bsorry\b|^\s*axiom\s' --include='*.lean' Tribrach examples; then
+          if grep -rnE '\bsorry\b|^\s*axiom\s' --include='*.lean' Tribrach examples bench; then
             echo "Found sorry or axiom"; exit 1
           fi
 

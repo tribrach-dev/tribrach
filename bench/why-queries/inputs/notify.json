@@ -1,0 +1,607 @@
+[
+ {
+  "id": "ntf-01",
+  "input": {
+   "hour": 23,
+   "sent_last_hour": 1,
+   "user": {
+    "quiet_start": 23,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "security",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-02",
+  "input": {
+   "hour": 9,
+   "sent_last_hour": 1,
+   "user": {
+    "quiet_start": 21,
+    "quiet_end": 8,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "security",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-03",
+  "input": {
+   "hour": 3,
+   "sent_last_hour": 0,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-04",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 4,
+   "user": {
+    "quiet_start": 13,
+    "quiet_end": 15,
+    "channels": [
+     "push"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "social",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-05",
+  "input": {
+   "hour": 3,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 8,
+    "quiet_end": 8,
+    "channels": [
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-06",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-07",
+  "input": {
+   "hour": 6,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "email"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "security",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-08",
+  "input": {
+   "hour": 21,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 22,
+    "quiet_end": 7,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-09",
+  "input": {
+   "hour": 9,
+   "sent_last_hour": 3,
+   "user": {
+    "quiet_start": 21,
+    "quiet_end": 8,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-10",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 8,
+    "quiet_end": 8,
+    "channels": [
+     "push"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-11",
+  "input": {
+   "hour": 0,
+   "sent_last_hour": 1,
+   "user": {
+    "quiet_start": 21,
+    "quiet_end": 8,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "social",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-12",
+  "input": {
+   "hour": 7,
+   "sent_last_hour": 3,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "security",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-13",
+  "input": {
+   "hour": 14,
+   "sent_last_hour": 4,
+   "user": {
+    "quiet_start": 22,
+    "quiet_end": 7,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "social",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-14",
+  "input": {
+   "hour": 6,
+   "sent_last_hour": 3,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-15",
+  "input": {
+   "hour": 3,
+   "sent_last_hour": 3,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "social",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-16",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 22,
+    "quiet_end": 7,
+    "channels": [
+     "email"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "social",
+    "priority": "urgent"
+   }
+  }
+ },
+ {
+  "id": "ntf-17",
+  "input": {
+   "hour": 0,
+   "sent_last_hour": 0,
+   "user": {
+    "quiet_start": 23,
+    "quiet_end": 6,
+    "channels": [
+     "push"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "social",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-18",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 4,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "urgent"
+   }
+  }
+ },
+ {
+  "id": "ntf-19",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 0,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-20",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 3,
+   "user": {
+    "quiet_start": 22,
+    "quiet_end": 7,
+    "channels": [
+     "push",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "social",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-21",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 4,
+   "user": {
+    "quiet_start": 23,
+    "quiet_end": 6,
+    "channels": [
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-22",
+  "input": {
+   "hour": 9,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-23",
+  "input": {
+   "hour": 0,
+   "sent_last_hour": 0,
+   "user": {
+    "quiet_start": 22,
+    "quiet_end": 7,
+    "channels": [],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-24",
+  "input": {
+   "hour": 6,
+   "sent_last_hour": 0,
+   "user": {
+    "quiet_start": 21,
+    "quiet_end": 8,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "social",
+    "priority": "urgent"
+   }
+  }
+ },
+ {
+  "id": "ntf-25",
+  "input": {
+   "hour": 0,
+   "sent_last_hour": 1,
+   "user": {
+    "quiet_start": 23,
+    "quiet_end": 6,
+    "channels": [
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-26",
+  "input": {
+   "hour": 9,
+   "sent_last_hour": 0,
+   "user": {
+    "quiet_start": 23,
+    "quiet_end": 6,
+    "channels": [
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-27",
+  "input": {
+   "hour": 9,
+   "sent_last_hour": 2,
+   "user": {
+    "quiet_start": 0,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "security",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-28",
+  "input": {
+   "hour": 3,
+   "sent_last_hour": 4,
+   "user": {
+    "quiet_start": 13,
+    "quiet_end": 15,
+    "channels": [
+     "push",
+     "email"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "social",
+    "priority": "low"
+   }
+  }
+ },
+ {
+  "id": "ntf-29",
+  "input": {
+   "hour": 14,
+   "sent_last_hour": 1,
+   "user": {
+    "quiet_start": 8,
+    "quiet_end": 8,
+    "channels": [
+     "email",
+     "sms"
+    ],
+    "sms_verified": false
+   },
+   "event": {
+    "kind": "social",
+    "priority": "normal"
+   }
+  }
+ },
+ {
+  "id": "ntf-30",
+  "input": {
+   "hour": 22,
+   "sent_last_hour": 4,
+   "user": {
+    "quiet_start": 23,
+    "quiet_end": 6,
+    "channels": [
+     "push",
+     "email",
+     "sms"
+    ],
+    "sms_verified": true
+   },
+   "event": {
+    "kind": "reminder",
+    "priority": "normal"
+   }
+  }
+ }
+]

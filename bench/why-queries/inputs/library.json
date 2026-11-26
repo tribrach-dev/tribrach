@@ -1,0 +1,915 @@
+[
+ {
+  "id": "lib-01",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 9,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 9,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m2"
+    },
+    {
+     "id": "i3",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m2"
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-02",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 67,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 4,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m1"
+    },
+    {
+     "id": "i2",
+     "kind": "periodical",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m2"
+    },
+    {
+     "id": "i3",
+     "kind": "dvd",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m1"
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-03",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 18,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 0,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "dvd",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "reference",
+     "rating": "adult",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-04",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 4,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-05",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 9,
+    "status": "active",
+    "fines_cents": 120,
+    "loans": 10,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m2"
+    },
+    {
+     "id": "i3",
+     "kind": "dvd",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-06",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 0,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "teen",
+     "status": "on_hold",
+     "held_for": "m2"
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-07",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 12,
+    "status": "suspended",
+    "fines_cents": 0,
+    "loans": 5,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "periodical",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-08",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 12,
+    "status": "active",
+    "fines_cents": 650,
+    "loans": 0,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "dvd",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-09",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 30,
+    "status": "active",
+    "fines_cents": 650,
+    "loans": 4,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-10",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 9,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 10,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "dvd",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i3",
+     "kind": "reference",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-11",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 30,
+    "status": "active",
+    "fines_cents": 120,
+    "loans": 9,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "teen",
+     "status": "out",
+     "held_for": null
+    },
+    {
+     "id": "i3",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-12",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 18,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 10,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-13",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "expired",
+    "fines_cents": 499,
+    "loans": 5,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m2"
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-14",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "expired",
+    "fines_cents": 0,
+    "loans": 5,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "periodical",
+     "rating": "adult",
+     "status": "on_hold",
+     "held_for": "m2"
+    },
+    {
+     "id": "i3",
+     "kind": "reference",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-15",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "active",
+    "fines_cents": 650,
+    "loans": 2,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "dvd",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "dvd",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-16",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 67,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 0,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "periodical",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i3",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-17",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 12,
+    "status": "suspended",
+    "fines_cents": 650,
+    "loans": 6,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "teen",
+     "status": "on_hold",
+     "held_for": "m2"
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-18",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 17,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 4,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "dvd",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i3",
+     "kind": "periodical",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-19",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 30,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 6,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "dvd",
+     "rating": "teen",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-20",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 12,
+    "status": "active",
+    "fines_cents": 120,
+    "loans": 4,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-21",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "expired",
+    "fines_cents": 0,
+    "loans": 9,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "periodical",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m2"
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "adult",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-22",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 12,
+    "status": "expired",
+    "fines_cents": 0,
+    "loans": 9,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m1"
+    },
+    {
+     "id": "i3",
+     "kind": "periodical",
+     "rating": "adult",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-23",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 30,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 4,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-24",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 9,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m1"
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    },
+    {
+     "id": "i3",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_hold",
+     "held_for": "m1"
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-25",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 67,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 5,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "reference",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    },
+    {
+     "id": "i3",
+     "kind": "periodical",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-26",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 13,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 6,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "periodical",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i3",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-27",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 13,
+    "status": "active",
+    "fines_cents": 650,
+    "loans": 2,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "dvd",
+     "rating": "teen",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-28",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 18,
+    "status": "active",
+    "fines_cents": 499,
+    "loans": 10,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "teen",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-29",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 15,
+    "status": "active",
+    "fines_cents": 0,
+    "loans": 0,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "dvd",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-30",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 12,
+    "status": "suspended",
+    "fines_cents": 500,
+    "loans": 10,
+    "tier": "plus"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "reference",
+     "rating": "teen",
+     "status": "out",
+     "held_for": null
+    },
+    {
+     "id": "i2",
+     "kind": "book",
+     "rating": "all",
+     "status": "out",
+     "held_for": null
+    }
+   ]
+  }
+ },
+ {
+  "id": "lib-31",
+  "input": {
+   "member": {
+    "id": "m1",
+    "age": 30,
+    "status": "active",
+    "fines_cents": 500,
+    "loans": 0,
+    "tier": "standard"
+   },
+   "items": [
+    {
+     "id": "i1",
+     "kind": "book",
+     "rating": "all",
+     "status": "on_shelf",
+     "held_for": null
+    }
+   ]
+  }
+ }
+]
