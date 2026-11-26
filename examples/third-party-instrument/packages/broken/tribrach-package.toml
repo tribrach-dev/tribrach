@@ -1,0 +1,4 @@
+# An invalid id, to show the malformed-descriptor diagnostic.
+name = "broken"
+kind = "instrument"
+owns-links = ["Kotlin"]

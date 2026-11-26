@@ -1,0 +1,5 @@
+# A fork that claims the same id, to show the conflict diagnostic.
+name = "acme-kotlin-fork"
+kind = "instrument"
+owns-links = ["acme.kotlin"]
+diagnostics = "ACF"

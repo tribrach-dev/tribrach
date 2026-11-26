@@ -49,8 +49,37 @@ name = "tribrach-swift"
 kind = "instrument"            # core | instrument | pack | adapter
 formats = { manifest = "1", vectors = "1", diagnostics = "1" }
 provides = ["link", "purity", "drift", "replay", "checker", "telemetry", "guard:code-shape"]
+owns-links = ["tribrach.swift"] # instrument ids whose links this package checks
 diagnostics = "TRS"            # diagnostic code prefix, e.g. TRS0101
 ```
+
+Descriptors use a subset of TOML: top-level `key = value` lines whose values
+are strings, arrays of strings or inline tables, plus `#` comments.
+
+### Link ownership
+
+Every link names its owner by an **instrument id**: dot-separated, lowercase
+segments that start with the publisher, such as `tribrach.go`,
+`tribrach.swift` or `acme.kotlin`. Core never lists owners. Installed
+packages register the ids they own under `owns-links`, and the runner
+resolves each link to the package that registered its id
+(`Tribrach.Package`). A third-party instrument therefore needs no change to
+core; `examples/third-party-instrument` shows one.
+
+- **Existing names.** The first manifests used a closed list: `go`, `swift`,
+  `migration`. They still read and map to `tribrach.go`, `tribrach.swift` and
+  `tribrach.data.migration`, with a note suggesting the id instead.
+- **Migrations.** A migration written in Swift or Go is host code, so its
+  links belong to that language's instrument. `tribrach.data.migration` is
+  for migration files that aren't host code (for example SQL). The
+  `tribrach-data` package registers it, and an adapter for the store reads
+  the files, which keeps the pack free of store details.
+- **Diagnostics.**
+  - `TR0101`: no installed package owns an id.
+  - `TR0102`: two packages register the same id.
+  - `TR0103`: a descriptor is malformed or names an invalid id.
+
+  Each says which package or link is involved and what to do about it.
 
 - Diagnostic prefixes keep codes from colliding: `TR` core, `TRG` Go,
   `TRS` Swift, `TRD` data. Adapters use their pack's or instrument's prefix.
