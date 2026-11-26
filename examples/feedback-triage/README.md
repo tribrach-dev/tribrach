@@ -37,5 +37,9 @@ lake exe cards --write RULES.md
 ```
 
 CI runs `lake exe cards --check RULES.md`, which fails if the page is out of
-date, if the model breaks a rule, or if a rule catches none of the known bugs. The examples are checked on every small list,
+date, if the model breaks a rule, if a rule never applies, or if a rule never
+says no to any outcome in its stated domain. A rule that catches none of the
+known bugs is reported as a coverage finding but doesn't fail the build: it
+says something about the bug list, not the rule. Fixture rules check that
+each finding is reported as intended. The examples are checked on every small list,
 not proved for all lists.
