@@ -14,6 +14,9 @@ Every item appears on the list at most once.
 
 Checked on 279 situations; the model follows the rule in every one.
 
+It can say no: (empty list) then `add 1` must not give `[ ] 1, [ ] 1`.
+It catches 1 of the 9 known bugs.
+
 **Allowed.** What the model does:
 
 | Before | Action | After |
@@ -33,6 +36,9 @@ Checked on 279 situations; the model follows the rule in every one.
 Adding an item that is already on the list changes nothing.
 
 Checked on 60 situations; the model follows the rule in every one.
+
+It can say no: `[ ] 1` then `add 1` must not give (empty list).
+It catches 2 of the 9 known bugs.
 
 **Allowed.** What the model does:
 
@@ -55,6 +61,9 @@ Adding a new item puts it at the end of the list, unticked.
 
 Checked on 33 situations; the model follows the rule in every one.
 
+It can say no: (empty list) then `add 1` must not give (empty list).
+It catches 1 of the 9 known bugs.
+
 **Allowed.** What the model does:
 
 | Before | Action | After |
@@ -74,6 +83,9 @@ Checked on 33 situations; the model follows the rule in every one.
 Ticking an item ticks it and leaves every other item, and the order, as it was.
 
 Checked on 60 situations; the model follows the rule in every one.
+
+It can say no: `[ ] 1` then `tick 1` must not give (empty list).
+It catches 2 of the 9 known bugs.
 
 **Allowed.** What the model does:
 
@@ -96,6 +108,9 @@ Ticking an item that isn't on the list changes nothing.
 
 Checked on 33 situations; the model follows the rule in every one.
 
+It can say no: (empty list) then `tick 1` must not give `[ ] 1`.
+It catches 2 of the 9 known bugs.
+
 **Allowed.** What the model does:
 
 | Before | Action | After |
@@ -116,6 +131,9 @@ Checked on 33 situations; the model follows the rule in every one.
 Removing an item takes it off the list and leaves everything else as it was.
 
 Checked on 93 situations; the model follows the rule in every one.
+
+It can say no: (empty list) then `remove 1` must not give `[ ] 1`.
+It catches 3 of the 9 known bugs.
 
 **Allowed.** What the model does:
 
@@ -138,6 +156,16 @@ Checked on 93 situations; the model follows the rule in every one.
 The search tried 9 realistic bugs against every rule.
 
 Every one is caught by at least one rule.
+
+## Findings
+
+Scope: 279 situations (every list reachable in up to three actions, times
+every action) and 259 possible outcomes (every list of up to three entries
+with ids 1 to 3, including broken ones such as duplicates). Model violations, rules that
+never apply and rules that never say no fail the build. Coverage findings don't: they
+describe the list of known bugs, not the rule.
+
+None: every rule applies, can say no, and catches at least one known bug.
 
 ## Did you know?
 

@@ -192,6 +192,9 @@ structure Card where
   forbidden : List (Example × String)
   /-- Situations where the model itself breaks the rule. Should be empty. -/
   broken : List (List Item × Op)
+  /-- An applicable situation and an outcome the rule rejects, built
+  independently of the bug list. -/
+  rejects : Option Example
 
 /-- Up to three examples spread across the list: first, middle, last. -/
 def spread {α : Type} (xs : List α) : List α :=
@@ -203,12 +206,129 @@ def caught (r : Rule) (mine : List (List Item × Op)) (bug : Bug) : Option (Exam
   (mine.find? (fun c => !(r.holds c.1 c.2 (bug.step c.2 c.1)))).map
     (fun c => ((c.1, c.2, bug.step c.2 c.1), bug.name))
 
+/-- Every list of up to three entries with ids 1 to 3, including broken ones
+such as duplicates: the outcomes tried when asking "can this rule say no?". -/
+def outcomeDomain : List (List Item) :=
+  let its := ids.flatMap (fun i => [(⟨i, false⟩ : Item), ⟨i, true⟩])
+  let ext := fun (ls : List (List Item)) => ls.flatMap (fun l => its.map (fun it => l ++ [it]))
+  let l1 := ext [[]]
+  let l2 := ext l1
+  [[]] ++ l1 ++ l2 ++ ext l2
+
+/-- The first applicable situation with an outcome the rule rejects. -/
+def rejectWitness (r : Rule) (mine : List (List Item × Op)) : Option Example :=
+  mine.findSome? (fun c =>
+    (outcomeDomain.find? (fun a => !(r.holds c.1 c.2 a))).map (fun a => (c.1, c.2, a)))
+
 def makeCard (r : Rule) : Card :=
   let mine := cases.filter (fun c => r.applies c.1 c.2)
   let broken := mine.filter (fun c => !(r.holds c.1 c.2 (step c.2 c.1)))
   let allowed := (spread mine).map (fun c => (c.1, c.2, step c.2 c.1))
   let forbidden := bugs.filterMap (caught r mine)
-  { rule := r, checked := mine.length, allowed, forbidden, broken }
+  { rule := r, checked := mine.length, allowed, forbidden, broken,
+    rejects := rejectWitness r mine }
+
+/-! ## Findings
+
+Four questions about each rule, reported separately:
+
+- **Model violation:** the model itself breaks the rule somewhere in scope.
+- **Never applies:** no situation in scope matches the rule's precondition.
+- **Never rejects:** the rule accepts every outcome in `outcomeDomain`, in
+  every situation it applies to. This is exhaustive over a stated finite
+  domain, so it is the only finding that calls a rule vacuous, and only
+  within that domain.
+- **No known bug caught:** none of the bugs in `bugs` breaks the rule. That
+  is a fact about the bug list, not the rule, so it is reported as coverage
+  and doesn't fail the build.
+-/
+
+inductive FindingKind where
+  | modelViolation
+  | neverApplies
+  | neverRejects
+  | noBugCaught
+  deriving BEq, Repr
+
+def FindingKind.name : FindingKind → String
+  | .modelViolation => "model violation"
+  | .neverApplies => "never applies"
+  | .neverRejects => "never rejects"
+  | .noBugCaught => "no known bug caught"
+
+/-- Whether a finding fails the build. Coverage findings don't. -/
+def FindingKind.blocking : FindingKind → Bool
+  | .noBugCaught => false
+  | _ => true
+
+structure Finding where
+  kind : FindingKind
+  rule : String
+  detail : String
+
+def findingsFor (r : Rule) : List Finding :=
+  let mine := cases.filter (fun c => r.applies c.1 c.2)
+  let broken := mine.filter (fun c => !(r.holds c.1 c.2 (step c.2 c.1)))
+  let violations : List Finding :=
+    if broken.isEmpty then []
+    else [{ kind := .modelViolation, rule := r.name,
+            detail := s!"the model breaks it in {broken.length} situations" }]
+  let vacuity : List Finding :=
+    if mine.isEmpty then
+      [{ kind := .neverApplies, rule := r.name,
+         detail := s!"none of the {cases.length} situations in scope matches it" }]
+    else
+      match rejectWitness r mine with
+      | some _ => []
+      | none =>
+        [{ kind := .neverRejects, rule := r.name,
+           detail := s!"it accepts all {outcomeDomain.length} outcomes in each of the {mine.length} situations it applies to" }]
+  let coverage : List Finding :=
+    if (bugs.filterMap (caught r mine)).isEmpty then
+      [{ kind := .noBugCaught, rule := r.name,
+         detail := s!"none of the {bugs.length} known bugs breaks it" }]
+    else []
+  violations ++ vacuity ++ coverage
+
+/-! ### Fixtures
+
+Rules that exist only to check the findings above. They are not shown on the
+page. -/
+
+/-- Rejects a transition (removing must not add a ticked item), but no known
+bug does that, so it should report coverage only. -/
+def fixtureNoBugCaught : Rule :=
+  { name := "fixture: removing never adds a ticked item"
+    plain := "Removing an item never adds a ticked item."
+    applies := fun _ o => isRemove o
+    holds := fun b _ a => a.all (fun it => !it.done || b.contains it) }
+
+/-- Its precondition (a list of four items) can't be reached with three
+actions, so it should never apply. -/
+def fixtureUnreachable : Rule :=
+  { name := "fixture: ticking on a list of four items"
+    plain := "Ticking on a list of four items ticks only that item."
+    applies := fun b o => b.length == 4 && isTickOf true b o
+    holds := fun b o a => ticksOnly b o a }
+
+/-- Accepts everything, so it should never reject. -/
+def fixtureAcceptsAll : Rule :=
+  { name := "fixture: removing allows anything"
+    plain := "Removing an item may produce any list."
+    applies := fun _ o => isRemove o
+    holds := fun _ _ _ => true }
+
+def fixtures : List (Rule × List FindingKind) := [
+  (fixtureNoBugCaught, [.noBugCaught]),
+  (fixtureUnreachable, [.neverApplies, .noBugCaught]),
+  (fixtureAcceptsAll, [.neverRejects, .noBugCaught])
+]
+
+def fixtureFailures : List String :=
+  fixtures.filterMap (fun p =>
+    let got := (findingsFor p.1).map (·.kind)
+    if got == p.2 then none
+    else some s!"{p.1.name}: expected {p.2.map FindingKind.name}, got {got.map FindingKind.name}")
 
 /-! ## Did you know?
 
@@ -338,6 +458,10 @@ def row (ex : Example) : String :=
 def renderCard (n : Nat) (c : Card) : List String :=
   [s!"## {n}. {c.rule.name}", "", c.rule.plain, "",
    s!"Checked on {c.checked} situations; the model follows the rule in every one.", "",
+   (match c.rejects with
+    | some ex => s!"It can say no: {showState ex.1} then {showOp ex.2.1} must not give {showState ex.2.2}."
+    | none => "It never says no to any outcome tried."),
+   s!"It catches {c.forbidden.length} of the {bugs.length} known bugs.", "",
    "**Allowed.** What the model does:", "",
    "| Before | Action | After |", "| --- | --- | --- |"] ++
   c.allowed.map row ++
@@ -383,13 +507,24 @@ def renderQuestion (q : Question) : List String :=
 
 def cards : List Card := rules.map makeCard
 
-/-- Problems that make the cards untrustworthy: the model breaks a rule, a
-rule never applies, or a rule forbids nothing (it's vacuous). -/
+def findings : List Finding := rules.flatMap findingsFor
+
+/-- What fails the build: blocking findings, and fixtures whose findings
+changed. -/
 def problems : List String :=
-  cards.flatMap (fun c =>
-    (if c.broken.isEmpty then [] else [s!"the model breaks \"{c.rule.name}\" in {c.broken.length} situations"]) ++
-    (if c.checked == 0 then [s!"\"{c.rule.name}\" never applies in the search"] else []) ++
-    (if c.forbidden.isEmpty then [s!"\"{c.rule.name}\" catches none of the known bugs"] else []))
+  (findings.filter (·.kind.blocking)).map (fun f => s!"{f.kind.name}: \"{f.rule}\": {f.detail}") ++
+    fixtureFailures.map (fun m => s!"fixture check failed: {m}")
+
+def renderFindings : List String :=
+  ["## Findings", "",
+   s!"Scope: {cases.length} situations (every list reachable in up to three actions, times",
+   s!"every action) and {outcomeDomain.length} possible outcomes (every list of up to three entries",
+   "with ids 1 to 3, including broken ones such as duplicates). Model violations, rules that",
+   "never apply and rules that never say no fail the build. Coverage findings don't: they",
+   "describe the list of known bugs, not the rule.", ""] ++
+  (let cov := findings.filter (fun f => !f.kind.blocking)
+   if cov.isEmpty then ["None: every rule applies, can say no, and catches at least one known bug.", ""]
+   else cov.map (fun f => s!"- {f.kind.name}: \"{f.rule}\": {f.detail}") ++ [""])
 
 def render : String :=
   let header := [
@@ -406,7 +541,7 @@ def render : String :=
     "finds. The search never visits the same situation twice, so a \"no\" can cover",
     "sequences of any length.", ""] ++
     questions.flatMap renderQuestion
-  "\n".intercalate (header ++ body ++ renderBlindSpots ++ dyk)
+  "\n".intercalate (header ++ body ++ renderBlindSpots ++ renderFindings ++ dyk)
 
 end Cards
 end Todo
