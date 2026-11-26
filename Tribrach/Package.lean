@@ -70,7 +70,7 @@ private def isSpace (c : Char) : Bool := c == ' ' || c == '\t' || c == '\r'
 private def trimChars (l : List Char) : List Char :=
   ((l.dropWhile isSpace).reverse.dropWhile isSpace).reverse
 
-private def trim (s : String) : String := (trimChars s.toList).asString
+private def trim (s : String) : String := String.ofList (trimChars s.toList)
 
 /-- Drop a `#` comment that isn't inside a string. -/
 private def stripComment (line : String) : String :=
@@ -80,14 +80,14 @@ private def stripComment (line : String) : String :=
       if c == '"' then c :: go cs (!inStr)
       else if c == '#' && !inStr then []
       else c :: go cs inStr
-  (go line.toList false).asString
+  String.ofList (go line.toList false)
 
 /-- `"text"` to `text`. -/
 private def unquote? (s : String) : Option String :=
   match s.toList with
   | '"' :: rest =>
     match rest.reverse with
-    | '"' :: inner => some inner.reverse.asString
+    | '"' :: inner => some (String.ofList inner.reverse)
     | _ => none
   | _ => none
 
@@ -96,7 +96,7 @@ private def parseValue? (raw : String) : Option TomlValue :=
   | '[' :: rest =>
     match rest.reverse with
     | ']' :: inner =>
-      let body := trim inner.reverse.asString
+      let body := trim (String.ofList inner.reverse)
       if body.isEmpty then some (.arr [])
       else ((body.splitOn ",").mapM (fun part => unquote? (trim part))).map TomlValue.arr
     | _ => none
@@ -126,7 +126,7 @@ def Descriptor.parse (source : String) (text : String) : Except Diagnostic Descr
   match parseToml text with
   | .error e => .error (bad e)
   | .ok kvs =>
-    let lookup := fun (k : String) => (kvs.find? (fun p => p.1 == k)).map (·.2)
+    let lookup : String → Option TomlValue := fun k => (kvs.find? (fun p => p.1 == k)).map (·.2)
     match lookup "name", lookup "kind" with
     | some (.str name), some (.str kindName) =>
       match PackageKind.parse? kindName with
