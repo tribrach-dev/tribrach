@@ -231,16 +231,28 @@ competing with them.
 ## User feedback
 
 The model knows what the app should have done, so user feedback can be
-replayed instead of guessed at. Prototype: `examples/feedback-triage`.
+replayed instead of guessed at. Library: `Tribrach.Triage`; example:
+`examples/feedback-triage`.
 
 - **Reports with context:** when a user says "this is wrong", the app attaches
   the recent operation names, the rules in play, the model stamp and the app
   version. Privacy labels decide what may be included, and the user sees
   exactly what will be sent.
-- **Triage by replay** into three groups: `code-bug` (the app broke the model
-  or a rule; arrives with a test case), `expectation-mismatch` (the app
-  followed the rules but the user expected otherwise; a spec question, shown
-  with `tribrach explain`), and `cannot-reproduce`.
+- **Triage by replay** (in the library: any `Model` plus a small `Subject`
+  adapter):
+  - `malformed`: the capture itself is broken.
+  - `version-mismatch`: the report was made against another model version.
+  - `model-gap`: the report shows an operation or state field the model
+    doesn't have.
+  - `code-bug`: the app broke the model or a rule; it arrives with a test
+    case.
+  - `expectation-mismatch`: the app followed the rules but the user expected
+    otherwise. This is a spec question, shown with `tribrach explain`.
+  - `cannot-reproduce`: nothing differs.
+- **Next for triage:**
+  - Replay older-version reports through a migration when one exists.
+  - Relational models, where a report records each step's outcome (done,
+    refused, failed).
 - **Disagreement per rule:** counting reports per rule shows which rules
   users push back on, a product signal rather than a bug signal.
 - **Same plugin shape:** feedback is a capture of an operation sequence
