@@ -98,7 +98,7 @@ structure Revision where
 structure Graph where
   contracts : List Contract
   edges : List Edge
-  history : List Revision
+  history : List Revision := []
 
 structure Issue where
   code : String
