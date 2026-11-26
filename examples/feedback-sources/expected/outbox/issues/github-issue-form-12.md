@@ -4,7 +4,7 @@ Would create: github-issue
 Labels: bug, has-replay
 From: github-issue-form 12 https://github.com/example-org/todo-app/issues/12
 Model: todo.v1  App: 2.3.0
-Group: code-bug-0
+Group: code-bug-afe0a465eb1e262e
 
 ## Evidence
 

@@ -243,7 +243,8 @@ def result {m : Model} (sub : Subject m) (j : Json) : Json :=
     ("model", Json.str sub.version),
     ("verdict", Json.str v.name),
     ("reason", Json.str why),
-    ("evidence", toJson (why.splitOn "; ")),
+    -- A model gap lists each missing piece; other verdicts have one reason.
+    ("evidence", toJson (if v == .modelGap then why.splitOn "; " else [why])),
     ("group", Json.str (groupKey v j))] ++ source)
 
 /-- Read a JSON array of reports and print one line each: plain text, or one

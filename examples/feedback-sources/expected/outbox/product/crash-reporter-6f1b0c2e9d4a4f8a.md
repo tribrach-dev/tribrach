@@ -4,12 +4,11 @@ Would create: tracker-card
 Labels: spec-question
 From: crash-reporter 6f1b0c2e9d4a4f8a
 Model: todo.v1  App: 2.2.9
-Group: expectation-mismatch-0
+Group: expectation-mismatch-51bfb518b0208cb5
 
 ## Evidence
 
-- the app followed the rules
-- the user expected something else
+- the app followed the rules; the user expected something else
 
 ## Replay
 
