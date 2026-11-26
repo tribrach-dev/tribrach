@@ -1,4 +1,4 @@
-import Parking.Codecs
+import Parking.Samples
 
 /-!
 # Example: parking contracts as the source of DTOs
@@ -47,14 +47,13 @@ def schemas : List (String × Schema) := [
 
 /-! ## Exchanges, made by running the model -/
 
+open Samples
+
 /-- The fixed clock and ids every case uses: 2026-11-26T19:30:00Z. -/
-def now : Int := 1795721400
 def given (approve : Bool) (extra : List (String × Json) := []) : Json :=
   Json.mkObj ([("now", Json.str (formatInstant now)), ("sessionId", "s-1001"),
     ("token", "tok-test-visa"), ("card", Json.str (if approve then "approve" else "decline")),
     ("authId", "auth-77")] ++ extra)
-
-def env (approve : Bool) : Env := ⟨now, "s-1001", "tok-test-visa", authorize approve "auth-77"⟩
 
 /-- The payments call `start` makes for a request, if any. -/
 def payCall (approve : Bool) (r : StartRequest) : List Call :=
@@ -86,8 +85,6 @@ def startV1Cases : List Exchange := [
   -- Rollback evidence: a v1 server refuses what it can't read in full.
   badCase "v2-field-on-v1" (Json.mkObj [("zone", "A1"), ("plate", "ABC123"), ("minutes", 60),
     ("evCharging", true)])]
-
-def envV2 (approve : Bool) (free : Nat) : EnvV2 := { env approve with chargersFree := free }
 
 def v2Case (id : String) (approve : Bool) (free : Nat) (r : StartRequestV2) : Exchange :=
   let queues := r.evCharging == some true && free == 0
@@ -127,7 +124,30 @@ def authorizeCases : List Exchange := [
 def schemaFiles : List Export.File :=
   schemas.map fun (n, s) => s.file s!"exported/schemas/{n}.json"
 
-def files : Export.Files := ⟨schemaFiles ++ [
+/-! ## Verdicts: mutated messages and whether each is valid
+
+For checking host decoders against Lean: a host decoder must accept exactly
+the documents marked `accept`. -/
+
+def verdictsFile (name : String) (vs : List (Json × Bool)) : Export.File :=
+  { path := s!"exported/verdicts/{name}.json",
+    text := renderJson (Json.mkObj [("format", "tribrach.verdicts.v1"),
+      ("schema", Json.str (schemaBase ++ name ++ ".json")),
+      ("cases", Json.arr (vs.map fun (j, ok) =>
+        Json.mkObj [("doc", j), ("accept", Json.bool ok)]).toArray)])
+      ["format", "schema", "cases", "doc", "accept"] ++ "\n" }
+
+def verdictFiles : List Export.File := [
+  verdictsFile "payments.authorize.request" (verdicts AuthorizeRequest.codec (every 7 payRequests)),
+  verdictsFile "payments.authorize.response"
+    (verdicts AuthorizeResponse.codec (every 7 payResponses)),
+  verdictsFile "meters.start.v1.request" (verdicts StartRequest.codec (every 31 requestsV1)),
+  verdictsFile "meters.start.v1.response" (verdicts StartResponse.codec (every 47 responsesV1)),
+  verdictsFile "meters.start.v2.request" (verdicts StartRequestV2.codec (every 97 requestsV2)),
+  verdictsFile "meters.start.v2.response"
+    (verdicts StartResponseV2.codec (every 199 responsesV2))]
+
+def files : Export.Files := ⟨schemaFiles ++ verdictFiles ++ [
   exchangesFile "payments.authorize" 1 authorizeCases "exported/exchanges/payments.authorize.json",
   exchangesFile "meters.start" 1 startV1Cases "exported/exchanges/meters.start.v1.json",
   exchangesFile "meters.start" 2 startV2Cases "exported/exchanges/meters.start.v2.json"]⟩

@@ -4,7 +4,7 @@
 #  1. the committed exported/ is what the build writes (compared as JSON);
 #  2. round trips, version reads and decoder = shape in Lean (Check.lean);
 #  3. a JSON Schema validator agrees with Lean on every mutated message;
-#  4. the exchanges' requests and responses fit their schemas;
+#  4. the exported verdicts match the validator, and the exchanges fit their schemas;
 #  5. the planted break: lowering payments' limit below the dearest session
 #     makes meters' proofs fail, naming the theorem.
 set -e
@@ -63,6 +63,13 @@ for line in open(sys.argv[1]):
         if bad <= 20:
             print(f"FAIL {m['schema']}: validator says {got}, Lean {m['lean']} for {json.dumps(m['doc'])}")
 print(f"{'ok  ' if not bad else 'FAIL'} JSON Schema validator agrees with Lean on {total - bad} of {total} mutated messages")
+
+for p in sorted(pathlib.Path("exported/verdicts").glob("*.json")):
+    doc = json.loads(p.read_text())
+    v = schemas[doc["schema"].rsplit("/", 1)[1][:-5]]
+    wrong = [c for c in doc["cases"] if v.is_valid(c["doc"]) != c["accept"]]
+    bad += len(wrong)
+    print(f"{'ok  ' if not wrong else 'FAIL'} {p}: validator agrees on {len(doc['cases']) - len(wrong)} of {len(doc['cases'])}")
 
 for p in sorted(pathlib.Path("exported/exchanges").glob("*.json")):
     doc = json.loads(p.read_text())

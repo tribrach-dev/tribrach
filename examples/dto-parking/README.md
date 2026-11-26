@@ -54,6 +54,13 @@ checked on many messages, not yet proved:
 | A v2 field (`evCharging`) reaches a v1 server | It is rejected, never silently dropped | case `v2-field-on-v1` |
 | v2 adds `queued` with no v1 form | `downgrade` must map it, or `v2_serves_v1` doesn't typecheck | by construction |
 
+## Verdicts
+
+`exported/verdicts/*.json` (`tribrach.verdicts.v1`) hold about 2,400
+mutated messages, each marked with whether the schema accepts it. A host
+decoder must accept exactly the ones marked `accept`, which is how the Go
+and Swift generators are checked against Lean.
+
 ## Exchanges
 
 `exported/exchanges/*.json` (`tribrach.exchanges.v1`, see
