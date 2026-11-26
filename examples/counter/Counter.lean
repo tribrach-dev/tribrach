@@ -1,4 +1,5 @@
 import Tribrach.Model
+import Tribrach.Relation
 
 /-!
 # Example: a bounded counter
@@ -45,5 +46,9 @@ theorem counter_run_le (max : Nat) (ops : List CounterOp) :
     (counter max).Inv ((counter max).run ops (0 : Nat)) :=
   Tribrach.Model.run_preserves (counter max) (counter_preserves max) ops (0 : Nat)
     (Nat.zero_le max)
+
+/-- The same counter through the relational API, via the adapter. -/
+theorem counter_rel_preserves (max : Nat) : (counter max).toRel.Preserves :=
+  Tribrach.Model.toRel_preserves (counter max) (counter_preserves max)
 
 end Counter

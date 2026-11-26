@@ -1,0 +1,13 @@
+name = "shipments"
+defaultTargets = ["Shipments", "replay"]
+
+[[require]]
+name = "tribrach"
+path = "../.."
+
+[[lean_lib]]
+name = "Shipments"
+
+[[lean_exe]]
+name = "replay"
+root = "Main"
