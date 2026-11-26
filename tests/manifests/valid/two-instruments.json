@@ -1,0 +1,9 @@
+{
+  "format": "tribrach.manifest.v1",
+  "package": "counter",
+  "links": [
+    { "lean": "Counter.counterStep", "owner": "tribrach.go", "symbol": "example.com/counter.Step", "stamp": "0123456789abcdef" },
+    { "lean": "Counter.counterStep", "owner": "tribrach.swift", "symbol": "Counter.step(_:_:)", "stamp": "0123456789abcdef" },
+    { "lean": "Counter.counterStep", "owner": "acme.kotlin", "symbol": "com.example.Counter.step", "stamp": "0123456789abcdef" }
+  ]
+}

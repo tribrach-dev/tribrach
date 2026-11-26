@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tribrach-dev/tribrach/schema/refresh.schema.json",
+  "title": "Tribrach refresh report, version 1",
+  "description": "What changed since the committed graph and manifest: the project definitions whose hash moved, and each link to re-check, per instrument, with the definitions that caused it. A build output for people and CI comments; not committed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "package", "changed", "items"],
+  "properties": {
+    "format": { "const": "tribrach.refresh.v1" },
+    "package": { "type": "string", "minLength": 1 },
+    "changed": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["owner", "lean", "symbol", "status"],
+        "properties": {
+          "owner": { "type": "string", "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)+$" },
+          "lean": { "type": "string", "minLength": 1 },
+          "symbol": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["changed", "new", "removed"] },
+          "from": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+          "to": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+          "because": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        },
+        "allOf": [
+          { "if": { "properties": { "status": { "const": "changed" } } }, "then": { "required": ["from", "to", "because"] } },
+          { "if": { "properties": { "status": { "const": "new" } } }, "then": { "required": ["to"] } },
+          { "if": { "properties": { "status": { "const": "removed" } } }, "then": { "required": ["from"] } }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+{ "format": "tribrach.manifest.v1", "package": "counter",
+  "links": [ { "lean": "Counter.counterStep", "owner": "go", "symbol": "example.com/counter.Step", "stamp": "0123456789abcdef" } ] }

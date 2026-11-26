@@ -1,0 +1,8 @@
+{
+  "format": "tribrach.vectors.v1",
+  "model": "counter.v1",
+  "cases": [
+    { "id": "climb", "start": 0, "ops": [ { "op": "incr" }, { "op": "incr" } ], "states": [1, 2] },
+    { "id": "empty", "start": 2, "ops": [], "states": [] }
+  ]
+}

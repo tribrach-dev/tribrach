@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tribrach-dev/tribrach/schema/manifest.schema.json",
+  "title": "Tribrach manifest, version 1",
+  "description": "The links a Lean exporter writes for instruments: which Lean definition each host symbol implements, who checks it, and the definition's stamp.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "package", "links"],
+  "properties": {
+    "format": { "const": "tribrach.manifest.v1" },
+    "package": { "type": "string", "minLength": 1 },
+    "links": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/link" }
+    }
+  },
+  "$defs": {
+    "stamp": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$",
+      "description": "16 lowercase hex digits. Stable for one Lean toolchain."
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lean", "owner", "symbol", "stamp"],
+      "properties": {
+        "lean": {
+          "type": "string",
+          "pattern": "^[^\\s.]+(\\.[^\\s.]+)*$",
+          "description": "Fully qualified Lean name."
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)+$",
+          "description": "Instrument id, such as tribrach.go. The legacy names go, swift and migration are read by the runner but are not valid here."
+        },
+        "symbol": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The host symbol, in the owning instrument's own notation."
+        },
+        "stamp": { "$ref": "#/$defs/stamp" }
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+{ "format": "tribrach.vectors.v1", "model": "counter.v1",
+  "cases": [ { "id": "bare", "start": 0, "ops": [ "incr" ], "states": [1] } ] }

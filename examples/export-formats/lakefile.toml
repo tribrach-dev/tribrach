@@ -1,0 +1,11 @@
+name = "export-formats"
+defaultTargets = ["CounterExport"]
+
+# The bounded counter model comes from the counter example.
+[[require]]
+name = "counter"
+path = "../counter"
+
+# Compiling this module writes exported/ (see #tribrach_export).
+[[lean_lib]]
+name = "CounterExport"

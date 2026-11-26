@@ -1,0 +1,9 @@
+{
+  "format": "tribrach.vectors.v1",
+  "model": "todo.v1",
+  "cases": [
+    { "id": "add-one", "start": { "items": [] },
+      "ops": [ { "op": "add", "title": "milk" } ],
+      "states": [ { "items": [ { "title": "milk", "done": false } ] } ] }
+  ]
+}
