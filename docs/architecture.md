@@ -163,6 +163,28 @@ versions.
   manifest, one entry per accepted revision, with its compatibility and
   evidence.
 
+## Feedback triage
+
+`Tribrach.Triage` replays a user's feedback report against a model and sorts
+it into one of six verdicts: `malformed`, `version-mismatch`, `model-gap`,
+`code-bug`, `expectation-mismatch` or `cannot-reproduce`.
+
+A project supplies a `Subject` for its `Model`:
+
+- the model version;
+- how states and operations are read from and written to JSON;
+- an executable rule check, `broken`, with a proof (`sound`) that a state it
+  passes keeps the model's invariant.
+
+The report format, the replay, the gap detection and a ready-made `main`
+(`Triage.runFile`) are shared. Gaps are found without project code:
+
+- an operation the subject doesn't decode is a gap;
+- so is any state key that doesn't survive reading and writing back, named
+  by path (`observed[0].pinned`).
+
+Example: `examples/feedback-triage`.
+
 ## Build plan
 
 Tribrach is written fresh against this design and its own neutral examples.

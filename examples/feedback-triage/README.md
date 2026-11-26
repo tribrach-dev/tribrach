@@ -19,6 +19,11 @@ lake build
 lake exe triage reports.json
 ```
 
+Triage itself is a library feature, `Tribrach.Triage`. This example only
+supplies the to-do model and a small adapter (`Todo/Triage.lean`) saying how
+its states and operations look in a report. Any project can do the same for
+its own model.
+
 `reports.json` holds nine sample reports with the triage each should get; the
 command exits non-zero if any are sorted differently. The model is a tiny
 to-do list (add, complete, remove) whose rule is that item ids are unique. The

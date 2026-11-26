@@ -1,6 +1,10 @@
 name = "feedback-triage"
 defaultTargets = ["Todo", "triage", "cards"]
 
+[[require]]
+name = "tribrach"
+path = "../.."
+
 [[lean_lib]]
 name = "Todo"
 
