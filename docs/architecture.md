@@ -93,15 +93,32 @@ but not what else needs review. `Tribrach.Contract` adds the missing pieces
   Each edge records the upstream revision it was established against. Edges
   must form a DAG. The checks are `TR0201` (missing contract), `TR0202`
   (cycle) and `TR0203` (reliance on a revision that doesn't exist yet).
-- **Compatibility, weakest first.**
-  - `structural`: changed, nothing more is known.
-  - `declared`: an author says it is compatible; not verified.
-  - `checked`: backed by named evidence, such as a theorem or a vector suite
-    run in CI.
+- **Revision records.** Each accepted revision records what kind of change
+  it was and how well that is known:
+  - *Kind:* `refine`, `extend` with a direction (`backward`, `forward` or
+    `both`), `breaking` or `deprecate`. A record with no kind is
+    unclassified. A rename keeps the id and needs no revision.
+  - *Evidence, weakest first:* `refuted`, `structural`, `declared`,
+    `tested`, `checked`.
+  - *Optional:* a migration reference, and the stamp the record was made
+    against. A stale record (`TR0205`) is ignored.
 
-  Over a range of revisions, the weakest step decides. The impact report
-  lists direct dependents with that verdict, and lists their own dependents
-  as possibly affected when the direct one needs review.
+  A refutation beats any claim about the same revision (`TR0204`). Over a
+  range of revisions, the weakest step decides.
+- **Proved or derived impact.** `Tribrach.Impact` turns the records and
+  edges into facts for the logic layer and derives one verdict per
+  dependent, with a why tree that `Why.check` re-verifies.
+  - A **proved** verdict comes from a rule backed by a theorem. Today that is
+    `Model.carry_over`: a checked refinement keeps every guarantee a
+    `dependsOn` dependent used, and the example states it as a corollary
+    per edge.
+  - Every other rule is **policy** and can only ask for more work: review,
+    confirm a claim, re-prove, or move off a deprecated revision.
+  - A clearing rule without a theorem is reported (`TR0206`).
+    `cleared_only_by_backed` proves that, otherwise, a checked proved
+    verdict always comes from a backed rule.
+  - Where proof and policy meet on one edge, the proof decides and the
+    disagreement is reported (`TR0207`).
 
 **Effect on formats.** This is a format change, so it ships as new major
 versions.

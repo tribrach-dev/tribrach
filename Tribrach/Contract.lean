@@ -27,14 +27,25 @@ upstream change can be turned into an impact report.
 
 Each edge records the upstream revision it was last established against.
 
-## Compatibility, weakest to strongest
+## What changed, and how well it is known
 
-- `structural`: the contract changed and nobody has said more. Review.
-- `declared`: an author declares the change compatible. Not verified.
-- `checked`: compatibility is backed by checked evidence: a theorem, or a
-  vector suite run in CI. The report names the evidence.
+Each accepted revision has a record in the graph's `history`:
 
-Over a range of revisions, the weakest step decides.
+- `kind`: `refine` (allows fewer behaviours, keeps every guarantee),
+  `extend` with a direction (`backward`: old consumers still work;
+  `forward`: new consumers can read old data; `both`), `breaking`, or
+  `deprecate`. A rename keeps the id and needs no revision. A record without
+  a kind is *unclassified*.
+- `compat`, the evidence, weakest to strongest: `refuted` (a check failed),
+  `structural` (nothing is known), `declared` (an author says so), `tested`
+  (vectors were replayed), `checked` (a theorem).
+- `migration`: an optional reference to the migration and its proof.
+- `stamp`: the contract's stamp when the record was made. A record for the
+  current revision whose stamp no longer matches is stale and is ignored.
+
+Several records may describe the same revision. A refutation always wins;
+otherwise the strongest evidence counts. Over a range of revisions, the
+weakest step decides. `Tribrach.Impact` turns this into an impact report.
 
 ## Graph checks
 
@@ -42,6 +53,9 @@ Over a range of revisions, the weakest step decides.
 - `TR0202` contracts depend on each other in a cycle. Edges must form a DAG,
   otherwise "upstream" has no meaning.
 - `TR0203` an edge relies on a revision newer than the contract has.
+- `TR0204` records for one revision disagree: one claims compatibility and
+  another refutes it. The refutation wins.
+- `TR0205` a record is stale: the definition changed after it was made.
 -/
 
 namespace Tribrach
@@ -83,16 +97,59 @@ structure Edge where
   deriving Repr
 
 inductive Compat where
+  | refuted (evidence : String)
   | structural
   | declared (note : String)
+  | tested (suite : String)
   | checked (evidence : String)
   deriving Repr
+
+/-- Weakest (refuted) is 0, strongest (checked) is 4. -/
+def Compat.rank : Compat → Nat
+  | .refuted _ => 0
+  | .structural => 1
+  | .declared _ => 2
+  | .tested _ => 3
+  | .checked _ => 4
+
+def Compat.level : Compat → String
+  | .refuted _ => "refuted"
+  | .structural => "structural"
+  | .declared _ => "declared"
+  | .tested _ => "tested"
+  | .checked _ => "checked"
+
+def Compat.note : Compat → String
+  | .refuted e => e
+  | .structural => "no record"
+  | .declared n => n
+  | .tested s => s
+  | .checked e => e
+
+/-- Which side of an extension keeps working. -/
+inductive Direction where
+  /-- Old consumers still work with the new revision. -/
+  | backward
+  /-- New consumers can still read what the old revision produced. -/
+  | forward
+  | both
+  deriving DecidableEq, Repr
+
+inductive ChangeKind where
+  | refine
+  | extend (dir : Direction)
+  | breaking
+  | deprecate
+  deriving DecidableEq, Repr
 
 /-- What is known about the step from `revision - 1` to `revision`. -/
 structure Revision where
   id : ContractId
   revision : Nat
   compat : Compat
+  kind : Option ChangeKind := none
+  migration : Option String := none
+  stamp : Option String := none
   deriving Repr
 
 structure Graph where
@@ -146,68 +203,48 @@ def issues (g : Graph) : List Issue :=
     | none => none)
   missing ++ cycles ++ future
 
-/-- What is known about every step from `fromRev` to `toRev`. A step with no
-record counts as structural. -/
-def stepsBetween (g : Graph) (id : ContractId) (fromRev toRev : Nat) : List Compat :=
-  (List.range (toRev - fromRev)).map (fun k =>
-    let rev := fromRev + k + 1
-    ((g.history.find? (fun r => r.id == id && r.revision == rev)).map (·.compat)).getD .structural)
+/-- A record for the current revision whose stamp no longer matches. -/
+def isStale (g : Graph) (r : Revision) : Bool :=
+  match r.stamp, g.find? r.id with
+  | some st, some c => r.revision == c.revision && st != c.stamp
+  | _, _ => false
 
-end Graph
+/-- The records for one revision that still count. -/
+def live (g : Graph) (id : ContractId) (rev : Nat) : List Revision :=
+  g.history.filter (fun r => r.id == id && r.revision == rev && !g.isStale r)
 
-/-- The weakest of a range of steps, with its notes. -/
-def Compat.summarize (steps : List Compat) : Compat :=
-  if steps.any (fun c => match c with | .structural => true | _ => false) then .structural
-  else
-    let declared := steps.filterMap (fun c => match c with | .declared n => some n | _ => none)
-    if !declared.isEmpty then .declared ("; ".intercalate declared)
-    else .checked ("; ".intercalate (steps.filterMap (fun c =>
-      match c with | .checked e => some e | _ => none)))
+/-- What is known about the step to `rev`: a refutation wins, otherwise the
+strongest evidence. The kind is the first one recorded. -/
+def step (g : Graph) (id : ContractId) (rev : Nat) : Option ChangeKind × Compat :=
+  let rs := g.live id rev
+  let compat := match rs.find? (fun r => r.compat.rank == 0) with
+    | some r => r.compat
+    | none => rs.foldl (fun best r => if r.compat.rank > best.rank then r.compat else best)
+        Compat.structural
+  ((rs.filterMap (·.kind)).head?, compat)
 
-/-- One line of an impact report. -/
-structure Impact where
-  contract : ContractId
-  kind : EdgeKind
-  /-- The contract whose review this waits on, for indirect impacts. -/
-  through : Option ContractId
-  compat : Compat
-  text : String
+/-- Every step from `fromRev` to `toRev`. -/
+def stepsBetween (g : Graph) (id : ContractId) (fromRev toRev : Nat) :
+    List (Option ChangeKind × Compat) :=
+  (List.range (toRev - fromRev)).map (fun k => g.step id (fromRev + k + 1))
 
-def Impact.needsReview (i : Impact) : Bool :=
-  match i.compat with
-  | .checked _ => false
-  | _ => true
-
-namespace Graph
-
-/-- Contracts downstream of `id`, transitively, with the edge that leads to
-each. Stops after `fuel` levels. -/
-def below (g : Graph) : Nat → List ContractId → List ContractId → List (ContractId × Edge)
-  | 0, _, _ => []
-  | n + 1, frontier, seen =>
-    let found := frontier.flatMap (fun id =>
-      (g.downstreamEdges id).filter (fun e => !seen.contains e.src) |>.map (fun e => (e.src, e)))
-    if found.isEmpty then []
-    else found ++ g.below n (found.map (·.1)) (seen ++ found.map (·.1))
-
-/-- Impact of `id` moving to revision `newRev`. Direct dependents get a
-compatibility verdict over the revisions they skipped. Their own dependents
-are listed as indirect when the direct one needs review. -/
-def impact (g : Graph) (id : ContractId) (newRev : Nat) : List Impact :=
-  (g.downstreamEdges id).flatMap (fun e =>
-    if e.revision ≥ newRev then []
-    else
-      let c := Compat.summarize (g.stepsBetween id e.revision newRev)
-      let text := match c with
-        | .structural => s!"review: {id} changed from @{e.revision} to @{newRev} with no compatibility claim; {e.kind.obligation}"
-        | .declared n => s!"declared compatible, not verified ({n})"
-        | .checked ev => s!"compatible, checked by {ev}"
-      let direct : Impact := { contract := e.src, kind := e.kind, through := none, compat := c, text }
-      if !direct.needsReview then [direct]
-      else
-        direct :: (g.below (g.contracts.length + 1) [e.src] [id, e.src]).map (fun p =>
-          { contract := p.1, kind := p.2.kind, through := some e.src, compat := .structural,
-            text := s!"may be affected through {e.src}; {p.2.kind.obligation} after {e.src} is reviewed" }))
+/-- Stale records (`TR0205`) and revisions whose records disagree (`TR0204`). -/
+def revisionIssues (g : Graph) : List Issue :=
+  let stale : List Issue := (g.history.filter g.isStale).map (fun r =>
+    let now := ((g.find? r.id).map (·.stamp)).getD ""
+    { code := "TR0205",
+      message := s!"the {r.compat.level} record for {r.id}@{r.revision} was made at stamp {r.stamp.getD ""}, but the definition is now at stamp {now}; it is ignored" })
+  let keys := (g.history.map (fun r => (r.id, r.revision))).eraseDups
+  let conflicts : List Issue := keys.filterMap (fun k =>
+    let rs := g.live k.1 k.2
+    let refuted := rs.filterMap (fun r => match r.compat with | .refuted e => some e | _ => none)
+    let claims := rs.filter (fun r => r.compat.rank ≥ 2)
+    if !refuted.isEmpty && !claims.isEmpty then
+      let said := ", ".intercalate (claims.map (fun r => s!"{r.compat.level} ({r.compat.note})"))
+      some { code := "TR0204",
+             message := s!"{k.1}@{k.2}: {said} says compatible, but {"; ".intercalate refuted}; the refutation wins" }
+    else none)
+  stale ++ conflicts
 
 end Graph
 
