@@ -45,6 +45,8 @@ jobs:
         run: |
           pip install --quiet "jsonschema==4.26.0"
           python tools/check_captures.py
+      - name: Check instrument conformance cases
+        run: python tools/conformance.py
 
   dco:
     if: github.event_name == 'pull_request'

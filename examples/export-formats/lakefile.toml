@@ -1,0 +1,11 @@
+name = "export-formats"
+defaultTargets = ["export"]
+
+# The bounded counter model comes from the counter example.
+[[require]]
+name = "counter"
+path = "../counter"
+
+[[lean_exe]]
+name = "export"
+root = "Main"

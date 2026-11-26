@@ -1,7 +1,7 @@
 """Validate format goldens: everything in tests/<kind>/valid must pass and
-everything in tests/<kind>/invalid must fail, for captures, feedback reports
-and triage results. Also checks the committed outputs of the
-feedback-sources example against the report and triage schemas."""
+everything in tests/<kind>/invalid must fail, for captures, feedback reports,
+triage results, manifests and vectors. Also checks the committed outputs of
+the feedback-sources and export-formats examples against their schemas."""
 
 import json
 import pathlib
@@ -20,7 +20,13 @@ def load_schema(name):
 
 SCHEMAS = {
     name: load_schema(name)
-    for name in ("capture.schema.json", "report.schema.json", "triage.schema.json")
+    for name in (
+        "capture.schema.json",
+        "report.schema.json",
+        "triage.schema.json",
+        "manifest.schema.json",
+        "vectors.schema.json",
+    )
 }
 REGISTRY = Registry().with_resources(
     (s["$id"], Resource.from_contents(s)) for s in SCHEMAS.values()
@@ -36,6 +42,8 @@ def validator(name):
 VALIDATOR = validator("capture.schema.json")
 REPORT = validator("report.schema.json")
 TRIAGE = validator("triage.schema.json")
+MANIFEST = validator("manifest.schema.json")
+VECTORS = validator("vectors.schema.json")
 
 
 def problems(capture):
@@ -50,6 +58,33 @@ def problems(capture):
         if r["start"] <= prev_end:
             errs.append(f"range {r} overlaps or is out of order")
         prev_end = r["end"]
+    return errs
+
+
+def manifest_problems(doc):
+    errs = [e.message for e in MANIFEST.iter_errors(doc)]
+    if errs:
+        return errs
+    seen = set()
+    for l in doc["links"]:
+        key = (l["lean"], l["owner"], l["symbol"])
+        if key in seen:
+            errs.append(f"link {key} appears twice")
+        seen.add(key)
+    return errs
+
+
+def vectors_problems(doc):
+    errs = [e.message for e in VECTORS.iter_errors(doc)]
+    if errs:
+        return errs
+    ids = set()
+    for c in doc["cases"]:
+        if c["id"] in ids:
+            errs.append(f"case id {c['id']} appears twice")
+        ids.add(c["id"])
+        if len(c["states"]) != len(c["ops"]):
+            errs.append(f"case {c['id']} has {len(c['ops'])} operations but {len(c['states'])} states")
     return errs
 
 
@@ -86,11 +121,31 @@ def check_outputs():
     return failed
 
 
+def check_exports():
+    """The export example's committed outputs and the replay conformance
+    vectors follow the manifest and vectors formats."""
+    failed = False
+    out = ROOT / "examples" / "export-formats" / "expected"
+    docs = [
+        ("export-formats/expected/counter.manifest.json", manifest_problems, json.loads((out / "counter.manifest.json").read_text())),
+        ("export-formats/expected/counter.vectors.json", vectors_problems, json.loads((out / "counter.vectors.json").read_text())),
+        ("conformance/replay.json vectors", vectors_problems, json.loads((ROOT / "tests" / "conformance" / "replay.json").read_text())["vectors"]),
+    ]
+    for name, check, doc in docs:
+        errs = check(doc)
+        print(f"{'ok  ' if not errs else 'FAIL'} {name}{' (' + errs[0] + ')' if errs else ''}")
+        failed |= bool(errs)
+    return failed
+
+
 def main():
     failed = check_goldens("captures", problems)
     failed |= check_goldens("reports", schema_only(REPORT))
     failed |= check_goldens("triage", schema_only(TRIAGE))
+    failed |= check_goldens("manifests", manifest_problems)
+    failed |= check_goldens("vectors", vectors_problems)
     failed |= check_outputs()
+    failed |= check_exports()
     sys.exit(1 if failed else 0)
 
 

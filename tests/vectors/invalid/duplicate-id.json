@@ -1,0 +1,5 @@
+{ "format": "tribrach.vectors.v1", "model": "counter.v1",
+  "cases": [
+    { "id": "same", "start": 0, "ops": [], "states": [] },
+    { "id": "same", "start": 1, "ops": [], "states": [] }
+  ] }

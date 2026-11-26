@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tribrach-dev/tribrach/schema/vectors.schema.json",
+  "title": "Tribrach replay vectors, version 1",
+  "description": "Operation sequences with the state the model reaches after every step. States are the model's own JSON. Operations are objects whose op field names the operation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "model", "cases"],
+  "properties": {
+    "format": { "const": "tribrach.vectors.v1" },
+    "model": { "type": "string", "minLength": 1, "description": "The model id, such as counter.v1." },
+    "cases": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "op": {
+      "type": "object",
+      "required": ["op"],
+      "properties": { "op": { "type": "string", "minLength": 1 } }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start", "ops", "states"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "start": {},
+        "ops": { "type": "array", "items": { "$ref": "#/$defs/op" } },
+        "states": {
+          "type": "array",
+          "description": "The state after each operation; exactly one per operation."
+        }
+      }
+    }
+  }
+}

@@ -97,12 +97,43 @@ core; `examples/third-party-instrument` shows one.
 - The core changes only when a format changes, which needs an issue first
   (see GOVERNANCE.md).
 
-## Shared formats (to stabilise first)
+## Shared formats
 
-- Manifest: links, Lean names, host symbols, stamps, format version.
-- Vectors: JSON operation sequences with expected states and outputs.
-- Claims: which properties are proved, which are tested, and by what.
-- Annotation syntax: `//tribrach:link`, `//tribrach:pure`, `//tribrach:stamp`.
+`Tribrach.Export` writes the files instruments read; instruments never read
+Lean. Example: `examples/export-formats`. Instruments prove they read the
+formats the same way by passing `tests/conformance` (see its README);
+`tools/conformance.py` is the reference implementation.
+
+- **Manifest** (`tribrach.manifest.v1`, `schema/manifest.schema.json`): one
+  entry per link with the Lean name, owner id, host symbol and stamp. Built
+  with `lean% Name`, which gives the name and its stamp.
+- **Stamps:** `stamp% Name` hashes the definition's type and value, and
+  everything it uses from the same Lean file, as 16 hex digits. They are
+  stable for one toolchain, so a toolchain bump re-stamps on purpose. On the
+  host side the stamp sits next to the symbol it covers
+  (`//tribrach:stamp`), never in a shared file, so stamping one target can't
+  disturb another.
+- **Vectors** (`tribrach.vectors.v1`, `schema/vectors.schema.json`): cases
+  with a start state, operations as `{"op": name, ...}` objects, and the state
+  after every step. `Model.trace` produces them and `Model.trace_preserves`
+  proves every expected state keeps the model's rules.
+- **Annotations:** `//tribrach:link <LeanName>`, `//tribrach:pure`,
+  `//tribrach:stamp <hex>`; one grammar for every language with `//` line
+  comments, and no space after the `//`, like `//go:` directives.
+- **Claims** (planned next): which properties are proved, which are tested,
+  and by what.
+
+Value conventions for states and operations, so every host reads them the
+same way:
+
+- Prefer integers in fixed units (per-mille, basis points, microdegrees) to
+  floats.
+- Integers beyond ±2^53 (hashes, 64-bit ids) are written as decimal strings.
+- Enumerations are strings naming the case; absent optionals are `null`.
+- Lists are written in the model's order. If the host's order differs, the
+  model should define a canonical order and the codec should sort by it.
+- `Nat` subtraction truncates at zero; a host using signed integers must
+  match that explicitly.
 
 ## Contract identity and dependencies
 
@@ -207,7 +238,7 @@ It does not copy code from any application, and nothing here depends on one.
 Applications adopt released versions and migrate their own annotations to the
 `//tribrach:` syntax as their own work.
 
-1. Core formats and exporters (manifest, vectors, stamps, claims).
+1. Core formats and exporters: manifest, vectors and stamps (done), claims.
 2. `tribrach-go`: `go vet` analyzer and vector replay.
 3. `tribrach-swift`: SwiftSyntax analyzer, SwiftPM plugins and vector replay.
 4. `tribrach-data`: data contracts and adapters, demonstrated on a neutral
