@@ -28,6 +28,7 @@ feature vector and on every older hidden vector.
 import argparse
 import datetime as dt
 import json
+import random
 import re
 import shutil
 import statistics
@@ -37,6 +38,7 @@ import time
 import uuid
 
 import bench
+import gen_inputs
 import gen_specs
 from bench import HERE, RESULTS, WORK, ENGINE, TOOLS, SPEC, DESCRIBE, plant, host_tree, host_decide
 
@@ -91,6 +93,17 @@ def feature_fails(tr, m, version):
     vec = feature_vectors(m, version)
     got = host_decide(sub(tr, m), m, [c["input"] for c in vec])
     return {c["id"] for g, c in zip(got, vec) if g != c["expected"]}
+
+
+CHECK_N = 1000
+
+
+def check_inputs(m):
+    """Inputs for `./why check`: the same generators as the hidden tests, from
+    a different seed, so the hidden cases themselves are never shown."""
+    gen, _ = (gen_inputs.FEATURE if MODE == "features" else gen_inputs.WIDE)[m]
+    r = random.Random(f"tribrach-why-bench-check-{MODE}-{m}")
+    return [{"id": f"chk-{k + 1:04d}", "input": gen(r)} for k in range(CHECK_N)]
 
 
 def tree(skip=None):
@@ -230,6 +243,9 @@ You also have `./why`, which answers questions from the specifications for any c
 Asking `./why` about the reported situation is usually the quickest way to see which conditions decide it.
 """
 
+CHECK_TOOL = """- `./why check <access|deploy>`: runs the code against the specification on 1,000 generated inputs and reports how many disagree, with the first disagreement's input, both answers and the specification's reasons (`--show N` for more). Use it to confirm a change agrees everywhere, not only on the reported situation.
+"""
+
 
 FEATURE_INTRO = """You maintain two services, both in this directory:
 
@@ -269,11 +285,14 @@ def ticket_text(t, arm="baseline"):
 
 
 def write_why(run_dir, version):
-    """The logic arm's ./why, pointed at each model's current spec version."""
+    """The logic arm's ./why, pointed at each model's current spec version
+    (with `./why check <model>` when the session has check/)."""
     w = run_dir / "why"
-    cases_for = "; ".join(f'{m}) n={model_name(m, version[m])} ;;' for m in MODELS)
+    cases_for = " ".join(f'{m}) n={model_name(m, version[m])} ;;' for m in MODELS)
     w.write_text('#!/bin/sh\nd="$(dirname "$0")"; m="$1"; shift\n'
+                 'chk=; if [ "$m" = check ] && [ -d "$d/check" ]; then chk=1; m="$1"; shift; fi\n'
                  f'case "$m" in {cases_for} *) n="$m" ;; esac\n'
+                 f'if [ -n "$chk" ]; then exec python3 "$d/why_check.py" "{ENGINE}" "$n" "$m" "$@"; fi\n'
                  'cases="$d/tests/$m.json"\n'
                  'if [ "$1" = "--cases" ]; then cases="$2"; shift 2; fi\n'
                  f'exec "{ENGINE}" "$n" "$cases" "$@"\n')
@@ -296,7 +315,12 @@ def build(arm, run_dir):
         cases = quiet(m) + [t["case"] for t in tickets() if "case" in t and t["model"] == m]
         (run_dir / "tests" / f"{m}.json").write_text(json.dumps(cases, indent=1) + "\n")
     shutil.copy(HERE / "run_tests.py", run_dir)
-    if arm == "logic":
+    if arm == "check":
+        (run_dir / "check").mkdir()
+        for m in MODELS:
+            (run_dir / "check" / f"{m}.json").write_text(json.dumps(check_inputs(m), indent=1) + "\n")
+        shutil.copy(HERE / "why_check.py", run_dir)
+    if arm in ("logic", "check"):
         write_why(run_dir, {m: 1 for m in MODELS})
 
 
@@ -374,7 +398,7 @@ def run_shift(arm, model, effort, rep, timeout):
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S")
     run_dir = WORK / "w" / uuid.uuid4().hex[:12] / "task"
     build(arm, run_dir)
-    tool = WHY_TOOL if arm == "logic" else ""
+    tool = {"logic": WHY_TOOL, "check": WHY_TOOL.replace("\nAsking", CHECK_TOOL + "\nAsking")}.get(arm, "")
     version = {m: 1 for m in MODELS}
     intro = FEATURE_INTRO if MODE == "features" else INTRO
     if arm == "prose":
@@ -396,7 +420,7 @@ def run_shift(arm, model, effort, rep, timeout):
                     fh.write(f"\n## Change: {t['id']}\n\n{change[0].upper() + change[1:]}\n")
             else:
                 (run_dir / "spec" / f"{SPEC[t['model']]}.lean").write_text(spec_text(t["model"], t["version"]))
-            if arm == "logic":
+            if arm in ("logic", "check"):
                 write_why(run_dir, version)
         prompt = (intro.format(access=DESCRIBE["access"], deploy=DESCRIBE["deploy"], tool=tool,
                                first=ticket_text(t, arm)) if k == 0 else ticket_text(t, arm))
@@ -494,35 +518,41 @@ def med(xs):
     return statistics.median(xs) if xs else None
 
 
-def cmd_summarize(_a):
-    runs = [json.loads(l) for p in sorted(RESULTS.glob("runs-shift-*.jsonl"))
+ARMS = ("prose", "baseline", "logic", "check")
+ARM_NAMES = {"prose": "Markdown spec", "baseline": "Lean spec", "logic": "Lean spec + ./why",
+             "check": "Lean spec + ./why + check"}
+
+
+def summarize_mode(mode):
+    global MODE
+    MODE = mode
+    suite = "shift" if mode == "bugs" else "features"
+    runs = [json.loads(l) for p in sorted(RESULTS.glob(f"runs-{suite}-*.jsonl"))
             for l in p.read_text().splitlines() if l.strip()]
+    if not runs:
+        return []
     order = [m for m in bench.MODEL_ORDER if any(r["model"] == m for r in runs)]
+    arms = [a for a in ARMS if any(r["arm"] == a for r in runs)]
     n = len(tickets())
-    out = ["# Shift results", "",
-           "Generated by `python shift.py summarize` from `results/runs-shift-*.jsonl`. "
-           f"One session handles {n} tickets in turn (shift.json). Medians over runs.", "",
-           "- **Correct**: tickets with the right verdict whose code change (or no change) was right, per run.",
-           "- **Context at end**: the size of the last request's prompt.",
-           "- **Tokens read**: the sum of every request's prompt size over the shift (what a long session pays for, cached or not).",
-           "",
+    title = "Bug shift" if mode == "bugs" else "Feature shift"
+    out = [f"## {title} ({SHIFTS[mode]}, {n} tickets)", "",
            "| Model | Arm | Runs | Correct tickets | All hidden pass | Output tokens | Context at end | Tokens read | Tool calls | ./why calls | Compactions | Wall time (s) | List-price cost |",
            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for m in order:
-        for arm in ("baseline", "logic"):
+        for arm in arms:
             rs = [r for r in runs if r["model"] == m and r["arm"] == arm]
             if not rs:
                 continue
             f = lambda k: med([r[k] for r in rs])
-            out.append(f"| {m} | {arm} | {len(rs)} | {f('correct')}/{n} | "
+            out.append(f"| {m} | {ARM_NAMES[arm]} | {len(rs)} | {f('correct')}/{n} | "
                        f"{sum(r['final_hidden_failing'] == 0 for r in rs)}/{len(rs)} | {f('output_tokens'):,.0f} | "
                        f"{f('context_end'):,.0f} | {f('context_sum'):,.0f} | {f('tool_calls'):.0f} | {f('why_calls'):.0f} | "
                        f"{f('compactions'):.0f} | {f('wall_s'):.0f} | ${f('cost_usd_list'):.2f} |")
-    out += ["", "## Context at the start of each ticket (median)", "",
-            "| Model | Arm | " + " | ".join(f"T{k + 1:02d}" for k in range(n)) + " |",
-            "| --- | --- | " + " | ".join("---:" for _ in range(n)) + " |"]
+    out += ["", "Context at the start of each ticket (median):", "",
+            "| Model | Arm | " + " | ".join(f"T{k + 1:02d}" for k in range(n)) + " | End |",
+            "| --- | --- | " + " | ".join("---:" for _ in range(n)) + " | ---: |"]
     for m in order:
-        for arm in ("baseline", "logic"):
+        for arm in arms:
             rs = [r for r in runs if r["model"] == m and r["arm"] == arm]
             if not rs:
                 continue
@@ -530,19 +560,34 @@ def cmd_summarize(_a):
             for k in range(n):
                 v = med([r["turns"][k]["context_start"] for r in rs if len(r["turns"]) > k])
                 cells.append(f"{v / 1000:.0f}k" if v else "-")
-            out.append(f"| {m} | {arm} | " + " | ".join(cells) + " |")
-    out += ["", "## Tickets (correct runs, baseline / logic)", "",
-            "| Ticket | Task | Verdict | " + " | ".join(order) + " |",
+            cells.append(f"{med([r['context_end'] for r in rs]) / 1000:.0f}k")
+            out.append(f"| {m} | {ARM_NAMES[arm]} | " + " | ".join(cells) + " |")
+    out += ["", "Correct runs per ticket (" + " / ".join(ARM_NAMES[a] for a in arms) + "):", "",
+            "| Ticket | Task | Kind | " + " | ".join(order) + " |",
             "| --- | --- | --- | " + " | ".join("---" for _ in order) + " |"]
     for k, t in enumerate(tickets()):
         cells = []
         for m in order:
             c = []
-            for arm in ("baseline", "logic"):
+            for arm in arms:
                 rs = [r for r in runs if r["model"] == m and r["arm"] == arm and len(r["turns"]) > k]
                 c.append(f"{sum(r['turns'][k]['correct'] for r in rs)}/{len(rs)}")
             cells.append(" / ".join(c))
         out.append(f"| {t['ticket']} | {t['id']} | {t['verdict']} | " + " | ".join(cells) + " |")
+    return out + [""]
+
+
+def cmd_summarize(_a):
+    out = ["# Long-session results", "",
+           "Generated by `python shift.py summarize` from `results/runs-shift-*.jsonl` (bug shift) and "
+           "`results/runs-features-*.jsonl` (feature shift). One resumed session handles every ticket in turn. "
+           "Medians over runs.", "",
+           "- **Correct tickets**: tickets whose verdict (bug shift) and code were right at the end of the ticket's turn.",
+           "- **All hidden pass**: runs whose final code agrees with the specification on every hidden vector.",
+           "- **Context at end**: the size of the last request's prompt.",
+           "- **Tokens read**: the sum of every request's prompt size over the session (what a long session pays for, cached or not).",
+           ""]
+    out += summarize_mode("bugs") + summarize_mode("features")
     (RESULTS / "SHIFT.md").write_text("\n".join(out) + "\n")
     print("\n".join(out))
     return 0
