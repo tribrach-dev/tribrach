@@ -1,0 +1,171 @@
+[
+ {
+  "id": "dep-feat-tier0",
+  "model": "deploy",
+  "version": 2,
+  "feature": "tier0",
+  "report": "Product change: we are adding tier 0 for our most critical services. A tier 0 change needs an independent owner approval and independent approvals from two different SREs; its perf check must pass; a hotfix may not skip the deploy window; and every tier 0 change that ships pages the on-call engineer. spec/Deploy.lean has been updated with the new rules. Implement it.",
+  "solution": [
+   {
+    "file": "deploy/checks.py",
+    "find": "    if tier == 1:\n        return REQUIRED",
+    "replace": "    if tier in (0, 1):\n        return REQUIRED"
+   },
+   {
+    "file": "deploy/approvals.py",
+    "find": "def owner_approved(approvals, change):",
+    "replace": "def two_sres_approved(approvals, change):\n    return len({a.by for a in approvals if a.role == SRE and a.by != change.author}) >= 2\n\n\ndef owner_approved(approvals, change):"
+   },
+   {
+    "file": "deploy/gate.py",
+    "find": "    if svc.tier == 1 and not approvals.owner_approved(req.approvals, ch):\n        out.append(\"tier 1 needs an owner approval\")\n",
+    "replace": "    if svc.tier == 1 and not approvals.owner_approved(req.approvals, ch):\n        out.append(\"tier 1 needs an owner approval\")\n    if svc.tier == 0 and not (approvals.owner_approved(req.approvals, ch)\n                              and approvals.two_sres_approved(req.approvals, ch)):\n        out.append(\"tier 0 needs an owner and two sre approvals\")\n"
+   },
+   {
+    "file": "deploy/gate.py",
+    "find": "    if ch.hotfix or (ch.migration and svc.tier == 1):",
+    "replace": "    if ch.hotfix or (ch.migration and svc.tier == 1) or svc.tier == 0:"
+   },
+   {
+    "file": "deploy/window.py",
+    "find": "    if req.change.hotfix and sre_ok and req.oncall_acked:",
+    "replace": "    if req.change.hotfix and sre_ok and req.oncall_acked and req.service.tier != 0:"
+   }
+  ]
+ },
+ {
+  "id": "acc-feat-tempgrant",
+  "model": "access",
+  "version": 2,
+  "feature": "tempgrant",
+  "report": "Product change: temporary grants. `person.temp_grants` (optional) lists {\"zone\", \"days_left\"} grants. An employee or contractor may enter a zone they hold a grant for while its days_left is above 0, on top of what their role allows. Visitors' grants count for nothing. Training, hours and the second factor apply as usual. spec/Access.lean has been updated with the new rules. Implement it.",
+  "solution": [
+   {
+    "file": "access/model.py",
+    "find": "    escort: Optional[Escort]\n\n    @classmethod",
+    "replace": "    escort: Optional[Escort]\n    temp_grants: tuple = ()\n\n    @classmethod"
+   },
+   {
+    "file": "access/model.py",
+    "find": "                   escort=Escort.from_json(j.get(\"escort\")))",
+    "replace": "                   escort=Escort.from_json(j.get(\"escort\")),\n                   temp_grants=tuple((g[\"zone\"], int(g[\"days_left\"])) for g in (j.get(\"temp_grants\") or [])))"
+   },
+   {
+    "file": "access/zones.py",
+    "find": "    if credentials.badge_active(person):\n        zones.add(LOBBY)\n    return zones",
+    "replace": "    if credentials.badge_active(person):\n        zones.add(LOBBY)\n    if person.kind != VISITOR:\n        zones |= {z for z, days in person.temp_grants if days > 0}\n    return zones"
+   }
+  ]
+ },
+ {
+  "id": "dep-feat-depfreeze",
+  "model": "deploy",
+  "version": 3,
+  "feature": "depfreeze",
+  "report": "Product change: service freezes. `change.depends_on` lists the services the change depends on and `calendar.frozen` lists services that are frozen today (both optional, empty when missing). A change whose own service or any dependency is frozen may not ship inside the deploy window; a hotfix still may. spec/Deploy.lean has been updated with the new rules. Implement it.",
+  "solution": [
+   {
+    "file": "deploy/model.py",
+    "find": "    hotfix: bool = False\n\n    @classmethod",
+    "replace": "    hotfix: bool = False\n    depends_on: tuple = ()\n\n    @classmethod"
+   },
+   {
+    "file": "deploy/model.py",
+    "find": "                   migration=bool(j.get(\"migration\")), hotfix=bool(j.get(\"hotfix\")))",
+    "replace": "                   migration=bool(j.get(\"migration\")), hotfix=bool(j.get(\"hotfix\")),\n                   depends_on=tuple(j.get(\"depends_on\") or ()))"
+   },
+   {
+    "file": "deploy/model.py",
+    "find": "    freeze: bool = False\n",
+    "replace": "    freeze: bool = False\n    frozen: tuple = ()\n"
+   },
+   {
+    "file": "deploy/model.py",
+    "find": "                   calendar=Calendar(cal[\"day\"], int(cal[\"hour\"]), bool(cal.get(\"freeze\"))),",
+    "replace": "                   calendar=Calendar(cal[\"day\"], int(cal[\"hour\"]), bool(cal.get(\"freeze\")),\n                                     tuple(cal.get(\"frozen\") or ())),"
+   },
+   {
+    "file": "deploy/window.py",
+    "find": "    if in_window(cal) and not cal.freeze:",
+    "replace": "    hit = req.change.service in cal.frozen or any(d in cal.frozen for d in req.change.depends_on)\n    if in_window(cal) and not cal.freeze and not hit:"
+   }
+  ]
+ },
+ {
+  "id": "acc-feat-holiday",
+  "model": "access",
+  "version": 3,
+  "feature": "holiday",
+  "report": "Product change: holiday cover. On a holiday, facilities staff may use any door they are cleared for from 7 to 19. It is still not business hours, so restricted zones still ask for a second factor. spec/Access.lean has been updated with the new rules. Implement it.",
+  "solution": [
+   {
+    "file": "access/hours.py",
+    "find": "    if person.role == \"security\":\n        return True",
+    "replace": "    if person.role == \"security\":\n        return True\n    start, end = policy.business_span\n    if now.holiday and person.role == \"facilities\" and start <= now.hour < end:\n        return True"
+   }
+  ]
+ },
+ {
+  "id": "dep-feat-sensitive",
+  "model": "deploy",
+  "version": 4,
+  "feature": "sensitive",
+  "report": "Product change: sensitive changes. `change.touches` lists the paths a change edits (optional). A change that touches a path under auth/ or crypto/ is sensitive: it needs an independent approval with role security, and its security scan must pass (tier 3 may not skip it). spec/Deploy.lean has been updated with the new rules. Implement it.",
+  "solution": [
+   {
+    "file": "deploy/model.py",
+    "find": "    depends_on: tuple = ()\n\n    @classmethod",
+    "replace": "    depends_on: tuple = ()\n    touches: tuple = ()\n\n    @property\n    def sensitive(self):\n        return any(t.startswith((\"auth/\", \"crypto/\")) for t in self.touches)\n\n    @classmethod"
+   },
+   {
+    "file": "deploy/model.py",
+    "find": "                   depends_on=tuple(j.get(\"depends_on\") or ()))",
+    "replace": "                   depends_on=tuple(j.get(\"depends_on\") or ()),\n                   touches=tuple(j.get(\"touches\") or ()))"
+   },
+   {
+    "file": "deploy/checks.py",
+    "find": "def security_ok(results, tier):\n    s = results[\"security\"]\n    if s == PASS:\n        return True\n    return s == SKIPPED and tier == 3",
+    "replace": "def security_ok(results, tier, sensitive=False):\n    s = results[\"security\"]\n    if s == PASS:\n        return True\n    return s == SKIPPED and tier == 3 and not sensitive"
+   },
+   {
+    "file": "deploy/checks.py",
+    "find": "def all_green(results, tier):\n    core = results[\"unit\"] == PASS and results[\"integration\"] == PASS\n    return core and security_ok(results, tier) and perf_ok(results, tier)",
+    "replace": "def all_green(results, tier, sensitive=False):\n    core = results[\"unit\"] == PASS and results[\"integration\"] == PASS\n    return core and security_ok(results, tier, sensitive) and perf_ok(results, tier)"
+   },
+   {
+    "file": "deploy/gate.py",
+    "find": "    if not checks.all_green(req.checks, svc.tier):",
+    "replace": "    if not checks.all_green(req.checks, svc.tier, ch.sensitive):"
+   },
+   {
+    "file": "deploy/gate.py",
+    "find": "    sre_ok = approvals.sre_approved(req.approvals, ch)\n",
+    "replace": "    if ch.sensitive and not approvals.has_role(approvals.independent(req.approvals, ch), approvals.SECURITY):\n        out.append(\"sensitive change needs a security approval\")\n    sre_ok = approvals.sre_approved(req.approvals, ch)\n"
+   }
+  ]
+ },
+ {
+  "id": "acc-feat-quarantine",
+  "model": "access",
+  "version": 4,
+  "feature": "quarantine",
+  "report": "Product change: quarantine. `site.quarantine` (optional) lists quarantined zones. Nobody may go through a door into a quarantined zone except emergency responders (with a valid credential), and every tap at such a door alerts security. Fire exits still open during a fire alarm. spec/Access.lean has been updated with the new rules. Implement it.",
+  "solution": [
+   {
+    "file": "access/model.py",
+    "find": "    fire_alarm: bool = False\n\n    @classmethod\n    def from_json(cls, j):\n        return cls(lockdown=bool(j.get(\"lockdown\")), fire_alarm=bool(j.get(\"fire_alarm\")))",
+    "replace": "    fire_alarm: bool = False\n    quarantine: frozenset = frozenset()\n\n    @classmethod\n    def from_json(cls, j):\n        return cls(lockdown=bool(j.get(\"lockdown\")), fire_alarm=bool(j.get(\"fire_alarm\")),\n                   quarantine=frozenset(j.get(\"quarantine\") or ()))"
+   },
+   {
+    "file": "access/decision.py",
+    "find": "    if site.lockdown:\n        return (True, \"responder\") if p.responder else (False, \"lockdown\")",
+    "replace": "    if site.lockdown or d.zone in site.quarantine:\n        return (True, \"responder\") if p.responder else (False, \"lockdown or quarantine\")"
+   },
+   {
+    "file": "access/alerts.py",
+    "find": "        out.append(Alert(p.id, d.id, \"visitor without escort\"))\n    return out",
+    "replace": "        out.append(Alert(p.id, d.id, \"visitor without escort\"))\n    if d.zone in tap.site.quarantine:\n        out.append(Alert(p.id, d.id, \"quarantined zone\"))\n    return out"
+   }
+  ]
+ }
+]

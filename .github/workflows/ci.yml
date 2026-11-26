@@ -37,6 +37,9 @@ jobs:
             diff -u "vectors/$f.json" "/tmp/$f.json"
           done
           python3 bench.py check
+          python3 gen_specs.py --check
+          python3 shift.py check
+          python3 shift.py --shift features check
       - name: No sorry or new axioms
         run: |
           if grep -rnE '\bsorry\b|^\s*axiom\s' --include='*.lean' Tribrach examples bench; then

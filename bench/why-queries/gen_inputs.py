@@ -79,6 +79,7 @@ def main():
     out.mkdir(exist_ok=True)
     hard_inputs(out)
     hidden_inputs(out)
+    feature_inputs(out)
     for name, gen in GEN.items():
         r = random.Random(f"tribrach-why-bench-{name}")
         inputs = [gen(r) for _ in range(N)] + EDGES[name]
@@ -171,6 +172,71 @@ def deploy_wide(r):
     return x
 
 
+def access_feature(r):
+    """access_wide() plus the fields the feature versions add (temporary
+    grants, quarantine), for the feature shift's hidden vectors."""
+    x = access_wide(r)
+    zones = ["lobby", "office", "lab", "server", "loading", "roof"]
+    p, door = x["person"], x["door"]
+    # Mostly taps that could succeed, so the new rules decide something.
+    if r.random() < 0.8:
+        p["badge"] = "active"
+        if p["kind"] == "contractor":
+            p["contract_days_left"] = r.choice([3, 9, 30])
+        need = {"lab": "lab_safety", "server": "server_access", "roof": "fall_protection"}.get(door["zone"])
+        if need and r.random() < 0.7:
+            p["training"] = sorted(set(p["training"]) | {need})
+    if r.random() < 0.5:
+        p["temp_grants"] = [{"zone": door["zone"] if r.random() < 0.6 else r.choice(zones),
+                             "days_left": r.choice([-2, 0, 1, 5, 30])}
+                            for _ in range(r.randint(1, 2))]
+    if r.random() < 0.35:
+        x["site"]["quarantine"] = sorted(set(r.sample(zones, r.randint(1, 2)) + [x["door"]["zone"]] * (r.random() < 0.6)))
+    if r.random() < 0.3:
+        x["now"]["holiday"] = True
+    if r.random() < 0.25 and p["kind"] != "visitor":
+        p["role"] = "facilities"
+    return x
+
+
+def deploy_feature(r):
+    """deploy_wide() plus the fields the feature versions add (tier 0,
+    dependencies and service freezes, touched paths)."""
+    x = deploy_wide(r)
+    services = ["payments", "search", "docs", "auth", "feed"]
+    if r.random() < 0.35:
+        x["service"]["tier"] = 0
+    if r.random() < 0.5:
+        x["change"]["depends_on"] = sorted(r.sample(services, r.randint(1, 2)))
+    if r.random() < 0.4:
+        x["calendar"]["frozen"] = sorted(r.sample(services, r.randint(1, 2)))
+    if r.random() < 0.5:
+        x["change"]["touches"] = sorted(r.sample(["auth/session.py", "crypto/keys.py", "api/handlers.py",
+                                                  "docs/index.md", "authz/README.md", "lib/crypto_utils.py"],
+                                                 r.randint(1, 2)))
+    for _ in range(r.choice([0, 0, 1, 2])):
+        x["approvals"].append({"by": "u" + str(r.randint(1, 9)), "role": r.choice(["sre", "security"])})
+    # Mostly changes that could ship, so the new rules decide something.
+    if r.random() < 0.7:
+        x["checks"] = {k: "pass" for k in x["checks"]}
+        x["approvals"].append({"by": "u" + str(r.randint(6, 9)), "role": "owner"})
+        x["calendar"]["freeze"] = False
+        if r.random() < 0.7:
+            x["calendar"]["day"], x["calendar"]["hour"] = r.choice(["mon", "tue", "wed", "thu"]), r.choice([10, 13, 15])
+        if x["service"]["tier"] == 0 and r.random() < 0.7:
+            x["approvals"] += [{"by": "u7", "role": "sre"}, {"by": "u8", "role": "sre"}]
+            if r.random() < 0.3:
+                x["change"]["hotfix"], x["oncall"]["acked"] = True, True
+                x["calendar"]["hour"] = r.choice([7, 18, 21])
+        if r.random() < 0.3:
+            x["checks"][r.choice(["perf", "security"])] = r.choice(["skipped", "fail"])
+        if r.random() < 0.15:
+            x["service"]["tier"], x["checks"]["security"] = 3, "skipped"
+        if r.random() < 0.4:
+            x["approvals"].append({"by": "u9", "role": "security"})
+    return x
+
+
 HARD = {"access": (access, "acc"), "deploy": (deploy, "dep")}
 WIDE = {"access": (access_wide, "hacc"), "deploy": (deploy_wide, "hdep")}
 WIDE_N = 800
@@ -182,6 +248,18 @@ def hard_inputs(out):
         r = random.Random(f"tribrach-why-bench-hard-{name}")
         cases = [{"id": f"{prefix}-{k + 1:02d}", "input": gen(r)} for k in range(HARD_N)]
         (out / f"{name}.json").write_text(json.dumps(cases, indent=1) + "\n")
+
+
+FEATURE = {"access": (access_feature, "facc"), "deploy": (deploy_feature, "fdep")}
+FEATURE_N = 2000
+
+
+def feature_inputs(out):
+    """Inputs for the feature shift's hidden vectors."""
+    for name, (gen, prefix) in FEATURE.items():
+        r = random.Random(f"tribrach-why-bench-feature-{name}")
+        cases = [{"id": f"{prefix}-{k + 1:04d}", "input": gen(r)} for k in range(FEATURE_N)]
+        (out / f"feature-{name}.json").write_text(json.dumps(cases, indent=1) + "\n")
 
 
 def hidden_inputs(out):

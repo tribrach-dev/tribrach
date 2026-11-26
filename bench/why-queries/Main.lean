@@ -3,11 +3,18 @@ import Bench.Library
 import Bench.Notify
 import Bench.Access
 import Bench.Deploy
+import Bench.Access2
+import Bench.Access3
+import Bench.Access4
+import Bench.Deploy2
+import Bench.Deploy3
+import Bench.Deploy4
 import Tribrach.WhyNot
 
 open Lean Tribrach.Logic Bench
 
-def models : List BenchModel := [Irrigation.model, Library.model, Notify.model, Access.model, Deploy.model]
+def models : List BenchModel := [Irrigation.model, Library.model, Notify.model, Access.model, Deploy.model,
+  Access2.model, Access3.model, Access4.model, Deploy2.model, Deploy3.model, Deploy4.model]
 
 def usage : String := "usage:
   why expect <model> <inputs.json>               print test vectors (expected decisions) as JSON

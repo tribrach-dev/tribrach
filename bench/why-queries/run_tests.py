@@ -1,7 +1,8 @@
 """Replay the test vectors against the host code and report mismatches.
 
-usage: python run_tests.py              (all models in tests/)
-       python run_tests.py FILE.json    (your own cases, for the model in tests/)
+usage: python run_tests.py                    (all models in tests/)
+       python run_tests.py FILE.json          (your own cases, for the model in tests/)
+       python run_tests.py MODEL FILE.json    (when tests/ holds several models)
 
 A case without expected decisions is only run, and what the code decides
 is printed.
@@ -23,8 +24,11 @@ def main():
     failed = 0
     total = 0
     models = sorted(v.stem for v in (HERE / "tests").glob("*.json"))
-    if len(sys.argv) > 1:
-        files = [(models[0], Path(a)) for a in sys.argv[1:]]
+    args = sys.argv[1:]
+    if args and args[0] in models:
+        files = [(args[0], Path(a)) for a in args[1:]]
+    elif args:
+        files = [(models[0], Path(a)) for a in args]
     else:
         files = [(m, HERE / "tests" / f"{m}.json") for m in models]
     for name, vec in files:

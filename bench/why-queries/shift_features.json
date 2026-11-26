@@ -1,0 +1,11 @@
+{
+ "about": "Product changes, one per ticket, to the same resumed session. Before each ticket the model's spec is replaced by the ticket's version (features.json).",
+ "order": [
+  "dep-feat-tier0",
+  "acc-feat-tempgrant",
+  "dep-feat-depfreeze",
+  "acc-feat-holiday",
+  "dep-feat-sensitive",
+  "acc-feat-quarantine"
+ ]
+}
