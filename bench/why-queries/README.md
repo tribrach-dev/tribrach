@@ -52,8 +52,87 @@ Findings:
 The earlier single-run figure (about 1,500 tokens of reading against about
 400 with a why-query) is not reproduced: the saving in context is real and
 repeatable, but it is a fifth to two fifths, not three quarters. Because
-context carries forward, the saving should matter more in long sessions
-that handle many tasks; measuring that is the next step.
+context carries forward, the saving was expected to matter more in long
+sessions; the [long sessions](#long-sessions) below test that, and it
+doesn't.
+
+## Long sessions
+
+`shift.py` runs one resumed session through a list of tickets, with the
+hidden vectors checked after every ticket. Full numbers are in
+[results/SHIFT.md](results/SHIFT.md). Sonnet 5.5, 5 runs per arm, medians:
+
+- **Bug shift** (12 tickets on both services at once, all faults planted
+  together, 5 of them reports where the user is wrong).
+- **Feature shift** (6 product changes, three per service, each adding
+  fields and rules that interact with the existing ones). Before each
+  ticket the specification moves to the next version. Hidden vectors come
+  from 2,000 generated inputs per service.
+
+Four arms, all given the same ticket text:
+
+- **Markdown spec**: a maintainer-style specification in Markdown
+  (`spec_prose/`), with each feature's ticket text appended as a
+  "Change" section, which is how a prose spec usually grows.
+- **Lean spec**: the Lean specification, no tools.
+- **Lean spec + ./why**: as in the single-task suites.
+- **Lean spec + ./why + check**: also `./why check <model>`, which runs the
+  code against the specification on 1,000 generated inputs (from a seed of
+  its own, so never the hidden cases) and prints the first disagreement with
+  its why tree ([why_check.py](why_check.py)).
+
+| Shift | Arm | Correct tickets | All hidden pass | Context at end | Tokens read | Cost |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| bugs | Markdown spec | 12/12 | 5/5 | 43,720 | 1.70M | $0.34 |
+| bugs | Lean spec | 12/12 | 5/5 | 55,761 | 2.42M | $0.45 |
+| bugs | Lean + ./why | 12/12 | 5/5 | 59,188 | 2.88M | $0.51 |
+| bugs | Lean + ./why + check | 12/12 | 5/5 | 60,957 | 3.23M | $0.57 |
+| features | Markdown spec | 3/6 | 0/5 | 52,481 | 1.59M | $0.40 |
+| features | Lean spec | 6/6 | 5/5 | 65,765 | 2.22M | $0.49 |
+| features | Lean + ./why | 6/6 | 5/5 | 71,224 | 3.12M | $0.61 |
+| features | Lean + ./why + check | 6/6 | 5/5 | 64,435 | 2.66M | $0.53 |
+
+"Tokens read" is the sum of every request's prompt over the session.
+
+Findings:
+
+- **The Lean specification is what separates the arms, on new features.**
+  With the Markdown spec, the same two features failed in all 5 runs, and
+  no run ended with every hidden vector passing. With either Lean arm, every
+  run got all 6 features right. Both failures are interactions the prose
+  leaves open:
+  - *Quarantine* (51 vectors): "nobody may go through except emergency
+    responders" was read as "responders aren't blocked", so responders
+    still had to pass training and hours. The Lean rule lets a responder in,
+    as in a lockdown.
+  - *Service freeze* with tier 0 (3 vectors): the freeze ticket says "a
+    hotfix still may", and the tier 0 ticket says a tier 0 hotfix may not
+    skip the window. The agents resolved the two differently from the Lean.
+
+  The *sensitive changes* ticket is also marked wrong in every run, because
+  grading is strict and the vectors are cumulative. Replaying run 1's edits
+  shows that ticket's own change was right, and its 2 failing vectors were
+  left over from the freeze ticket. Grading now also reports carried-over
+  failures (`carried_over`, `own_ok`). The Markdown specs and the tickets
+  were written by the same author as the Lean, so a looser prose spec than
+  a careful team would write is possible. That isn't ruled out yet.
+- **On bugs, the Markdown spec is as accurate and cheaper**: 12/12 in every
+  run, with 30% fewer tokens read than the Lean arm, because the Markdown is
+  shorter.
+- **The tools cost more than they return in long sessions.** `./why` added
+  19% to tokens read on bugs and 40% on features. Its why-trees are added
+  on top of reading the code, and every later request carries them. `./why
+  check` was used about once per ticket, to confirm a change. It cost less
+  than the why-queries on features (2.66M vs 3.12M), but it still came out
+  above plain Lean. With every Lean arm at 100%, neither tool had a mistake
+  to catch here.
+- **The single-task saving doesn't compound.** There, `./why` replaced one
+  large "read the whole specification and code" step. In a session that step
+  happens once, early, and then everything is in context.
+
+An earlier version of the feature shift had a broken `./why` wrapper (a
+shell syntax error), so its logic-arm runs are kept apart in
+`results/pilot/features-logic-broken-why-sonnet.jsonl` and not counted.
 
 ## Tasks
 
@@ -210,6 +289,9 @@ python3 bench.py check
 python3 bench.py run --suite large --model claude-sonnet-5-5 --reps 3
 python3 bench.py run --suite hard --model claude-sonnet-5-5 --reps 5   # or --suite fix
 python3 bench.py summarize                     # writes results/RESULTS.md
+python3 shift.py run --model claude-sonnet-5-5 --arms prose,baseline,logic,check --reps 5
+python3 shift.py --shift features run --model claude-sonnet-5-5 --arms prose,baseline,logic,check --reps 5
+python3 shift.py summarize                     # writes results/SHIFT.md
 ```
 
 `bench.py run` uses whatever account the local `claude` command is signed
@@ -222,6 +304,9 @@ follow it back to the answer key; set `WHY_BENCH_ENGINE` to put it elsewhere.
   suite is still small next to a real codebase.
 - Facts come from the specification's `encode` step. Host-emitted facts
   (the issue's later step) aren't covered yet.
+- The long sessions use one model (Sonnet 5.5) and two services; the
+  Markdown specs were written by the benchmark's author, not by an
+  independent team.
 - Only Claude Code sessions are measured; other agents may use the tool
   differently.
 - A session can read anything on the machine it runs on. Prompts tell it to

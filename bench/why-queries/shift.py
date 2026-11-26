@@ -326,9 +326,13 @@ def build(arm, run_dir):
 
 # ---------------------------------------------------------------- running
 
+WHY_RE = re.compile(r"(?:^|[\s/;&|(`$])\./why\b|/opt/why-bench/why\b|/task/why\b")
+CHECK_RE = re.compile(r"\bwhy check\b")
+
+
 def turn_stats(lines, model):
     """Per-request context sizes and the turn's result event."""
-    ctx, tools, steps, result, compacted, session = [], 0, [], None, 0, None
+    ctx, tools, steps, cmds, result, compacted, session = [], 0, [], [], None, 0, None
     for raw in lines:
         try:
             ev = json.loads(raw)
@@ -346,6 +350,7 @@ def turn_stats(lines, model):
                     tools += 1
                     inp = b.get("input", {})
                     steps.append(f"{b['name']}: {str(inp.get('command') or inp.get('file_path') or inp.get('pattern') or '')[:160]}")
+                    cmds.append(str(inp.get("command") or ""))
         elif ev.get("type") == "result":
             result = ev
     mu = (result or {}).get("modelUsage", {})
@@ -353,7 +358,8 @@ def turn_stats(lines, model):
     return {"session_id": session, "requests": len(ctx), "context_start": ctx[0] if ctx else None,
             "context_end": ctx[-1] if ctx else None, "context_sum": sum(ctx),
             "output_tokens": out_tokens, "tool_calls": tools, "steps": steps,
-            "why_calls": sum(1 for x in steps if re.search(r"(^|[\s/;&|])\./why\b|/why ", x)),
+            "why_calls": sum(len(WHY_RE.findall(x)) for x in cmds),
+            "check_calls": sum(len(CHECK_RE.findall(x)) for x in cmds),
             "compactions": compacted, "cost_usd_list": (result or {}).get("total_cost_usd"),
             "duration_ms": (result or {}).get("duration_ms"), "is_error": (result or {}).get("is_error", True)}
 
@@ -489,6 +495,7 @@ def run_shift(arm, model, effort, rep, timeout):
            "context_sum": sum(x["context_sum"] for x in turns),
            "tool_calls": sum(x["tool_calls"] for x in turns),
            "why_calls": sum(x["why_calls"] for x in turns),
+           "check_calls": sum(x.get("check_calls", 0) for x in turns),
            "compactions": sum(x["compactions"] for x in turns),
            "cost_usd_list": round(sum(x["cost_usd_list"] or 0 for x in turns), 4),
            "turns": turns}
@@ -543,8 +550,8 @@ def summarize_mode(mode):
     n = len(tickets())
     title = "Bug shift" if mode == "bugs" else "Feature shift"
     out = [f"## {title} ({SHIFTS[mode]}, {n} tickets)", "",
-           "| Model | Arm | Runs | Correct tickets | All hidden pass | Output tokens | Context at end | Tokens read | Tool calls | ./why calls | Compactions | Wall time (s) | List-price cost |",
-           "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
+           "| Model | Arm | Runs | Correct tickets | All hidden pass | Output tokens | Context at end | Tokens read | Tool calls | ./why commands | of which check | Compactions | Wall time (s) | List-price cost |",
+           "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for m in order:
         for arm in arms:
             rs = [r for r in runs if r["model"] == m and r["arm"] == arm]
@@ -553,7 +560,7 @@ def summarize_mode(mode):
             f = lambda k: med([r[k] for r in rs])
             out.append(f"| {m} | {ARM_NAMES[arm]} | {len(rs)} | {f('correct')}/{n} | "
                        f"{sum(r['final_hidden_failing'] == 0 for r in rs)}/{len(rs)} | {f('output_tokens'):,.0f} | "
-                       f"{f('context_end'):,.0f} | {f('context_sum'):,.0f} | {f('tool_calls'):.0f} | {f('why_calls'):.0f} | "
+                       f"{f('context_end'):,.0f} | {f('context_sum'):,.0f} | {f('tool_calls'):.0f} | {f('why_calls'):.0f} | {med([r.get('check_calls', 0) for r in rs]):.0f} | "
                        f"{f('compactions'):.0f} | {f('wall_s'):.0f} | ${f('cost_usd_list'):.2f} |")
     out += ["", "Context at the start of each ticket (median):", "",
             "| Model | Arm | " + " | ".join(f"T{k + 1:02d}" for k in range(n)) + " | End |",
