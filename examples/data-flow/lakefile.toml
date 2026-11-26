@@ -1,0 +1,13 @@
+name = "data-flow"
+defaultTargets = ["DataFlow", "why"]
+
+[[require]]
+name = "tribrach"
+path = "../.."
+
+[[lean_lib]]
+name = "DataFlow"
+
+[[lean_exe]]
+name = "why"
+root = "Main"
