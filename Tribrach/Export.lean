@@ -49,7 +49,7 @@ namespace Export
 
 /-- A 64-bit value as 16 lowercase hex digits. -/
 def hex64 (h : UInt64) : String :=
-  let s := String.mk (Nat.toDigits 16 h.toNat)
+  let s := String.ofList (Nat.toDigits 16 h.toNat)
   "".pushn '0' (16 - s.length) ++ s
 
 /-- Whether a string is a well-formed stamp: 16 lowercase hex digits. -/
