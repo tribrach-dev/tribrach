@@ -1,0 +1,17 @@
+{
+ "about": "One on-call shift: every ticket goes to the same resumed session, in this order. Ids name tasks in tasks_fix.json (vague report, no case) or tasks_hard.json (report about one test case).",
+ "order": [
+  "dep-fix-budget-boundary",
+  "acc-fix-holiday",
+  "dep-hotfix-ack",
+  "acc-fix-lockdown-responder",
+  "dep-fix-migration",
+  "acc-roof-training",
+  "dep-fix-self-approval",
+  "acc-fix-afterhours",
+  "dep-fix-closing-time",
+  "acc-lockdown",
+  "acc-fix-expiry-notice",
+  "dep-fix-double-rollout"
+ ]
+}

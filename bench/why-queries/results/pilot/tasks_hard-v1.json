@@ -1,0 +1,469 @@
+[
+ {
+  "id": "acc-contract-days",
+  "model": "access",
+  "verdict": "bug",
+  "category": "wrong comparison",
+  "report": "Contractor c3, whose contract ends in 5 days, was refused at the office door on Tuesday at 10:00. Their badge is active.",
+  "case": {
+   "id": "acc-r1",
+   "input": {
+    "now": {
+     "day": "tue",
+     "hour": 10,
+     "holiday": false
+    },
+    "site": {
+     "lockdown": false,
+     "fire_alarm": false
+    },
+    "person": {
+     "id": "c3",
+     "kind": "contractor",
+     "role": "engineer",
+     "badge": "active",
+     "contract_days_left": 5,
+     "training": [],
+     "responder": false,
+     "escort": null
+    },
+    "door": {
+     "id": "d-office-2",
+     "zone": "office",
+     "after_hours": false,
+     "egress": false
+    }
+   }
+  },
+  "file": "access/contracts.py",
+  "find": "    return days is not None and days > 0\n\n\ndef has_ended",
+  "replace": "    return days is not None and days > 7\n\n\ndef has_ended",
+  "line_of": "    return days is not None and days > 7",
+  "cause_pattern": "is_running|> ?7|\\b7\\b|> ?0|more than 0|greater than (0|zero)"
+ },
+ {
+  "id": "acc-visitor-server",
+  "model": "access",
+  "verdict": "bug",
+  "category": "dropped condition",
+  "report": "Security review: visitor v2 got through the server-room door on Wednesday at 11:00 together with their facilities escort f2. Is that allowed?",
+  "case": {
+   "id": "acc-r2",
+   "input": {
+    "now": {
+     "day": "wed",
+     "hour": 11,
+     "holiday": false
+    },
+    "site": {
+     "lockdown": false,
+     "fire_alarm": false
+    },
+    "person": {
+     "id": "v2",
+     "kind": "visitor",
+     "role": "none",
+     "badge": "active",
+     "contract_days_left": null,
+     "training": [],
+     "responder": false,
+     "escort": {
+      "id": "f2",
+      "role": "facilities",
+      "on_site": true,
+      "training": [
+       "server_access"
+      ]
+     }
+    },
+    "door": {
+     "id": "d-server-1",
+     "zone": "server",
+     "after_hours": false,
+     "egress": false
+    }
+   }
+  },
+  "file": "access/zones.py",
+  "find": "        zones |= {z for z in borrowed if z not in policy.no_visitor_zones}",
+  "replace": "        zones |= borrowed",
+  "cause_pattern": "no.?visitor|visitors (may|can|are) not|not allowed for visitors|visitor.{0,40}(server|restricted)"
+ },
+ {
+  "id": "acc-friday",
+  "model": "access",
+  "verdict": "bug",
+  "category": "encoding mismatch",
+  "report": "Lab tech l4 was refused at the lab door on Friday at 10:00. The same tap works on Thursday.",
+  "case": {
+   "id": "acc-r3",
+   "input": {
+    "now": {
+     "day": "fri",
+     "hour": 10,
+     "holiday": false
+    },
+    "site": {
+     "lockdown": false,
+     "fire_alarm": false
+    },
+    "person": {
+     "id": "l4",
+     "kind": "employee",
+     "role": "lab_tech",
+     "badge": "active",
+     "contract_days_left": null,
+     "training": [
+      "lab_safety"
+     ],
+     "responder": false,
+     "escort": null
+    },
+    "door": {
+     "id": "d-lab-1",
+     "zone": "lab",
+     "after_hours": false,
+     "egress": false
+    }
+   }
+  },
+  "file": "access/policy.py",
+  "find": "            out.extend(DAYS[i:j + 1])",
+  "replace": "            out.extend(DAYS[i:j])",
+  "cause_pattern": "expand_days|fri|j ?\\+ ?1|exclusive|inclusive|range"
+ },
+ {
+  "id": "acc-roof-training",
+  "model": "access",
+  "verdict": "no_bug",
+  "category": "user was wrong",
+  "report": "Facilities engineer f1 couldn't get through the roof door on Tuesday at 10:00. Facilities staff are supposed to have roof access.",
+  "case": {
+   "id": "acc-r4",
+   "input": {
+    "now": {
+     "day": "tue",
+     "hour": 10,
+     "holiday": false
+    },
+    "site": {
+     "lockdown": false,
+     "fire_alarm": false
+    },
+    "person": {
+     "id": "f1",
+     "kind": "employee",
+     "role": "facilities",
+     "badge": "active",
+     "contract_days_left": null,
+     "training": [
+      "server_access"
+     ],
+     "responder": false,
+     "escort": null
+    },
+    "door": {
+     "id": "d-roof-1",
+     "zone": "roof",
+     "after_hours": false,
+     "egress": false
+    }
+   }
+  },
+  "cause_pattern": "fall.?protection|training|trained"
+ },
+ {
+  "id": "acc-lockdown",
+  "model": "access",
+  "verdict": "no_bug",
+  "category": "user was wrong",
+  "report": "During Monday's lockdown drill at 12:00, security officer s1 couldn't open the office door. Security staff can open every door at any hour.",
+  "case": {
+   "id": "acc-r5",
+   "input": {
+    "now": {
+     "day": "mon",
+     "hour": 12,
+     "holiday": false
+    },
+    "site": {
+     "lockdown": true,
+     "fire_alarm": false
+    },
+    "person": {
+     "id": "s1",
+     "kind": "employee",
+     "role": "security",
+     "badge": "active",
+     "contract_days_left": null,
+     "training": [],
+     "responder": false,
+     "escort": null
+    },
+    "door": {
+     "id": "d-office-1",
+     "zone": "office",
+     "after_hours": false,
+     "egress": false
+    }
+   }
+  },
+  "cause_pattern": "responder"
+ },
+ {
+  "id": "dep-self-approval",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "dropped condition",
+  "report": "Change c741 to feed (high risk, written by u1) went out to the canary on Thursday at 11:00 with approvals from u1 (owner) and u2 (peer). Shouldn't it have been held?",
+  "case": {
+   "id": "dep-r1",
+   "input": {
+    "change": {
+     "id": "c741",
+     "service": "feed",
+     "author": "u1",
+     "risk": "high",
+     "migration": false,
+     "hotfix": false
+    },
+    "service": {
+     "tier": 2,
+     "error_budget_pct": 40,
+     "canary": true
+    },
+    "checks": {
+     "unit": "pass",
+     "integration": "pass",
+     "security": "pass",
+     "perf": "pass"
+    },
+    "approvals": [
+     {
+      "by": "u1",
+      "role": "owner"
+     },
+     {
+      "by": "u2",
+      "role": "peer"
+     }
+    ],
+    "calendar": {
+     "day": "thu",
+     "hour": 11,
+     "freeze": false
+    },
+    "oncall": {
+     "acked": true
+    }
+   }
+  },
+  "file": "deploy/approvals.py",
+  "find": "    return [a for a in approvals if a.by != change.author]",
+  "replace": "    return list(approvals)",
+  "cause_pattern": "author|self|own approval|independent"
+ },
+ {
+  "id": "dep-budget",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "stale constant",
+  "report": "payments shipped as a full deploy on Wednesday at 13:00 with only 15% of its error budget left. We expected a canary.",
+  "case": {
+   "id": "dep-r2",
+   "input": {
+    "change": {
+     "id": "c552",
+     "service": "payments",
+     "author": "u1",
+     "risk": "medium",
+     "migration": false,
+     "hotfix": false
+    },
+    "service": {
+     "tier": 2,
+     "error_budget_pct": 15,
+     "canary": true
+    },
+    "checks": {
+     "unit": "pass",
+     "integration": "pass",
+     "security": "pass",
+     "perf": "pass"
+    },
+    "approvals": [
+     {
+      "by": "u3",
+      "role": "owner"
+     }
+    ],
+    "calendar": {
+     "day": "wed",
+     "hour": 13,
+     "freeze": false
+    },
+    "oncall": {
+     "acked": true
+    }
+   }
+  },
+  "file": "deploy/slo.py",
+  "find": "HEALTHY_BUDGET_PCT = 20",
+  "replace": "HEALTHY_BUDGET_PCT = 10",
+  "cause_pattern": "\\b(10|20)\\b|HEALTHY_BUDGET"
+ },
+ {
+  "id": "dep-perf-tier",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "swapped branch",
+  "report": "Tier-1 search shipped on Tuesday at 10:00 although its perf check was skipped.",
+  "case": {
+   "id": "dep-r3",
+   "input": {
+    "change": {
+     "id": "c318",
+     "service": "search",
+     "author": "u1",
+     "risk": "medium",
+     "migration": false,
+     "hotfix": false
+    },
+    "service": {
+     "tier": 1,
+     "error_budget_pct": 50,
+     "canary": false
+    },
+    "checks": {
+     "unit": "pass",
+     "integration": "pass",
+     "security": "pass",
+     "perf": "skipped"
+    },
+    "approvals": [
+     {
+      "by": "u2",
+      "role": "owner"
+     }
+    ],
+    "calendar": {
+     "day": "tue",
+     "hour": 10,
+     "freeze": false
+    },
+    "oncall": {
+     "acked": true
+    }
+   }
+  },
+  "file": "deploy/checks.py",
+  "find": "    if tier == 1:\n        return REQUIRED\n    else:\n        return OPTIONAL",
+  "replace": "    if tier == 1:\n        return OPTIONAL\n    else:\n        return REQUIRED",
+  "line_of": [
+   "    if tier == 1:\n        return OPTIONAL",
+   "        return OPTIONAL\n    else:",
+   "        return REQUIRED\n\n\ndef security_ok"
+  ],
+  "cause_pattern": "perf_requirement|swap|revers|invert|backwards|tier ?(==)? ?1"
+ },
+ {
+  "id": "dep-hotfix-ack",
+  "model": "deploy",
+  "verdict": "no_bug",
+  "category": "user was wrong",
+  "report": "Hotfix c812 for payments was blocked on Friday at 18:00 even though an SRE approved it. Hotfixes are supposed to bypass the deploy window.",
+  "case": {
+   "id": "dep-r4",
+   "input": {
+    "change": {
+     "id": "c812",
+     "service": "payments",
+     "author": "u1",
+     "risk": "medium",
+     "migration": false,
+     "hotfix": true
+    },
+    "service": {
+     "tier": 1,
+     "error_budget_pct": 50,
+     "canary": true
+    },
+    "checks": {
+     "unit": "pass",
+     "integration": "pass",
+     "security": "pass",
+     "perf": "pass"
+    },
+    "approvals": [
+     {
+      "by": "u3",
+      "role": "sre"
+     },
+     {
+      "by": "u2",
+      "role": "owner"
+     }
+    ],
+    "calendar": {
+     "day": "fri",
+     "hour": 18,
+     "freeze": false
+    },
+    "oncall": {
+     "acked": false
+    }
+   }
+  },
+  "cause_pattern": "ack|on.?call"
+ },
+ {
+  "id": "dep-skipped-status",
+  "model": "deploy",
+  "verdict": "bug",
+  "category": "encoding mismatch",
+  "report": "A low-risk docs change (tier 3) was blocked on Monday at 10:00. Its security scan was skipped, which tier 3 allows.",
+  "case": {
+   "id": "dep-r5",
+   "input": {
+    "change": {
+     "id": "c203",
+     "service": "docs",
+     "author": "u1",
+     "risk": "low",
+     "migration": false,
+     "hotfix": false
+    },
+    "service": {
+     "tier": 3,
+     "error_budget_pct": 60,
+     "canary": false
+    },
+    "checks": {
+     "unit": "pass",
+     "integration": "pass",
+     "security": "skipped",
+     "perf": "pass"
+    },
+    "approvals": [
+     {
+      "by": "u4",
+      "role": "peer"
+     }
+    ],
+    "calendar": {
+     "day": "mon",
+     "hour": 10,
+     "freeze": false
+    },
+    "oncall": {
+     "acked": true
+    }
+   }
+  },
+  "file": "deploy/checks.py",
+  "find": "    \"skipped\": SKIPPED, \"skip\": SKIPPED,",
+  "replace": "    \"skip\": SKIPPED,",
+  "line_of": "    \"skip\": SKIPPED, \"neutral\"",
+  "cause_pattern": "skipped|alias|normali[sz]|STATUS"
+ }
+]

@@ -1,0 +1,87 @@
+[
+ {
+  "id": "irr-stale-constant",
+  "model": "irrigation",
+  "category": "stale constant",
+  "find": "    \"beds\": 40,",
+  "replace": "    \"beds\": 35,",
+  "cause_pattern": "beds.*(35|40)|(35|40).*beds"
+ },
+ {
+  "id": "irr-dropped-frost",
+  "model": "irrigation",
+  "category": "dropped condition",
+  "find": "        if conditions[\"temp_c\"] > FROST_MAX_C:\n            actions.append(\"water \" + zone[\"name\"])",
+  "replace": "        actions.append(\"water \" + zone[\"name\"])",
+  "line_of": [
+   "    if zone[\"kind\"] == \"pots\" and is_parched(zone):",
+   "        actions.append(\"water \" + zone[\"name\"])\n        return actions"
+  ],
+  "cause_pattern": "frost|temperature|cold|freez"
+ },
+ {
+  "id": "irr-wrong-comparison",
+  "model": "irrigation",
+  "category": "wrong comparison",
+  "find": "    return start <= hour < end\n\n\ndef is_dry",
+  "replace": "    return start <= hour <= end\n\n\ndef is_dry",
+  "line_of": "    return start <= hour <= end",
+  "cause_pattern": "22|<=|inclusive|upper|end hour|end of the"
+ },
+ {
+  "id": "lib-swapped-branch",
+  "model": "library",
+  "category": "swapped branch",
+  "find": "    if rating == \"teen\":\n        return member[\"age\"] >= TEEN_AGE\n    elif rating == \"adult\":\n        return member[\"age\"] >= ADULT_AGE",
+  "replace": "    if rating == \"teen\":\n        return member[\"age\"] >= ADULT_AGE\n    elif rating == \"adult\":\n        return member[\"age\"] >= TEEN_AGE",
+  "line_of": [
+   "        return member[\"age\"] >= ADULT_AGE",
+   "        return member[\"age\"] >= TEEN_AGE"
+  ],
+  "cause_pattern": "swap|teen.*adult|adult.*teen|revers|18.*13|13.*18"
+ },
+ {
+  "id": "lib-dropped-hold-owner",
+  "model": "library",
+  "category": "dropped condition",
+  "find": "        return item.get(\"held_for\") == member[\"id\"]",
+  "replace": "        return item.get(\"held_for\") is not None",
+  "cause_pattern": "held_for|held for|on.hold|hold"
+ },
+ {
+  "id": "lib-wrong-comparison",
+  "model": "library",
+  "category": "wrong comparison",
+  "find": "    if member[\"fines_cents\"] >= FINE_LIMIT_CENTS:",
+  "replace": "    if member[\"fines_cents\"] > FINE_LIMIT_CENTS:",
+  "cause_pattern": ">=|500|at or above|exactly|equal"
+ },
+ {
+  "id": "lib-encoding-tier",
+  "model": "library",
+  "category": "encoding mismatch",
+  "find": "LOAN_LIMITS = {\"standard\": 5, \"plus\": 10}",
+  "replace": "LOAN_LIMITS = {\"standard\": 5, \"premium\": 10}",
+  "cause_pattern": "plus|premium"
+ },
+ {
+  "id": "ntf-swapped-branch",
+  "model": "notify",
+  "category": "swapped branch",
+  "find": "    if urgent:\n        throttled = False\n    else:\n        throttled = inp[\"sent_last_hour\"] >= RATE_LIMIT_PER_HOUR",
+  "replace": "    if urgent:\n        throttled = inp[\"sent_last_hour\"] >= RATE_LIMIT_PER_HOUR\n    else:\n        throttled = False",
+  "line_of": [
+   "    if urgent:\n        throttled = inp",
+   "        throttled = False"
+  ],
+  "cause_pattern": "urgent"
+ },
+ {
+  "id": "ntf-dropped-verified",
+  "model": "notify",
+  "category": "dropped condition",
+  "find": "    if \"sms\" in enabled and user[\"sms_verified\"] and urgent:",
+  "replace": "    if \"sms\" in enabled and urgent:",
+  "cause_pattern": "verif"
+ }
+]

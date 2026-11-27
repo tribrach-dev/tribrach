@@ -1,0 +1,96 @@
+[
+ {
+  "id": "irr-stale-constant",
+  "model": "irrigation",
+  "file": "irrigation/config.py",
+  "category": "stale constant",
+  "find": "        \"beds\": 40,",
+  "replace": "        \"beds\": 35,",
+  "cause_pattern": "beds.*(35|40)|(35|40).*beds"
+ },
+ {
+  "id": "irr-dropped-frost",
+  "model": "irrigation",
+  "file": "irrigation/rules.py",
+  "category": "dropped condition",
+  "find": "        if not weather.frost(cond, s.weather):\n            plan.water.append(zone.name)\n            plan.note(zone.name, \"parched pots\")\n        else:\n            plan.note(zone.name, \"parched pots, but frost\")\n",
+  "replace": "        plan.water.append(zone.name)\n        plan.note(zone.name, \"parched pots\")\n",
+  "line_of": [
+   "    if zone.kind == \"pots\" and soil.is_parched(zone, s.soil):",
+   "        plan.water.append(zone.name)\n        plan.note(zone.name, \"parched pots\")"
+  ],
+  "cause_pattern": "frost|temperature|cold|freez"
+ },
+ {
+  "id": "irr-wrong-comparison",
+  "model": "irrigation",
+  "file": "irrigation/schedule.py",
+  "category": "wrong comparison",
+  "find": "        if start <= hour < end:",
+  "replace": "        if start <= hour <= end:",
+  "cause_pattern": "22|<=|inclusive|upper|end hour|end of the"
+ },
+ {
+  "id": "lib-swapped-branch",
+  "model": "library",
+  "file": "library/ratings.py",
+  "category": "swapped branch",
+  "find": "    if rating == \"teen\":\n        return ages[\"teen\"]\n    elif rating == \"adult\":\n        return ages[\"adult\"]",
+  "replace": "    if rating == \"teen\":\n        return ages[\"adult\"]\n    elif rating == \"adult\":\n        return ages[\"teen\"]",
+  "line_of": [
+   "        return ages[\"adult\"]\n    elif",
+   "        return ages[\"teen\"]\n    return"
+  ],
+  "cause_pattern": "swap|teen.*adult|adult.*teen|revers|18.*13|13.*18"
+ },
+ {
+  "id": "lib-dropped-hold-owner",
+  "model": "library",
+  "file": "library/catalog.py",
+  "category": "dropped condition",
+  "find": "        return item.held_for == member_id",
+  "replace": "        return item.held_for is not None",
+  "cause_pattern": "held_for|held for|on.hold|hold"
+ },
+ {
+  "id": "lib-wrong-comparison",
+  "model": "library",
+  "file": "library/members.py",
+  "category": "wrong comparison",
+  "find": "    if member.fines_cents >= policy.get(\"fines.block_at_cents\"):",
+  "replace": "    if member.fines_cents > policy.get(\"fines.block_at_cents\"):",
+  "cause_pattern": ">=|500|at or above|exactly|equal"
+ },
+ {
+  "id": "lib-encoding-tier",
+  "model": "library",
+  "file": "library/policy.py",
+  "category": "encoding mismatch",
+  "find": "    \"loan_limits\": {\"standard\": 5, \"plus\": 10},",
+  "replace": "    \"loan_limits\": {\"standard\": 5, \"premium\": 10},",
+  "cause_pattern": "plus|premium"
+ },
+ {
+  "id": "ntf-swapped-branch",
+  "model": "notify",
+  "file": "notify/throttle.py",
+  "category": "swapped branch",
+  "find": "    if urgent:\n        return False\n    else:\n        return over_limit(ctx)",
+  "replace": "    if urgent:\n        return over_limit(ctx)\n    else:\n        return False",
+  "line_of": [
+   "        return over_limit(ctx)\n    else:",
+   "        return False\n\n\ndef email"
+  ],
+  "cause_pattern": "urgent"
+ },
+ {
+  "id": "ntf-dropped-verified",
+  "model": "notify",
+  "file": "notify/router.py",
+  "category": "dropped condition",
+  "find": "        if ch == \"sms\":\n            if not prefs.sms_verified:\n                return \"number not verified\"\n            if not urgent:",
+  "replace": "        if ch == \"sms\":\n            if not urgent:",
+  "line_of": "        if ch == \"sms\":\n            if not urgent:",
+  "cause_pattern": "verif"
+ }
+]

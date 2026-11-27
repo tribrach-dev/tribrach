@@ -1,0 +1,281 @@
+import Bench.Common
+
+/-!
+# Building access control (specification)
+
+Input: one badge tap at one door.
+
+```json
+{"now": {"day": "tue", "hour": 20, "holiday": false},
+ "site": {"lockdown": false, "fire_alarm": false},
+ "person": {"id": "f1", "kind": "employee", "role": "facilities", "badge": "active",
+            "contract_days_left": null, "training": ["server_access"], "responder": false,
+            "escort": null},
+ "door": {"id": "roof-1", "zone": "roof", "after_hours": false, "egress": false}}
+```
+
+- `kind` is `employee`, `contractor` or `visitor`; `role` is `engineer`,
+  `lab_tech`, `facilities`, `security`, `exec` or `none`; `badge` is
+  `active`, `suspended` or `lost`.
+- `contract_days_left` is set for contractors only.
+- `escort` is set for visitors: `{"id", "role", "on_site", "training"}`.
+- Zones: `lobby`, `office`, `lab`, `server`, `loading`, `roof`.
+
+Decisions: `open D` (unlock the door), `two_factor D` (unlock only after a
+second factor), `alert P D` (tell security about this tap) and
+`expiry_notice P` (remind a contractor that their contract ends soon).
+
+**Temporary grants.** `person.temp_grants` (optional) lists
+`{"zone", "days_left"}` grants. An employee or contractor may enter a zone
+they hold a grant for while its `days_left` is above 0, on top of what their
+role allows. Visitors' grants count for nothing. Training, hours and the
+second factor apply as usual.
+-/
+
+namespace Bench.Access2
+
+open Tribrach.Logic
+open Lean (Json)
+
+/-- Which zones each role may enter. -/
+def grants : List (String × String) := [
+  ("engineer", "office"),
+  ("lab_tech", "office"), ("lab_tech", "lab"),
+  ("facilities", "office"), ("facilities", "loading"), ("facilities", "roof"), ("facilities", "server"),
+  ("security", "lobby"), ("security", "office"), ("security", "lab"), ("security", "server"),
+  ("security", "loading"), ("security", "roof"),
+  ("exec", "office")
+]
+
+def zones : List String := ["lobby", "office", "lab", "server", "loading", "roof"]
+
+/-- Training a person needs before entering a zone. -/
+def training : List (String × String) :=
+  [("lab", "lab_safety"), ("server", "server_access"), ("roof", "fall_protection")]
+
+/-- Zones that need a second factor outside business hours. -/
+def restricted : List String := ["lab", "server", "roof"]
+
+/-- Zones visitors may never enter, escorted or not. -/
+def noVisitors : List String := ["server", "roof"]
+
+def businessDays : List String := ["mon", "tue", "wed", "thu", "fri"]
+def businessFrom : Int := 7
+def businessUntil : Int := 19
+def nightFrom : Int := 22
+def nightUntil : Int := 6
+def expiringWithin : Int := 7
+
+def static : List Fact :=
+  grants.map (fun (r, z) => fact "grants" [r, z]) ++
+  zones.map (fun z => fact "zone" [z]) ++
+  training.map (fun (z, t) => fact "requires_training" [z, t]) ++
+  training.map (fun (z, _) => fact "needs_training" [z]) ++
+  restricted.map (fun z => fact "restricted" [z]) ++
+  noVisitors.map (fun z => fact "no_visitors" [z])
+
+def strs (j : Json) (k : String) : Except String (List String) := do
+  let a ← getArr j k
+  a.toList.mapM (·.getStr?)
+
+def encodeEscort (p : String) (e : Json) : Except String (List Fact) := do
+  let id ← getStr e "id"
+  let role ← getStr e "role"
+  let onSite ← getBool e "on_site"
+  let tr ← strs e "training"
+  return [fact "escort" [p, id], fact "kind" [id, "employee"],
+          fact "badge_active" [id]] ++
+    when (role != "none") (fact "role" [id, role]) ++
+    when onSite (fact "escort_present" [p]) ++
+    tr.map (fun t => fact "trained" [id, t])
+
+def encode (j : Json) : Except String (List Fact) := do
+  let now ← j.getObjVal? "now"
+  let day ← getStr now "day"
+  let hour ← getInt now "hour"
+  let holiday ← getBool now "holiday"
+  let site ← j.getObjVal? "site"
+  let lockdown ← getBool site "lockdown"
+  let fire ← getBool site "fire_alarm"
+  let p ← j.getObjVal? "person"
+  let pid ← getStr p "id"
+  let kind ← getStr p "kind"
+  let role ← getStr p "role"
+  let badge ← getStr p "badge"
+  let tr ← strs p "training"
+  let responder ← getBool p "responder"
+  let days : Option Int := (p.getObjValAs? Int "contract_days_left").toOption
+  let escort ← match p.getObjVal? "escort" with
+    | .ok Json.null => pure []
+    | .ok e => encodeEscort pid e
+    | .error _ => pure []
+  let d ← j.getObjVal? "door"
+  let did ← getStr d "id"
+  let zone ← getStr d "zone"
+  let afterHours ← getBool d "after_hours"
+  let egress ← getBool d "egress"
+  let grants ← match p.getObjVal? "temp_grants" with
+    | .ok Json.null => pure []
+    | .ok a => do
+      let gs ← a.getArr?
+      gs.toList.mapM (fun g => do
+        let z ← getStr g "zone"
+        let n ← getInt g "days_left"
+        return (z, n))
+    | .error _ => pure []
+  let liveGrants := if kind == "visitor" then [] else (grants.filter (fun (_, n) => n > 0)).map (·.1)
+  let business := businessDays.contains day && businessFrom ≤ hour && hour < businessUntil && !holiday
+  let night := hour < nightUntil || hour ≥ nightFrom
+  let contract : List Fact := match kind, days with
+    | "contractor", some n =>
+      [fact "contract_days" [pid, toString n]] ++
+      when (n > 0) (fact "contract_valid" [pid]) ++
+      when (n ≤ 0) (fact "contract_expired" [pid]) ++
+      when (0 < n && n ≤ expiringWithin) (fact "contract_expiring" [pid, toString n])
+    | _, _ => []
+  return static ++
+    [fact "day" [day], fact "hour" [toString hour], fact "person" [pid], fact "kind" [pid, kind],
+     fact "badge" [pid, badge], fact "door" [did], fact "door_zone" [did, zone]] ++
+    when (role != "none") (fact "role" [pid, role]) ++
+    when (badge == "active") (fact "badge_active" [pid]) ++
+    when (badge == "suspended" || badge == "lost") (fact "badge_flagged" [pid]) ++
+    tr.map (fun t => fact "trained" [pid, t]) ++
+    when responder (fact "responder" [pid]) ++
+    contract ++ escort ++
+    when holiday (fact "holiday") ++
+    when business (fact "business_hours") ++
+    when (!business) (fact "off_hours") ++
+    when night (fact "night") ++
+    when lockdown (fact "lockdown") ++
+    when fire (fact "fire_alarm") ++
+    when afterHours (fact "after_hours_door" [did]) ++
+    when egress (fact "egress" [did])
+    ++ liveGrants.map (fun z => fact "temp_grant" [pid, z])
+
+def P := v "P"
+def D := v "D"
+def Z := v "Z"
+def E := v "E"
+
+def rules : List Rule := [
+  -- Where a person may go
+  { name := "role grants zone"
+    head := atom "allowed" [P, Z], body := [atom "role" [P, v "R"], atom "grants" [v "R", Z]] },
+  { name := "lobby for any active badge"
+    head := atom "allowed" [P, c "lobby"], body := [atom "badge_active" [P]] },
+  { name := "escorted visitor"
+    head := atom "allowed" [P, Z]
+    body := [atom "kind" [P, c "visitor"], atom "escort" [P, E], atom "escort_present" [P], atom "allowed" [E, Z]]
+    neg := [atom "no_visitors" [Z]] },
+  { name := "temporary grant"
+    head := atom "allowed" [P, Z], body := [atom "temp_grant" [P, Z]] },
+  -- Training
+  { name := "zone needs no training"
+    head := atom "cleared" [P, Z], body := [atom "allowed" [P, Z], atom "zone" [Z]]
+    neg := [atom "needs_training" [Z]] },
+  { name := "trained for zone"
+    head := atom "cleared" [P, Z]
+    body := [atom "allowed" [P, Z], atom "requires_training" [Z, v "T"], atom "trained" [P, v "T"]] },
+  { name := "escort's training covers visitor"
+    head := atom "cleared" [P, Z]
+    body := [atom "kind" [P, c "visitor"], atom "escort" [P, E], atom "allowed" [P, Z], atom "cleared" [E, Z]] },
+  -- Credentials
+  { name := "employee badge"
+    head := atom "credential" [P], body := [atom "badge_active" [P], atom "kind" [P, c "employee"]] },
+  { name := "contractor badge"
+    head := atom "credential" [P]
+    body := [atom "badge_active" [P], atom "kind" [P, c "contractor"], atom "contract_valid" [P]] },
+  { name := "visitor badge"
+    head := atom "credential" [P]
+    body := [atom "badge_active" [P], atom "kind" [P, c "visitor"], atom "escort_present" [P]] },
+  -- Hours
+  { name := "business hours"
+    head := atom "hours_ok" [P, D], body := [atom "person" [P], atom "door" [D], atom "business_hours"] },
+  { name := "after-hours door"
+    head := atom "hours_ok" [P, D], body := [atom "person" [P], atom "after_hours_door" [D]]
+    neg := [atom "night"] },
+  { name := "security at any hour"
+    head := atom "hours_ok" [P, D], body := [atom "role" [P, c "security"], atom "door" [D]] },
+  { name := "facilities at the loading dock"
+    head := atom "hours_ok" [P, D], body := [atom "role" [P, c "facilities"], atom "door_zone" [D, c "loading"]] },
+  -- Entry
+  { name := "may enter"
+    head := atom "may_enter" [P, D]
+    body := [atom "person" [P], atom "credential" [P], atom "door_zone" [D, Z], atom "cleared" [P, Z], atom "hours_ok" [P, D]]
+    neg := [atom "lockdown"] },
+  { name := "responder in lockdown"
+    head := atom "may_enter" [P, D]
+    body := [atom "person" [P], atom "credential" [P], atom "responder" [P], atom "door" [D], atom "lockdown"] },
+  { name := "open unrestricted door"
+    head := atom "open" [D], body := [atom "may_enter" [P, D], atom "door_zone" [D, Z]]
+    neg := [atom "restricted" [Z]] },
+  { name := "open restricted door in business hours"
+    head := atom "open" [D]
+    body := [atom "may_enter" [P, D], atom "door_zone" [D, Z], atom "restricted" [Z], atom "business_hours"] },
+  { name := "second factor off hours"
+    head := atom "two_factor" [D]
+    body := [atom "may_enter" [P, D], atom "door_zone" [D, Z], atom "restricted" [Z], atom "off_hours"] },
+  { name := "fire egress"
+    head := atom "open" [D], body := [atom "fire_alarm", atom "egress" [D]] },
+  -- Alerts and notices
+  { name := "flagged badge"
+    head := atom "alert" [P, D], body := [atom "badge_flagged" [P], atom "door" [D]] },
+  { name := "expired contract"
+    head := atom "alert" [P, D], body := [atom "contract_expired" [P], atom "door" [D]] },
+  { name := "unescorted visitor"
+    head := atom "alert" [P, D], body := [atom "kind" [P, c "visitor"], atom "door" [D]]
+    neg := [atom "escort_present" [P]] },
+  { name := "contract ending soon"
+    head := atom "expiry_notice" [P], body := [atom "contract_expiring" [P, v "N"], atom "may_enter" [P, D]] }
+]
+
+def templates : Templates := [
+  ("grants", "role $1 may enter $2"),
+  ("zone", "$1 is a zone"),
+  ("requires_training", "$1 requires $2 training"),
+  ("needs_training", "$1 requires training"),
+  ("restricted", "$1 is restricted (second factor outside business hours)"),
+  ("no_visitors", "visitors may not enter $1"),
+  ("day", "the day is $1"),
+  ("hour", "the hour is $1"),
+  ("person", "$1 tapped a badge"),
+  ("kind", "$1 is a $2"),
+  ("badge", "$1's badge is $2"),
+  ("door", "$1 is the door"),
+  ("door_zone", "door $1 leads into $2"),
+  ("role", "$1 has role $2"),
+  ("badge_active", "$1's badge is active"),
+  ("badge_flagged", "$1's badge is suspended or lost"),
+  ("trained", "$1 has $2 training"),
+  ("responder", "$1 is an emergency responder"),
+  ("contract_days", "$1's contract has $2 days left"),
+  ("contract_valid", "$1's contract is still running"),
+  ("contract_expired", "$1's contract has ended"),
+  ("contract_expiring", "$1's contract ends in $2 days (7 or fewer)"),
+  ("escort", "$1 is escorted by $2"),
+  ("escort_present", "$1's escort is on site"),
+  ("holiday", "today is a holiday"),
+  ("business_hours", "it is business hours (mon-fri, 7-19, not a holiday)"),
+  ("off_hours", "it is outside business hours"),
+  ("night", "it is night (22-6)"),
+  ("lockdown", "the site is in lockdown"),
+  ("fire_alarm", "the fire alarm is on"),
+  ("after_hours_door", "$1 is an after-hours door"),
+  ("egress", "$1 is a fire exit"),
+  ("temp_grant", "$1 holds a temporary grant for $2"),
+  ("allowed", "$1 may enter zone $2"),
+  ("cleared", "$1 is cleared for zone $2"),
+  ("credential", "$1 has a valid credential"),
+  ("hours_ok", "$1 may use door $2 at this hour"),
+  ("may_enter", "$1 may go through door $2"),
+  ("open", "open door $1"),
+  ("two_factor", "ask for a second factor at door $1"),
+  ("alert", "alert security about $1 at door $2"),
+  ("expiry_notice", "remind $1 that their contract ends soon")
+]
+
+def model : BenchModel :=
+  { name := "access2", encode, rules, templates,
+    decisions := ["open", "two_factor", "alert", "expiry_notice"] }
+
+end Bench.Access2

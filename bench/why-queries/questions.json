@@ -1,0 +1,74 @@
+[
+ {
+  "id": "irr-question",
+  "model": "irrigation",
+  "question": "At 06:00 the controller opened no valves. For each zone (lawn, beds, pots), why wasn't it watered?",
+  "case": {
+   "id": "irr-q1",
+   "input": {
+    "hour": 6,
+    "temp_c": 12,
+    "rain_mm": 6,
+    "zones": [
+     {
+      "name": "lawn",
+      "kind": "lawn",
+      "moisture": 20,
+      "hold": false
+     },
+     {
+      "name": "beds",
+      "kind": "beds",
+      "moisture": 45,
+      "hold": false
+     },
+     {
+      "name": "pots",
+      "kind": "pots",
+      "moisture": 10,
+      "hold": true
+     }
+    ]
+   },
+   "expected": [
+    "alert pots"
+   ]
+  },
+  "grade": {
+   "lawn": "rain",
+   "beds": "not dry|moist|45|above|threshold|40|wet enough|doesn.t need",
+   "pots": "hold|held"
+  }
+ },
+ {
+  "id": "ntf-question",
+  "model": "notify",
+  "question": "A security event at 23:00 reached the user on no channel. For each channel (push, email, sms), why didn't it go out?",
+  "case": {
+   "id": "ntf-q1",
+   "input": {
+    "hour": 23,
+    "sent_last_hour": 3,
+    "user": {
+     "quiet_start": 22,
+     "quiet_end": 7,
+     "channels": [
+      "email",
+      "sms"
+     ],
+     "sms_verified": false
+    },
+    "event": {
+     "kind": "security",
+     "priority": "normal"
+    }
+   },
+   "expected": []
+  },
+  "grade": {
+   "push": "not (turned )?on|not turned|turned off|\\boff\\b|disabled|not enabled|isn.t enabled|not among|only email|no push|not in|doesn.t have|does not have|not have",
+   "email": "rate|limit|3 or more|three|sent",
+   "sms": "verif"
+  }
+ }
+]

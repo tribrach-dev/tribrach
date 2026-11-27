@@ -38,7 +38,9 @@ Language instruments live in their own repos because Swift packages must sit at
 a repo root and Lean's package index lists one package per repo.
 
 Examples are in [examples/](examples), formats in [docs/formats](docs/formats)
-and [schema/](schema), and conformance goldens in [tests/](tests).
+and [schema/](schema), conformance goldens in [tests/](tests), and benchmarks
+in [bench/](bench) (for example, whether why-queries save an agent effort when
+diagnosing bugs: [bench/why-queries](bench/why-queries)).
 
 See [docs/architecture.md](docs/architecture.md) for the design and
 [docs/roadmap.md](docs/roadmap.md) for what ships when.

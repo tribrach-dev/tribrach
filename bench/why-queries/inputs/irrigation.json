@@ -1,0 +1,763 @@
+[
+ {
+  "id": "irr-01",
+  "input": {
+   "hour": 19,
+   "temp_c": 1,
+   "rain_mm": 4,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 37,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 33,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-02",
+  "input": {
+   "hour": 6,
+   "temp_c": 24,
+   "rain_mm": 6,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 37,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 37,
+     "hold": true
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 70,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-03",
+  "input": {
+   "hour": 23,
+   "temp_c": 15,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 20,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-04",
+  "input": {
+   "hour": 21,
+   "temp_c": 8,
+   "rain_mm": 1,
+   "zones": [
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 70,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-05",
+  "input": {
+   "hour": 5,
+   "temp_c": 3,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 8,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 8,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 33,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-06",
+  "input": {
+   "hour": 19,
+   "temp_c": 1,
+   "rain_mm": 5,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 12,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 70,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 20,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-07",
+  "input": {
+   "hour": 6,
+   "temp_c": 24,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 28,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 20,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 70,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-08",
+  "input": {
+   "hour": 21,
+   "temp_c": -3,
+   "rain_mm": 5,
+   "zones": [
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 33,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-09",
+  "input": {
+   "hour": 5,
+   "temp_c": 1,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 28,
+     "hold": true
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 33,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-10",
+  "input": {
+   "hour": 5,
+   "temp_c": 24,
+   "rain_mm": 4,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 20,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 28,
+     "hold": true
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 12,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-11",
+  "input": {
+   "hour": 19,
+   "temp_c": 15,
+   "rain_mm": 5,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 8,
+     "hold": true
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 70,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 37,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-12",
+  "input": {
+   "hour": 23,
+   "temp_c": 15,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 12,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 20,
+     "hold": true
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 20,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-13",
+  "input": {
+   "hour": 18,
+   "temp_c": 3,
+   "rain_mm": 5,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 20,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 37,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 20,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-14",
+  "input": {
+   "hour": 6,
+   "temp_c": 3,
+   "rain_mm": 6,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 28,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 33,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-15",
+  "input": {
+   "hour": 6,
+   "temp_c": 15,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 55,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 12,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-16",
+  "input": {
+   "hour": 12,
+   "temp_c": 8,
+   "rain_mm": 12,
+   "zones": [
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 70,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 8,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-17",
+  "input": {
+   "hour": 3,
+   "temp_c": 1,
+   "rain_mm": 4,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 12,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 70,
+     "hold": true
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 45,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-18",
+  "input": {
+   "hour": 18,
+   "temp_c": 3,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 37,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 33,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 8,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-19",
+  "input": {
+   "hour": 22,
+   "temp_c": -3,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 33,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 37,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 37,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-20",
+  "input": {
+   "hour": 19,
+   "temp_c": 24,
+   "rain_mm": 1,
+   "zones": []
+  }
+ },
+ {
+  "id": "irr-21",
+  "input": {
+   "hour": 23,
+   "temp_c": 24,
+   "rain_mm": 6,
+   "zones": [
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 20,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 12,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-22",
+  "input": {
+   "hour": 12,
+   "temp_c": 3,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 8,
+     "hold": true
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 20,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 20,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-23",
+  "input": {
+   "hour": 5,
+   "temp_c": 2,
+   "rain_mm": 4,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 28,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 37,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-24",
+  "input": {
+   "hour": 21,
+   "temp_c": 2,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 45,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-25",
+  "input": {
+   "hour": 19,
+   "temp_c": 1,
+   "rain_mm": 1,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 33,
+     "hold": true
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 70,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 28,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-26",
+  "input": {
+   "hour": 12,
+   "temp_c": 24,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 45,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 70,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-27",
+  "input": {
+   "hour": 5,
+   "temp_c": 8,
+   "rain_mm": 4,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 28,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 20,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 28,
+     "hold": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-28",
+  "input": {
+   "hour": 12,
+   "temp_c": 24,
+   "rain_mm": 1,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 12,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 28,
+     "hold": false
+    },
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 20,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-29",
+  "input": {
+   "hour": 8,
+   "temp_c": 2,
+   "rain_mm": 1,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 12,
+     "hold": true
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 55,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-30",
+  "input": {
+   "hour": 8,
+   "temp_c": 8,
+   "rain_mm": 6,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 20,
+     "hold": false
+    },
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 45,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-31",
+  "input": {
+   "hour": 6,
+   "temp_c": 15,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "beds",
+     "kind": "beds",
+     "moisture": 37,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-32",
+  "input": {
+   "hour": 22,
+   "temp_c": 15,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "lawn",
+     "kind": "lawn",
+     "moisture": 20,
+     "hold": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "irr-33",
+  "input": {
+   "hour": 12,
+   "temp_c": 1,
+   "rain_mm": 0,
+   "zones": [
+    {
+     "name": "pots",
+     "kind": "pots",
+     "moisture": 10,
+     "hold": false
+    }
+   ]
+  }
+ }
+]

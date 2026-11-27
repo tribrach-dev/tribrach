@@ -1,0 +1,292 @@
+[{"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 37, "kind": "lawn", "hold": false},
+    {"name": "pots", "moisture": 33, "kind": "pots", "hold": false}],
+   "temp_c": 1,
+   "rain_mm": 4,
+   "hour": 19},
+  "id": "irr-01",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 37, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 37, "kind": "beds", "hold": true},
+    {"name": "pots", "moisture": 70, "kind": "pots", "hold": true}],
+   "temp_c": 24,
+   "rain_mm": 6,
+   "hour": 6},
+  "id": "irr-02",
+  "expected": []},
+ {"input":
+  {"zones": [{"name": "beds", "moisture": 20, "kind": "beds", "hold": false}],
+   "temp_c": 15,
+   "rain_mm": 0,
+   "hour": 23},
+  "id": "irr-03",
+  "expected": []},
+ {"input":
+  {"zones": [{"name": "pots", "moisture": 70, "kind": "pots", "hold": false}],
+   "temp_c": 8,
+   "rain_mm": 1,
+   "hour": 21},
+  "id": "irr-04",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 8, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 8, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 33, "kind": "pots", "hold": true}],
+   "temp_c": 3,
+   "rain_mm": 0,
+   "hour": 5},
+  "id": "irr-05",
+  "expected": ["water beds", "water lawn"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 12, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 70, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 20, "kind": "pots", "hold": false}],
+   "temp_c": 1,
+   "rain_mm": 5,
+   "hour": 19},
+  "id": "irr-06",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 28, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 20, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 70, "kind": "pots", "hold": false}],
+   "temp_c": 24,
+   "rain_mm": 0,
+   "hour": 6},
+  "id": "irr-07",
+  "expected": ["water beds", "water lawn"]},
+ {"input":
+  {"zones": [{"name": "beds", "moisture": 33, "kind": "beds", "hold": false}],
+   "temp_c": -3,
+   "rain_mm": 5,
+   "hour": 21},
+  "id": "irr-08",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 28, "kind": "lawn", "hold": true},
+    {"name": "pots", "moisture": 33, "kind": "pots", "hold": false}],
+   "temp_c": 1,
+   "rain_mm": 0,
+   "hour": 5},
+  "id": "irr-09",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 20, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 28, "kind": "beds", "hold": true},
+    {"name": "pots", "moisture": 12, "kind": "pots", "hold": false}],
+   "temp_c": 24,
+   "rain_mm": 4,
+   "hour": 5},
+  "id": "irr-10",
+  "expected": ["water lawn", "water pots"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 8, "kind": "lawn", "hold": true},
+    {"name": "beds", "moisture": 70, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 37, "kind": "pots", "hold": false}],
+   "temp_c": 15,
+   "rain_mm": 5,
+   "hour": 19},
+  "id": "irr-11",
+  "expected": ["alert lawn"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 12, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 20, "kind": "beds", "hold": true},
+    {"name": "pots", "moisture": 20, "kind": "pots", "hold": false}],
+   "temp_c": 15,
+   "rain_mm": 0,
+   "hour": 23},
+  "id": "irr-12",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 20, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 37, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 20, "kind": "pots", "hold": false}],
+   "temp_c": 3,
+   "rain_mm": 5,
+   "hour": 18},
+  "id": "irr-13",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 28, "kind": "lawn", "hold": false},
+    {"name": "pots", "moisture": 33, "kind": "pots", "hold": true}],
+   "temp_c": 3,
+   "rain_mm": 6,
+   "hour": 6},
+  "id": "irr-14",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 55, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 12, "kind": "beds", "hold": true}],
+   "temp_c": 15,
+   "rain_mm": 0,
+   "hour": 6},
+  "id": "irr-15",
+  "expected": ["alert beds"]},
+ {"input":
+  {"zones":
+   [{"name": "beds", "moisture": 70, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 8, "kind": "pots", "hold": true}],
+   "temp_c": 8,
+   "rain_mm": 12,
+   "hour": 12},
+  "id": "irr-16",
+  "expected": ["alert pots"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 12, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 70, "kind": "beds", "hold": true},
+    {"name": "pots", "moisture": 45, "kind": "pots", "hold": true}],
+   "temp_c": 1,
+   "rain_mm": 4,
+   "hour": 3},
+  "id": "irr-17",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 37, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 33, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 8, "kind": "pots", "hold": false}],
+   "temp_c": 3,
+   "rain_mm": 0,
+   "hour": 18},
+  "id": "irr-18",
+  "expected": ["water pots"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 33, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 37, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 37, "kind": "pots", "hold": false}],
+   "temp_c": -3,
+   "rain_mm": 0,
+   "hour": 22},
+  "id": "irr-19",
+  "expected": []},
+ {"input": {"zones": [], "temp_c": 24, "rain_mm": 1, "hour": 19},
+  "id": "irr-20",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "beds", "moisture": 20, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 12, "kind": "pots", "hold": false}],
+   "temp_c": 24,
+   "rain_mm": 6,
+   "hour": 23},
+  "id": "irr-21",
+  "expected": ["water pots"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 8, "kind": "lawn", "hold": true},
+    {"name": "beds", "moisture": 20, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 20, "kind": "pots", "hold": false}],
+   "temp_c": 3,
+   "rain_mm": 0,
+   "hour": 12},
+  "id": "irr-22",
+  "expected": ["alert lawn"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 28, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 37, "kind": "beds", "hold": false}],
+   "temp_c": 2,
+   "rain_mm": 4,
+   "hour": 5},
+  "id": "irr-23",
+  "expected": []},
+ {"input":
+  {"zones": [{"name": "pots", "moisture": 45, "kind": "pots", "hold": false}],
+   "temp_c": 2,
+   "rain_mm": 0,
+   "hour": 21},
+  "id": "irr-24",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 33, "kind": "lawn", "hold": true},
+    {"name": "beds", "moisture": 70, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 28, "kind": "pots", "hold": true}],
+   "temp_c": 1,
+   "rain_mm": 1,
+   "hour": 19},
+  "id": "irr-25",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 45, "kind": "lawn", "hold": false},
+    {"name": "pots", "moisture": 70, "kind": "pots", "hold": false}],
+   "temp_c": 24,
+   "rain_mm": 0,
+   "hour": 12},
+  "id": "irr-26",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 28, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 20, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 28, "kind": "pots", "hold": true}],
+   "temp_c": 8,
+   "rain_mm": 4,
+   "hour": 5},
+  "id": "irr-27",
+  "expected": ["water beds", "water lawn"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 12, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 28, "kind": "beds", "hold": false},
+    {"name": "pots", "moisture": 20, "kind": "pots", "hold": false}],
+   "temp_c": 24,
+   "rain_mm": 1,
+   "hour": 12},
+  "id": "irr-28",
+  "expected": []},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 12, "kind": "lawn", "hold": true},
+    {"name": "beds", "moisture": 55, "kind": "beds", "hold": false}],
+   "temp_c": 2,
+   "rain_mm": 1,
+   "hour": 8},
+  "id": "irr-29",
+  "expected": ["alert lawn"]},
+ {"input":
+  {"zones":
+   [{"name": "lawn", "moisture": 20, "kind": "lawn", "hold": false},
+    {"name": "beds", "moisture": 45, "kind": "beds", "hold": false}],
+   "temp_c": 8,
+   "rain_mm": 6,
+   "hour": 8},
+  "id": "irr-30",
+  "expected": []},
+ {"input":
+  {"zones": [{"name": "beds", "moisture": 37, "kind": "beds", "hold": false}],
+   "temp_c": 15,
+   "rain_mm": 0,
+   "hour": 6},
+  "id": "irr-31",
+  "expected": ["water beds"]},
+ {"input":
+  {"zones": [{"name": "lawn", "moisture": 20, "kind": "lawn", "hold": false}],
+   "temp_c": 15,
+   "rain_mm": 0,
+   "hour": 22},
+  "id": "irr-32",
+  "expected": []},
+ {"input":
+  {"zones": [{"name": "pots", "moisture": 10, "kind": "pots", "hold": false}],
+   "temp_c": 1,
+   "rain_mm": 0,
+   "hour": 12},
+  "id": "irr-33",
+  "expected": []}]

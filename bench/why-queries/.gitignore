@@ -1,0 +1,3 @@
+lake-manifest.json
+__pycache__/
+vectors/feature-*.json

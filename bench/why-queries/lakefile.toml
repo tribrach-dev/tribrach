@@ -1,0 +1,13 @@
+name = "why-queries-bench"
+defaultTargets = ["Bench", "why"]
+
+[[require]]
+name = "tribrach"
+path = "../.."
+
+[[lean_lib]]
+name = "Bench"
+
+[[lean_exe]]
+name = "why"
+root = "Main"
