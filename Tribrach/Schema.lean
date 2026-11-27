@@ -1,5 +1,6 @@
 import Lean.Data.Json
 import Tribrach.Export
+import Tribrach.Pattern
 
 /-!
 # Schemas: JSON types described in Lean
@@ -13,10 +14,11 @@ gets two things that agree by construction:
   them.
 * `Schema.accepts`: a checker in Lean, the one proofs talk about.
 
-Patterned strings use a closed list of patterns (`Pat`). Each one has a
-regular expression for the schema and a Lean function for the checker, and
-`tests/conformance/patterns.json` checks that the two accept the same strings.
-Instruments implement the same list, so nobody writes a regex of their own.
+Patterned strings use a closed list of patterns (`Pat`). Each one is a pattern
+tree (`Tribrach.Re`); the regular expression for the schema and the Lean
+checker are both read off it, and `tests/conformance/patterns.json` exports
+the tree so instruments run one generic matcher, and nobody writes a regex of
+their own.
 -/
 
 open Lean
@@ -56,19 +58,55 @@ inductive Pat where
 
 namespace Pat
 
-/-- The regular expression, in the syntax JSON Schema uses (ECMA-262). -/
-def regex : Pat → String
-  | hex n => "^[0-9a-f]{" ++ toString n ++ "}$"
-  | slug => "^[a-z0-9][a-z0-9-]*$"
-  | upperAlnum => "^[A-Z0-9]+$"
-  | ownerRepo => "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
-  | relPath => "^(?!/)(?!.*(^|/)\\.\\.(/|$))[^\\\\\\x00-\\x1f\\u2028\\u2029]+$"
-  | uri => "^[A-Za-z][A-Za-z0-9+.-]*:[^\\x00-\\x20\\x7f]*$"
+open Re in
+/-- The pattern as a tree (`Tribrach.Re`): the source of truth. `regex` and
+`check` are both read off it, and `tests/conformance/patterns.json` carries
+it to instruments and adapters. -/
+def tree : Pat → Re
+  | hex n => exactly n (set [.range '0' '9', .range 'a' 'f'])
+  | slug => seq [set [.range 'a' 'z', .range '0' '9'], many (set [.range 'a' 'z', .range '0' '9', .char '-'])]
+  | upperAlnum => many1 (set [.range 'A' 'Z', .range '0' '9'])
+  | ownerRepo =>
+    let part := many1 (set [.range 'A' 'Z', .range 'a' 'z', .range '0' '9', .char '_', .char '.', .char '-'])
+    seq [part, lit "/", part]
+  | relPath =>
+    without (many1 (set [.char '\\', .range '\x00' '\x1f', .char '\u2028', .char '\u2029'] (negated := true)))
+      [.startsWith "/", .segment '/' ".."]
+  | uri =>
+    seq [set [.range 'A' 'Z', .range 'a' 'z'],
+      many (set [.range 'A' 'Z', .range 'a' 'z', .range '0' '9', .char '+', .char '.', .char '-']),
+      lit ":", many (set [.range '\x00' '\x20', .char '\x7f'] (negated := true))]
   | dateTime =>
-    "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    let d2 := exactly 2 digit
+    seq [exactly 4 digit, lit "-", d2, lit "-", d2, lit "T", d2, lit ":", d2, lit ":", d2,
+      opt (seq [lit ".", many1 digit]),
+      alt [lit "Z", seq [set [.char '+', .char '-'], d2, lit ":", d2]]]
   | instant =>
-    "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
-  | decimal => "^(0|-?[1-9][0-9]*)$"
+    let d : Re := set [.range '0' '9']
+    let d05 : Re := set [.range '0' '5']
+    let hour := alt [seq [set [.char '0', .char '1'], d], seq [lit "2", set [.range '0' '3']]]
+    seq [exactly 4 digit, lit "-",
+      alt [seq [lit "0", set [.range '1' '9']], seq [lit "1", set [.range '0' '2']]], lit "-",
+      alt [seq [lit "0", set [.range '1' '9']], seq [set [.char '1', .char '2'], d], seq [lit "3", set [.char '0', .char '1']]],
+      lit "T", hour, lit ":", d05, d, lit ":", d05, d,
+      alt [lit "Z", seq [set [.char '+', .char '-'], hour, lit ":", d05, d]]]
+  | decimal => alt [lit "0", seq [opt (lit "-"), set [.range '1' '9'], many digit]]
+
+/-- The regular expression, in the syntax JSON Schema uses (ECMA-262). -/
+def regex (p : Pat) : String := p.tree.toRegex
+
+-- The trees render to the regexes the schema has always published.
+#guard (hex 16).regex == "^[0-9a-f]{16}$"
+#guard slug.regex == "^[a-z0-9][a-z0-9-]*$"
+#guard upperAlnum.regex == "^[A-Z0-9]+$"
+#guard ownerRepo.regex == "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+#guard relPath.regex == "^(?!/)(?!.*(^|/)\\.\\.(/|$))[^\\\\\\x00-\\x1f\\u2028\\u2029]+$"
+#guard uri.regex == "^[A-Za-z][A-Za-z0-9+.-]*:[^\\x00-\\x20\\x7f]*$"
+#guard dateTime.regex ==
+  "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+#guard instant.regex ==
+  "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+#guard decimal.regex == "^(0|-?[1-9][0-9]*)$"
 
 /-- A JSON Schema `format` to add beside the pattern, for tools that use it. -/
 def format? : Pat → Option String
@@ -89,106 +127,8 @@ def name : Pat → String
   | instant => "instant"
   | decimal => "decimal"
 
-private def isDigit (c : Char) : Bool := '0' ≤ c && c ≤ '9'
-private def isLowerHex (c : Char) : Bool := isDigit c || ('a' ≤ c && c ≤ 'f')
-private def isLower (c : Char) : Bool := 'a' ≤ c && c ≤ 'z'
-private def isAsciiLetter (c : Char) : Bool := isLower c || ('A' ≤ c && c ≤ 'Z')
-private def isRepoChar (c : Char) : Bool :=
-  isAsciiLetter c || isDigit c || c == '_' || c == '.' || c == '-'
-private def isControl (c : Char) : Bool := c.toNat < 0x20
-
-private def digits : List Char → Nat → Option (List Char)
-  | cs, 0 => some cs
-  | c :: cs, n + 1 => if isDigit c then digits cs n else none
-  | [], _ + 1 => none
-
-/-- One or more digits, then the rest. -/
-private def someDigits : List Char → Option (List Char)
-  | c :: cs => if isDigit c then some (cs.dropWhile isDigit) else none
-  | [] => none
-
-private def lit (c : Char) : List Char → Option (List Char)
-  | d :: ds => if c == d then some ds else none
-  | [] => none
-
-private def offsetOk : List Char → Bool
-  | ['Z'] => true
-  | s :: rest =>
-    (s == '+' || s == '-') &&
-      ((digits rest 2 >>= lit ':' >>= (digits · 2)) == some [])
-  | [] => false
-
-private def dateTimeOk (cs : List Char) : Bool :=
-  let head := digits cs 4 >>= lit '-' >>= (digits · 2) >>= lit '-' >>= (digits · 2)
-    >>= lit 'T' >>= (digits · 2) >>= lit ':' >>= (digits · 2) >>= lit ':' >>= (digits · 2)
-  match head with
-  | none => false
-  | some rest =>
-    match rest with
-    | '.' :: frac =>
-      match someDigits frac with
-      | some r => offsetOk r
-      | none => false
-    | _ => offsetOk rest
-
-/-- Two digits making a number from 0 to `hi`. -/
-private def twoDigits (hi : Nat) : List Char → Option (List Char)
-  | a :: b :: rest =>
-    if isDigit a && isDigit b && (a.toNat - 48) * 10 + (b.toNat - 48) ≤ hi then some rest else none
-  | _ => none
-
-/-- Two digits from 1 to `hi`. -/
-private def twoDigitsPos (hi : Nat) : List Char → Option (List Char)
-  | a :: b :: rest =>
-    let v := (a.toNat - 48) * 10 + (b.toNat - 48)
-    if isDigit a && isDigit b && 1 ≤ v && v ≤ hi then some rest else none
-  | _ => none
-
-private def instantOk (cs : List Char) : Bool :=
-  let head := digits cs 4 >>= lit '-' >>= twoDigitsPos 12 >>= lit '-' >>= twoDigitsPos 31
-    >>= lit 'T' >>= twoDigits 23 >>= lit ':' >>= twoDigits 59 >>= lit ':' >>= twoDigits 59
-  match head with
-  | some ['Z'] => true
-  | some (s :: rest) =>
-    (s == '+' || s == '-') && ((twoDigits 23 rest >>= lit ':' >>= twoDigits 59) == some [])
-  | _ => false
-
-private def decimalOk : List Char → Bool
-  | ['0'] => true
-  | '-' :: c :: cs => c != '0' && isDigit c && cs.all isDigit
-  | c :: cs => c != '0' && isDigit c && cs.all isDigit
-  | [] => false
-
-/-- The Lean side of each pattern. It accepts exactly what `regex` accepts. -/
-def check : Pat → String → Bool
-  | hex n, s => s.length == n && s.all isLowerHex
-  | slug, s =>
-    match s.toList with
-    | c :: _ => (isLower c || isDigit c) && s.all (fun c => isLower c || isDigit c || c == '-')
-    | [] => false
-  | upperAlnum, s => !s.isEmpty && s.all (fun c => ('A' ≤ c && c ≤ 'Z') || isDigit c)
-  | ownerRepo, s =>
-    match s.splitOn "/" with
-    | [a, b] => !a.isEmpty && !b.isEmpty && a.all isRepoChar && b.all isRepoChar
-    | _ => false
-  | relPath, s =>
-    !s.isEmpty && !s.startsWith "/" &&
-      s.all (fun c => c != '\\' && !isControl c && c != ' ' && c != ' ') &&
-      !(s.splitOn "/").contains ".."
-  | uri, s =>
-    match s.toList with
-    | c :: cs =>
-      let scheme := cs.takeWhile (· != ':')
-      let rest := cs.drop scheme.length
-      isAsciiLetter c &&
-        scheme.all (fun c => isAsciiLetter c || isDigit c || c == '+' || c == '.' || c == '-') &&
-        (match rest with
-         | ':' :: tail => tail.all (fun c => c.toNat > 0x20 && c.toNat != 0x7f)
-         | _ => false)
-    | [] => false
-  | dateTime, s => dateTimeOk s.toList
-  | instant, s => instantOk s.toList
-  | decimal, s => decimalOk s.toList
+/-- The Lean side of each pattern, read off the tree. -/
+def check (p : Pat) : String → Bool := p.tree.accepts
 
 /-- Every pattern conformance covers. -/
 def all : List Pat :=

@@ -4,14 +4,15 @@ import CaptureSchema
 Runs the Lean side of two checks (see check.sh):
 
 * every pattern in `Pat.all` against `tests/conformance/patterns.json`: the
-  case must exist, carry the regex Lean exports, and the Lean checker must
-  accept and reject exactly the listed strings;
+  case must exist, carry the regex and the tree Lean exports, and the Lean
+  checker must accept and reject exactly the listed strings;
 * the capture schema's Lean checker against the capture goldens: everything
   in `valid/` accepted, everything in `invalid/` rejected.
 
 Run with `lake env lean --run Check.lean <repo root>`. With
 `fuzz <in> <out>` it instead writes the Lean verdicts for generated strings,
-which check.sh compares with the regexes.
+which check.sh compares with the regexes. With `trees <out>` it writes each
+pattern's tree, by name, for updating `patterns.json`.
 -/
 
 open Lean Tribrach.Schema
@@ -37,6 +38,9 @@ def checkPatterns (root : System.FilePath) : IO Bool := do
     | some c =>
       if (c.getObjValAs? String "regex").toOption != some p.regex then
         IO.println s!"FAIL patterns: {p.name} regex differs from Pat.regex"; ok := false
+      if c.getObjValD "tree" != p.tree.toJson then
+        IO.println s!"FAIL patterns: {p.name} tree differs from Pat.tree; it is {p.tree.toJson.compress}"
+        ok := false
       for s in strings c "accept" do
         if !p.check s then IO.println s!"FAIL patterns: {p.name} should accept {repr s}"; ok := false
       for s in strings c "reject" do
@@ -70,6 +74,9 @@ def fuzz (inp out : System.FilePath) : IO UInt32 := do
 
 def main (args : List String) : IO UInt32 := do
   if let ["fuzz", inp, out] := args then return ← fuzz inp out
+  if let ["trees", out] := args then
+    IO.FS.writeFile out (Json.mkObj (Pat.all.map fun p => (p.name, p.tree.toJson))).pretty
+    return 0
   let root : System.FilePath := args.headD "../.."
   let a ← checkPatterns root
   let b ← checkGoldens root
