@@ -8,3 +8,4 @@ import Tribrach.Triage
 import Tribrach.Impact
 import Tribrach.Export
 import Tribrach.Schema
+import Tribrach.Wire

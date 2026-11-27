@@ -1,6 +1,6 @@
 """Validate format goldens: everything in tests/<kind>/valid must pass and
 everything in tests/<kind>/invalid must fail, for captures, feedback reports,
-triage results, manifests and vectors. Also checks the committed outputs of
+triage results, manifests, vectors and exchanges. Also checks the committed outputs of
 the feedback-sources and export-formats examples against their schemas."""
 
 import json
@@ -28,6 +28,7 @@ SCHEMAS = {
         "vectors.schema.json",
         "graph.schema.json",
         "refresh.schema.json",
+        "exchanges.schema.json",
     )
 }
 REGISTRY = Registry().with_resources(
@@ -48,6 +49,7 @@ MANIFEST = validator("manifest.schema.json")
 VECTORS = validator("vectors.schema.json")
 GRAPH = validator("graph.schema.json")
 REFRESH = validator("refresh.schema.json")
+EXCHANGES = validator("exchanges.schema.json")
 
 
 def problems(capture):
@@ -106,6 +108,16 @@ def graph_problems(doc):
     return errs
 
 
+def exchanges_problems(doc):
+    errs = [e.message for e in EXCHANGES.iter_errors(doc)]
+    if errs:
+        return errs
+    ids = [c["id"] for c in doc["cases"]]
+    if len(set(ids)) != len(ids):
+        errs.append("a case id appears twice")
+    return errs
+
+
 def schema_only(v):
     return lambda doc: [e.message for e in v.iter_errors(doc)]
 
@@ -148,6 +160,8 @@ def check_exports():
         ("export-formats/exported/counter.manifest.json", manifest_problems, json.loads((out / "counter.manifest.json").read_text())),
         ("export-formats/exported/counter.vectors.json", vectors_problems, json.loads((out / "counter.vectors.json").read_text())),
         ("export-formats/exported/tribrach.graph.json", graph_problems, json.loads((out / "tribrach.graph.json").read_text())),
+        *[(f"dto-parking/exported/exchanges/{p.name}", exchanges_problems, json.loads(p.read_text()))
+          for p in sorted((ROOT / "examples" / "dto-parking" / "exported" / "exchanges").glob("*.json"))],
         ("conformance/replay.json vectors", vectors_problems, json.loads((ROOT / "tests" / "conformance" / "replay.json").read_text())["vectors"]),
     ]
     for name, check, doc in docs:
@@ -165,6 +179,7 @@ def main():
     failed |= check_goldens("vectors", vectors_problems)
     failed |= check_goldens("graphs", graph_problems)
     failed |= check_goldens("refresh", schema_only(REFRESH))
+    failed |= check_goldens("exchanges", exchanges_problems)
     failed |= check_outputs()
     failed |= check_exports()
     sys.exit(1 if failed else 0)
