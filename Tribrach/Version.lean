@@ -24,7 +24,9 @@ and is recorded as such in the contract history.
 new proof. `Serves` states that a service at the new revision answers
 clients of the old one as the old service would, and `Serves.rollback`
 derives from it that rolling the service back is safe for every request the
-old revision can read.
+old revision can read. `ReadsOrRefuses` covers the other direction, a new
+client and an old server: the old reader takes a new message without losing
+anything, or refuses it.
 
 `Revision.ofVersion` and `Revision.ofOneWay` write the contract history
 record from the object itself, so the kind and the evidence come from Lean
@@ -122,6 +124,37 @@ theorem Serves.comp {v : Version Q1 Q2} {w : Version Q2 Q3} {b2 : R2 → R1} {b3
   intro q
   show b2 (b3 (h3 (w.upgrade (v.upgrade q)))) = h1 q
   rw [s23, s12]
+
+/-- An old reader takes from a new writer's message exactly what the new
+reader takes, put in the old form, and refuses the rest: a value the old
+revision can't hold is refused, never misread. `write` is the new writer,
+`read1` and `read2` the old and new readers. This is the other half of
+`Serves`, for a new client talking to an old server during a rollout or
+after a rollback. -/
+def ReadsOrRefuses (req : Version Q1 Q2) (read1 : W → Option Q1) (read2 : W → Option Q2)
+    (write : Q2 → W) : Prop :=
+  ∀ q, read1 (write q) = (read2 (write q)).bind req.downgrade?
+
+/-- Whatever an old server reads from a new client is what the new server
+would read, nothing lost, and it answers as the new server would. -/
+theorem ReadsOrRefuses.answers {req : Version Q1 Q2} {read1 : W → Option Q1}
+    {read2 : W → Option Q2} {write : Q2 → W} {back : R2 → R1} {h1 : Q1 → R1} {h2 : Q2 → R2}
+    (r : ReadsOrRefuses req read1 read2 write) (s : Serves req back h1 h2) {q : Q2} {q1 : Q1}
+    (h : read1 (write q) = some q1) :
+    ∃ q2, read2 (write q) = some q2 ∧ req.upgrade q1 = q2 ∧ back (h2 q2) = h1 q1 := by
+  rw [r q] at h
+  cases h2r : read2 (write q) with
+  | none => simp [h2r] at h
+  | some q2 =>
+    simp only [h2r, Option.bind_some] at h
+    exact ⟨q2, rfl, s.rollback h⟩
+
+/-- A request the old revision can't hold is refused by the old reader. -/
+theorem ReadsOrRefuses.refuses {req : Version Q1 Q2} {read1 : W → Option Q1}
+    {read2 : W → Option Q2} {write : Q2 → W} (r : ReadsOrRefuses req read1 read2 write)
+    {q q2 : Q2} (h : read2 (write q) = some q2) (hn : req.downgrade? q2 = none) :
+    read1 (write q) = none := by
+  rw [r q, h, Option.bind_some, hn]
 
 /-- The history record for a revision whose change is the `Version` `ref`
 names: an extension both ways, checked by the version's proofs. -/

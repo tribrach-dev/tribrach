@@ -98,4 +98,71 @@ def StartResponseV2.codec : Codec StartResponseV2 :=
     Obj.case "rejected" (Obj.build id |>.field "reason" reason id)
       (fun | .rejected w => some w | _ => none) .rejected]
 
+/-! ## A v2 client and a v1 server
+
+A v1 server reads a v2 request exactly as `Meters.downgradeRequest?` says:
+one that doesn't ask for EV charging is read with nothing lost, and one that
+does is refused, because the v1 object doesn't name `evCharging`. Together
+with `Meters.v2_serves_v1`, the v1 server then answers as v2 would
+(`ReadsOrRefuses.answers`). -/
+
+theorem v1_reads_or_refuses :
+    Tribrach.ReadsOrRefuses requestVersion StartRequest.codec.dec StartRequestV2.codec.dec
+      StartRequestV2.codec.enc := by
+  intro ⟨z, p, m, ev⟩
+  show StartRequest.codec.dec _ = (StartRequestV2.codec.dec _).bind downgradeRequest?
+  cases ev with
+  | some b =>
+    have hk : (StartRequestV2.codec.enc ⟨z, p, m, some b⟩).getObjVal? "evCharging" =
+        .ok (Json.bool b) := rfl
+    have h1 : StartRequest.codec.dec (StartRequestV2.codec.enc ⟨z, p, m, some b⟩) = none := by
+      unfold StartRequest.codec
+      exact Obj.codec_refuses_unknown _ hk (by decide)
+    rw [h1]
+    simp only [StartRequestV2.codec, Obj.codec, Obj.build, Obj.field, Obj.optional, Codec.guarded]
+    split
+    · simp only [Except.toOption, Option.pure_def, Option.bind_eq_bind, Option.bind_assoc,
+        Option.bind_some]
+      generalize (Json.mkObj _).getObjVal? "zone" = oz
+      generalize (Json.mkObj _).getObjVal? "plate" = op
+      generalize (Json.mkObj _).getObjVal? "minutes" = om
+      have he : (Json.mkObj [("zone", zone.enc z), ("plate", plate.enc p), ("minutes", minutes.enc m),
+          ("evCharging", Codec.bool.enc b)]).getObjVal? "evCharging" = .ok (Codec.bool.enc b) := rfl
+      cases oz <;> cases op <;> cases om <;> simp [he] <;>
+        (generalize Codec.bool.dec (Codec.bool.enc b) = ob; cases ob <;> simp [downgradeRequest?])
+    · rfl
+  | none =>
+    simp only [StartRequest.codec, StartRequestV2.codec, Obj.codec, Obj.build, Obj.field,
+      Obj.optional, Codec.guarded, Option.map_none, Option.getD_none, List.nil_append,
+      List.cons_append]
+    generalize zone.enc z = a, plate.enc p = b, minutes.enc m = c
+    have hj : Json.mkObj [("zone", a), ("plate", b), ("minutes", c)] =
+        .obj (Std.TreeMap.Raw.ofList [("zone", a), ("plate", b), ("minutes", c)]) := rfl
+    rw [hj]
+    generalize hJ : Std.TreeMap.Raw.ofList [("zone", a), ("plate", b), ("minutes", c)] compare = kvs
+    have hz : (Json.obj kvs).getObjVal? "zone" = .ok a := by subst hJ; rfl
+    have hp : (Json.obj kvs).getObjVal? "plate" = .ok b := by subst hJ; rfl
+    have hm : (Json.obj kvs).getObjVal? "minutes" = .ok c := by subst hJ; rfl
+    have he : (Json.obj kvs).getObjVal? "evCharging" = .error "property not found: evCharging" := by
+      subst hJ; rfl
+    have k1 : (kvs.all fun k _ => [("zone", zone.ty, true), ("plate", plate.ty, true),
+        ("minutes", minutes.ty, true)].any fun x => x.fst == k) = true := by subst hJ; rfl
+    have k2 : (kvs.all fun k _ => [("zone", zone.ty, true), ("plate", plate.ty, true),
+        ("minutes", minutes.ty, true), ("evCharging", Codec.bool.ty, false)].any
+          fun x => x.fst == k) = true := by subst hJ; rfl
+    simp only [Ty.check, Ty.checkFields, k1, k2, hz, hp, hm, he, req, opt, Bool.true_and,
+      Bool.not_false, Bool.and_true, Except.toOption, Option.bind_eq_bind]
+    split
+    · simp [Option.pure_def, Option.bind_assoc, downgradeRequest?]
+    · rfl
+
+/-- A v1 server reading a v2 client's request: whatever it reads, the v2
+server would have read too, nothing lost, and the v1 answer is the v2 answer
+as the v1 route sends it. -/
+theorem v1_server_answers_v2_client (e : EnvV2) {q : StartRequestV2} {q1 : StartRequest}
+    (h : StartRequest.codec.dec (StartRequestV2.codec.enc q) = some q1) :
+    ∃ q2, StartRequestV2.codec.dec (StartRequestV2.codec.enc q) = some q2 ∧
+      upgrade q1 = q2 ∧ downgrade (startV2 e q2) = start e.toEnv q1 :=
+  v1_reads_or_refuses.answers (v2_serves_v1 e) h
+
 end Parking.Codecs

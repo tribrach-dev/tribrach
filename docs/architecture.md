@@ -172,7 +172,11 @@ formats the same way by passing `tests/conformance` (see its README);
   itself (`backRead`). `OneWay` is the explicit opt-out. Versions chain
   (`Version.comp`); `Serves` states that a service at the new revision
   answers old clients as the old service did, and `Serves.rollback` derives
-  that rolling back is safe. `Revision.ofVersion` writes the contract
+  that rolling back is safe. `ReadsOrRefuses` covers a new client and an
+  old server: the old reader takes from a new message exactly what the new
+  reader takes, downgraded, and refuses the rest, never misreading it.
+  Closed objects make this hold on the wire: an object reader refuses any
+  key it doesn't name (`Obj.codec_refuses_unknown`). `Revision.ofVersion` writes the contract
   history record (kind `extend both`, evidence `checked`) from the version
   itself. Example: `examples/dto-parking` (`Meters.requestVersion`).
 - **Exchanges** (`tribrach.exchanges.v1`, `schema/exchanges.schema.json`):
