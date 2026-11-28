@@ -1,4 +1,5 @@
 import Tribrach.Schema
+import Std.Data.DTreeMap.Internal.WF.Lemmas
 
 /-!
 # Wire codecs: Lean values to JSON and back
@@ -226,6 +227,54 @@ def codec (o : Obj α α) : Codec α :=
   { ty, enc := fun a => Json.mkObj (o.enc a), dec := Codec.guarded ty o.read }
 
 end Obj
+
+/-! ### Closed objects refuse what they don't name
+
+An object type lists its fields and nothing else may appear, so a reader
+never quietly drops a field it doesn't know: the whole message is refused.
+This is what lets an old reader be trusted with a newer writer's messages
+(`Tribrach.ReadsOrRefuses`). -/
+
+/-- A key the tree finds is one of its entries. -/
+theorem get?_mem_toListModel {t : Std.DTreeMap.Internal.Impl String (fun _ => Json)}
+    {k : String} {v : Json} (h : Std.DTreeMap.Internal.Impl.Const.get? t k = some v) :
+    ⟨k, v⟩ ∈ t.toListModel := by
+  induction t with
+  | leaf => simp [Std.DTreeMap.Internal.Impl.Const.get?] at h
+  | inner _ k' _ l r ihl ihr =>
+    unfold Std.DTreeMap.Internal.Impl.Const.get? at h
+    split at h
+    · simp [ihl h]
+    · simp [ihr h]
+    · rename_i he
+      have : k = k' := Std.LawfulEqOrd.eq_of_compare he
+      subst this; cases h; simp
+
+/-- An object with a key the type doesn't name fails the type. -/
+theorem _root_.Tribrach.Schema.Ty.check_obj_unknown {fs : List (String × Ty × Bool)}
+    {kvs : Std.TreeMap.Raw String Json compare} {k : String} {v : Json}
+    (hk : (Json.obj kvs).getObjVal? k = .ok v) (hn : fs.all (·.1 != k)) :
+    Ty.check (.obj fs) (.obj kvs) = false := by
+  have hg : kvs[k]? = some v := by
+    simp only [Json.getObjVal?] at hk
+    split at hk
+    · rename_i h; cases hk; exact h
+    · cases hk
+  have hall : kvs.all (fun k _ => fs.any (·.1 == k)) = false := by
+    show kvs.inner.inner.all _ = false
+    rw [Std.DTreeMap.Internal.Impl.all_eq_all_toListModel, List.all_eq_false]
+    refine ⟨⟨k, v⟩, get?_mem_toListModel hg, ?_⟩
+    simp only [List.all_eq_true, bne_iff_ne, ne_eq] at hn
+    simp only [Bool.not_eq_true, List.any_eq_false, beq_iff_eq]
+    exact fun x hx he => hn x hx he
+  simp [Ty.check, hall]
+
+/-- An object reader refuses any message with a key it doesn't name. -/
+theorem Obj.codec_refuses_unknown (o : Obj α α) {j : Json} {k : String} {v : Json}
+    (hk : j.getObjVal? k = .ok v) (hn : o.fields.all (·.1 != k)) : o.codec.dec j = none := by
+  cases j with
+  | obj kvs => simp [Obj.codec, Codec.guarded, Ty.check_obj_unknown hk hn]
+  | _ => simp [Json.getObjVal?] at hk
 
 /-- One case of a tagged union. -/
 structure Case (α : Type) where

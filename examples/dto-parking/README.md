@@ -26,6 +26,8 @@ writes `exported/` and fails if any proof breaks.
 | `Meters.v2_serves_v1` | A v2 server on the v1 route answers every v1 request exactly as a v1 server would (a `Tribrach.Serves`) |
 | `Meters.v1_never_queued` | v1 requests never get v2's new `queued` answer |
 | `Meters.rollback_safe` | A v1 server reads a v2 request only when nothing is lost, and then answers as v2 would. It follows from the two above by `Serves.rollback` |
+| `Codecs.v1_reads_or_refuses` | On the wire, a v1 server reads a v2 client's request exactly as `downgradeRequest?` says: without EV charging it reads the same request, nothing lost; with `evCharging` it refuses the whole message, because the v1 object doesn't name that field (a `Tribrach.ReadsOrRefuses`, using the general `Obj.codec_refuses_unknown`) |
+| `Codecs.v1_server_answers_v2_client` | Whatever a v1 server reads from a v2 client, it answers as the v2 server would. It follows from the two above by `ReadsOrRefuses.answers` |
 
 `Meters.v2Revision` is the contract history record for v2, written by
 `Revision.ofVersion` from `requestVersion`: kind `extend both`, evidence
@@ -45,8 +47,9 @@ checked on many messages, not yet proved:
   small extensions: ECMA-262 `$`, and the `x-tribrach` bounds on decimal
   strings.
 - Versions on the wire: a v2 server reads each v1 request as `upgrade`
-  says. A v1 server reads a v2 request exactly when `downgradeRequest?`
-  allows. A v1 client reads every v2 response except `queued`.
+  says. A v1 client reads every v2 response except `queued`. (That a v1
+  server reads a v2 request exactly when `downgradeRequest?` allows is also
+  proved, as `Codecs.v1_reads_or_refuses`.)
 - Exchanges: every recorded request, call and response fits its schema, and
   status 200 means exactly that the request decodes.
 
