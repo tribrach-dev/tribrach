@@ -1,4 +1,5 @@
 import Tribrach.Wire
+import Std.Time
 
 /-!
 Writes and checks `tests/conformance/wire.json`: how each wire primitive
@@ -17,6 +18,8 @@ From the repository root:
 
 Every case also checks, in Lean, that the decoder accepts exactly what the
 schema accepts (`Codec.agrees`) and that what it writes reads back the same.
+The check also compares core's calendar rule with Lean's `Std.Time` over a
+400-year era, as an independent second opinion on which days exist.
 -/
 
 open Lean Tribrach Schema Wire
@@ -219,8 +222,21 @@ def file : String :=
 
 def path : System.FilePath := "tests" / "conformance" / "wire.json"
 
+/-- A second opinion on the calendar from Lean's standard library: over one
+400-year era (2000 to 2399) and every month and day number 1 to 31,
+`Pat.daysInMonth` and `Std.Time` agree on which days exist. -/
+def calendarDisagreements : List String :=
+  (List.range 400).flatMap fun i => (List.finRange 12).flatMap fun mi => (List.finRange 31).filterMap fun di =>
+    let y := 2000 + i
+    let ours := decide (di.val + 1 ≤ Pat.daysInMonth y (mi.val + 1))
+    let month := Std.Time.Month.Ordinal.ofInt (mi.val + 1) (by have := mi.isLt; omega)
+    let day := Std.Time.Day.Ordinal.ofInt (di.val + 1) (by have := di.isLt; omega)
+    let std := (Std.Time.PlainDate.ofYearMonthDay? (Int.ofNat y) month day).isSome
+    if ours == std then none
+    else some s!"{y}-{mi.val + 1}-{di.val + 1}: Tribrach says {ours}, Std.Time says {std}"
+
 def main (args : List String) : IO UInt32 := do
-  let problems := all.flatMap Case.problems
+  let problems := all.flatMap Case.problems ++ calendarDisagreements
   let dups := all.map (·.id) |>.filter fun i => (all.filter (·.id == i)).length > 1
   for p in problems ++ dups.map (s!"duplicate case id {·}") do IO.println s!"FAIL {p}"
   if !problems.isEmpty || !dups.isEmpty then return 1
