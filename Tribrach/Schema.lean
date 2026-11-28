@@ -168,10 +168,13 @@ end Pat
 name is an error. -/
 inductive Ty where
   | bool
-  /-- A whole number; JSON numbers like `2.0` count. -/
+  /-- A whole number; JSON numbers like `2.0` count. Always signed 64-bit
+  (`int64Min` to `int64Max`), within any narrower bounds given, so every
+  instrument can hold it; the schema says `"format": "int64"`. -/
   | int (min : Option Int := none) (max : Option Int := none) (multipleOf : Option Nat := none)
-  /-- A whole number written as a decimal string (`Pat.decimal`). JSON Schema
-  can't bound a string's value, so the bounds go under `x-tribrach`. -/
+  /-- A whole number written as a decimal string (`Pat.decimal`), signed
+  64-bit like `int`. JSON Schema can't bound a string's value, so the bounds
+  go under `x-tribrach`. -/
   | decimal (min : Option Int := none) (max : Option Int := none)
   /-- A string; lengths count Unicode code points. -/
   | str (minLen : Option Nat := none) (maxLen : Option Nat := none) (pat : Option Pat := none)
@@ -203,6 +206,10 @@ private def optField (k : String) : Option Json → List (String × Json)
   | some v => [(k, v)]
   | none => []
 
+/-- The range every whole number on the wire stays in: signed 64-bit. -/
+def int64Min : Int := -(2 ^ 63)
+def int64Max : Int := 2 ^ 63 - 1
+
 /-- A JSON number as a whole number, if it is one. -/
 def asInt? (n : JsonNumber) : Option Int :=
   let p : Int := (10 ^ n.exponent : Nat)
@@ -213,7 +220,8 @@ mutual
 def Ty.toJson : Ty → Json
   | .bool => Json.mkObj [("type", Json.str "boolean")]
   | .int lo hi m => Json.mkObj ([("type", Json.str "integer")] ++ optField "minimum" (lo.map Lean.toJson)
-      ++ optField "maximum" (hi.map Lean.toJson) ++ optField "multipleOf" (m.map Lean.toJson))
+      ++ optField "maximum" (hi.map Lean.toJson) ++ optField "multipleOf" (m.map Lean.toJson)
+      ++ [("format", Json.str "int64")])
   | .decimal lo hi => Json.mkObj ([("type", Json.str "string"),
       ("pattern", Json.str Pat.decimal.regex)]
       ++ (if lo.isNone && hi.isNone then [] else
@@ -251,12 +259,13 @@ def Ty.check : Ty → Json → Bool
   | .bool, .bool _ => true
   | .int lo hi m, .num n =>
     match asInt? n with
-    | some i => lo.all (· ≤ i) && hi.all (i ≤ ·) && m.all (fun m => i % (m : Int) == 0)
+    | some i => int64Min ≤ i && i ≤ int64Max && lo.all (· ≤ i) && hi.all (i ≤ ·) &&
+        m.all (fun m => i % (m : Int) == 0)
     | none => false
   | .decimal lo hi, .str s =>
     Pat.decimal.check s &&
       (match s.toInt? with
-       | some i => lo.all (· ≤ i) && hi.all (i ≤ ·)
+       | some i => int64Min ≤ i && i ≤ int64Max && lo.all (· ≤ i) && hi.all (i ≤ ·)
        | none => false)
   | .str lo hi p, .str s =>
     lo.all (· ≤ s.length) && hi.all (s.length ≤ ·) && p.all (·.check s)
@@ -389,6 +398,9 @@ private def point : Ty := .obj [req "x" (.int (min := some 0) (max := some 9)), 
 #guard !(Ty.decimal (min := some 1) (max := some 20000)).check "0"
 #guard !(Ty.decimal (min := some 1)).check "1_000"         -- toInt? alone would take it
 #guard !(Ty.decimal).check (Json.num 3)
+#guard (Ty.int).check (Json.num 9223372036854775807) && !(Ty.int).check (Json.num 9223372036854775808)
+#guard (Ty.int).check (Json.num (-9223372036854775808)) && !(Ty.int).check (Json.num (-9223372036854775809))
+#guard (Ty.decimal).check "-9223372036854775808" && !(Ty.decimal).check "9223372036854775808"
 private def shape : Ty := tagged "kind" [("dot", []), ("box", [req "w" (.int)])]
 #guard shape.check (Json.mkObj [("kind", "dot")])
 #guard shape.check (Json.mkObj [("kind", "box"), ("w", 2)])

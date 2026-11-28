@@ -1,4 +1,5 @@
 import Parking.Payments
+import Tribrach.Version
 
 /-!
 # The meters service: `meters.start`, versions 1 and 2
@@ -9,9 +10,10 @@ the session.
 
 Version 2 adds an optional `evCharging` request and a `queued` answer for
 when every charger is busy. A v2 server still serves v1 clients, on the v1
-route, by upgrading the request and downgrading the answer;
-`v2_serves_v1` proves that v1 clients see exactly what a v1 server would have
-told them.
+route, by upgrading the request and downgrading the answer. The request
+change is a `Tribrach.Version` (`requestVersion`), and `v2_serves_v1` is a
+`Tribrach.Serves`: v1 clients see exactly what a v1 server would have told
+them. `rollback_safe` then follows from `Serves.rollback`.
 -/
 
 namespace Parking.Meters
@@ -163,10 +165,26 @@ doesn't ask for EV charging. -/
 def downgradeRequest? (r : StartRequestV2) : Option StartRequest :=
   if r.evCharging.isNone then some ⟨r.zone, r.plate, r.minutes⟩ else none
 
+/-- The v1 to v2 request change, both ways. -/
+def requestVersion : Tribrach.Version StartRequest StartRequestV2 where
+  upgrade := upgrade
+  downgrade? := downgradeRequest?
+  forward r := by simp [upgrade, downgradeRequest?]
+  backRead r r1 h := by
+    unfold downgradeRequest? at h
+    split at h
+    · rename_i hn
+      cases h
+      cases r
+      simp_all [upgrade]
+    · cases h
+
 /-- Forward compatibility: a v2 server on the v1 route answers every v1
 request exactly as a v1 server would. -/
-theorem v2_serves_v1 (e : EnvV2) (r : StartRequest) :
-    downgrade (startV2 e (upgrade r)) = start e.toEnv r := by
+theorem v2_serves_v1 (e : EnvV2) :
+    Tribrach.Serves requestVersion downgrade (start e.toEnv) (startV2 e) := by
+  intro r
+  show downgrade (startV2 e (upgrade r)) = start e.toEnv r
   unfold startV2 upgrade
   simp only [reduceCtorEq, false_and, ite_false]
   cases start e.toEnv r <;> rfl
@@ -183,16 +201,13 @@ theorem v1_never_queued (e : EnvV2) (r : StartRequest) (s n) :
 nothing, and then answers as the v2 server would have. -/
 theorem rollback_safe (e : EnvV2) (r : StartRequestV2) (r1 : StartRequest)
     (h : downgradeRequest? r = some r1) : upgrade r1 = r ∧
-      downgrade (startV2 e r) = start e.toEnv r1 := by
-  unfold downgradeRequest? at h
-  split at h
-  · rename_i hn
-    cases h
-    have : r.evCharging = none := by simpa using hn
-    refine ⟨?_, ?_⟩
-    · cases r; simp_all [upgrade]
-    · have := v2_serves_v1 e ⟨r.zone, r.plate, r.minutes⟩
-      cases r; simp_all [upgrade]
-  · cases h
+      downgrade (startV2 e r) = start e.toEnv r1 :=
+  (v2_serves_v1 e).rollback (req := requestVersion) h
+
+/-- The contract history record for v2, written from the version itself. -/
+def v2Revision : Tribrach.Revision :=
+  Tribrach.Revision.ofVersion ⟨"meters.start"⟩ 2 (lean% Parking.Meters.requestVersion) requestVersion
+
+#guard v2Revision.kind == some (.extend .both)
 
 end Parking.Meters

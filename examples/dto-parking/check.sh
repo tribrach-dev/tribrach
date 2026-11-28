@@ -38,6 +38,9 @@ def pattern(validator, regex, instance, schema):
     # a final newline, so use \Z.
     if isinstance(instance, str) and re.search(regex[:-1] + r"\Z" if regex.endswith("$") else regex, instance) is None:
         yield ValidationError(f"{instance!r} does not match {regex!r}")
+    elif isinstance(instance, str) and regex == "^(0|-?[1-9][0-9]*)$" and not -(2 ** 63) <= int(instance) < 2 ** 63:
+        # Decimal strings are signed 64-bit, like core's whole numbers.
+        yield ValidationError(f"{instance} is outside signed 64-bit")
 
 def x_tribrach(validator, value, instance, schema):
     # Bounds on whole numbers written as decimal strings (Ty.decimal).
@@ -57,6 +60,9 @@ def format_(validator, fmt, instance, schema):
     # so check it here the way core does (Pat.calendar).
     if fmt == "date-time" and isinstance(instance, str) and not real_date(instance):
         yield ValidationError(f"{instance!r} is not a day that exists")
+    # format: int64 (core's whole numbers are signed 64-bit).
+    if fmt == "int64" and isinstance(instance, int) and not -(2 ** 63) <= instance < 2 ** 63:
+        yield ValidationError(f"{instance} is outside signed 64-bit")
 
 Validator = jsonschema.validators.extend(jsonschema.Draft202012Validator,
                                          {"pattern": pattern, "x-tribrach": x_tribrach, "format": format_})

@@ -134,6 +134,8 @@ def all : List Case :=
     ("zero", "0"), ("negative", "-12"), ("whole-fraction", "2.0"), ("exponent", "1e2"),
     ("negative-zero", "-0"), ("fraction", "2.5"), ("small-exponent", "25e-1"),
     ("int64-max", "9223372036854775807"), ("int64-min", "-9223372036854775808"),
+    ("above-int64", "9223372036854775808"), ("below-int64", "-9223372036854775809"),
+    ("above-int64-as-exponent", "1e19"), ("huge", "1e400"),
     ("beyond-double", "9007199254740993"), ("string", "\"1\""), ("bool", "true"),
     ("null", "null")] ++
   cases "int-bounded" (.of (Codec.int (min := some 0) (max := some 9))) [
@@ -157,7 +159,9 @@ def all : List Case :=
     ("case-differs", "\"Red\""), ("number", "0")] ++
   cases "decimal" (.of (Codec.decimal)) [
     ("zero", "\"0\""), ("negative", "\"-12\""), ("beyond-double", "\"9007199254740993\""),
-    ("int64-max", "\"9223372036854775807\""), ("negative-zero", "\"-0\""),
+    ("int64-max", "\"9223372036854775807\""), ("int64-min", "\"-9223372036854775808\""),
+    ("above-int64", "\"9223372036854775808\""), ("below-int64", "\"-9223372036854775809\""),
+    ("negative-zero", "\"-0\""),
     ("leading-zero", "\"007\""), ("plus", "\"+5\""), ("underscore", "\"1_000\""),
     ("fraction", "\"3.0\""), ("exponent", "\"1e3\""), ("space", "\" 5\""),
     ("number", "5"), ("empty", "\"\"")] ++
@@ -213,7 +217,7 @@ def about : String :=
   "(trailing data, a trailing comma, NaN) and on an object with a duplicated key. Whole numbers " ++
   "may be written 2.0 or 1e2 and are written back plainly; instants are written back in UTC, " ++
   "and an instant whose day doesn't exist in its month (30 February, 29 February outside leap years) fails. " ++
-  "Cases stay within signed 64-bit integers."
+  "Whole numbers, as JSON numbers or decimal strings, are signed 64-bit: anything outside fails."
 
 def file : String :=
   renderJson (Json.mkObj [("format", Json.str "tribrach.conformance.wire.v1"),
