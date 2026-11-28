@@ -48,8 +48,18 @@ def x_tribrach(validator, value, instance, schema):
         if "maximum" in value and n > value["maximum"]:
             yield ValidationError(f"{n} is above {value['maximum']}")
 
+sys.path.insert(0, "../../tools")
+from conformance import real_date
+
+def format_(validator, fmt, instance, schema):
+    # format: date-time asks for a real date (RFC 3339 5.7), which the
+    # pattern can't say. jsonschema only checks it with an extra package,
+    # so check it here the way core does (Pat.calendar).
+    if fmt == "date-time" and isinstance(instance, str) and not real_date(instance):
+        yield ValidationError(f"{instance!r} is not a day that exists")
+
 Validator = jsonschema.validators.extend(jsonschema.Draft202012Validator,
-                                         {"pattern": pattern, "x-tribrach": x_tribrach})
+                                         {"pattern": pattern, "x-tribrach": x_tribrach, "format": format_})
 schemas = {p.name[:-5]: Validator(json.loads(p.read_text()))
            for p in pathlib.Path("exported/schemas").glob("*.json")}
 
