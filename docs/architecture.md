@@ -140,8 +140,14 @@ formats the same way by passing `tests/conformance` (see its README);
   shape can't say. From it come a JSON Schema (draft 2020-12) for other tools
   and a checker in Lean (`Schema.accepts`). Rules appear in the schema under
   `x-tribrach` by Lean name and stamp. String patterns come from a closed
-  list (`Pat`), each with a regex and a Lean check that
-  `tests/conformance/patterns.json` and a fuzz run keep in step.
+  list (`Pat`). Each is a pattern tree (`Tribrach.Re`: literals, character
+  sets, sequences, choices, repeats, and `without` for the two refusals
+  `relPath` needs); the schema's regex and the Lean checker are both read off
+  the tree. `tests/conformance/patterns.json` carries the trees, so an
+  instrument runs one generic matcher instead of a checker per pattern, and
+  an adapter can render a pattern in its own dialect (a database `CHECK`, say)
+  instead of trusting a regex dialect. A fuzz run keeps Lean, the reference
+  tree matcher and the regexes in step.
   `#tribrach_write files` writes the schema on build, like
   `#tribrach_export`. `schema/capture.schema.json` is generated this way
   (example: `examples/capture-schema`); the other schemas are still written
@@ -154,6 +160,9 @@ formats the same way by passing `tests/conformance` (see its README);
   ids as decimal strings (`Ty.decimal`, bounds under `x-tribrach`), RFC 3339
   instants read at any offset and written in UTC, and optional fields left
   out rather than `null`. Example: `examples/dto-parking`.
+  `tests/conformance/wire.json`, written by `tools/WireCases.lean` from the
+  codecs themselves, pins how each primitive reads JSON text and writes it
+  back, so instruments' readers can be checked one primitive at a time.
 - **Exchanges** (`tribrach.exchanges.v1`, `schema/exchanges.schema.json`):
   requests a service handled, what it was given besides the request (clock,
   ids, stubbed answers), the calls it made with their answers, and the

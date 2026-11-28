@@ -4,8 +4,10 @@
 #  1. the committed schema is what the build writes (compared as JSON);
 #  2. the Lean checker agrees with the pattern conformance cases and with
 #     the capture goldens;
-#  3. the Lean checker and the exported regexes agree on many generated
-#     strings near the conformance cases.
+#  3. the Lean checker, the reference tree matcher (tools/conformance.py)
+#     and the exported regexes (plus the calendar check, where a pattern
+#     asks for it) agree on many generated strings near the
+#     conformance cases.
 set -e
 
 python3 - <<'PY'
@@ -28,7 +30,7 @@ python3 - "$tmp" <<'PY'
 import json, random, re, sys
 tmp = sys.argv[1]
 cases = json.load(open("../../tests/conformance/patterns.json"))["cases"]
-alphabet = list("09afgzAFZ-_./\\:+ T\t\n") + ["..", " ", "\x7f", "\x00", "é"]
+alphabet = list("09afgzAFZ-_./\\:+ T\t\n") + ["..", "\u2028", "\u2029", "\x7f", "\x00", "\x1f", "é"]
 rng = random.Random(20261126)
 def mutate(s):
     s = list(s)
@@ -51,19 +53,27 @@ PY
 lake env lean --run Check.lean fuzz "$tmp/in.json" "$tmp/out.json"
 python3 - "$tmp" <<'PY'
 import json, re, sys
+sys.path.insert(0, "../../tools")
+from conformance import pattern_matches, real_date
 tmp = sys.argv[1]
-cases = {c["name"]: c["regex"] for c in json.load(open("../../tests/conformance/patterns.json"))["cases"]}
+all_cases = json.load(open("../../tests/conformance/patterns.json"))["cases"]
+cases = {c["name"]: c["regex"] for c in all_cases}
+byname = {c["name"]: c for c in all_cases}
 samples = json.load(open(f"{tmp}/in.json"))
 lean = json.load(open(f"{tmp}/out.json"))
 bad = 0
 for name, strs in samples.items():
     rx = re.compile(cases[name][:-1] + r"\Z")  # ECMA $: only at the very end
     for s, got in zip(strs, lean[name]):
-        if (rx.search(s) is not None) != got:
+        want = rx.search(s) is not None and (not byname[name].get("calendar") or real_date(s))
+        if want != got:
             bad += 1
             print(f"FAIL {name}: Lean says {got} for {s!r}")
+        if want != pattern_matches(byname[name], s):
+            bad += 1
+            print(f"FAIL {name}: the reference tree matcher says {not want} for {s!r}")
 total = sum(len(v) for v in samples.values())
-print(f"{'ok  ' if not bad else 'FAIL'} fuzz: Lean and regex agree on {total - bad} of {total} strings")
+print(f"{'ok  ' if not bad else 'FAIL'} fuzz: Lean, the tree matcher and the regex agree on {total - bad} of {total} strings")
 sys.exit(1 if bad else 0)
 PY
 rm -rf "$tmp"

@@ -3,14 +3,17 @@
 Every instrument runs these cases for each format version it declares in its
 `tribrach-package.toml`, and must produce exactly the expected results.
 `python tools/conformance.py` is the reference implementation and runs in
-core CI, so the cases stay consistent with each other.
+core CI, so the cases stay consistent with each other. `patterns.json` trees
+and all of `wire.json` are written by Lean (`Pat.tree`,
+`tools/WireCases.lean`), and CI fails if the committed files differ.
 
 | File | Checks |
 | --- | --- |
 | `annotations.json` | Reading one comment line: directive, argument or error (`missing-argument`, `extra-argument`, `bad-stamp`, `unknown-directive`); lines that aren't directives give `null` |
 | `drift.json` | Comparing host links with the manifest for one owner: `ok`, `drift`, `unstamped`, `unknown`, `symbol-mismatch`, `missing` |
 | `replay.json` | Replaying vectors: JSON equality rules, stopping at the first differing step, and what the report names |
-| `patterns.json` | String patterns a schema may use: the exported regex, and strings it must accept and reject. Regexes follow ECMA-262, so `$` matches only at the very end |
+| `patterns.json` | String patterns a schema may use: the pattern tree (the source of truth), the regex rendered from it, and strings it must accept and reject. Regexes follow ECMA-262, so `$` matches only at the very end |
+| `wire.json` | Wire primitives: a JSON Schema as core exports it, an input as JSON text, and the JSON a codec writes back after reading it, or `error`. Covers whole numbers written `2.0` or `1e2`, string lengths in code points, decimal strings, instants at any offset written back in UTC, closed objects, absent versus `null`, tagged unions, duplicate keys and malformed text |
 
 Outcome names are shared; diagnostic codes are each instrument's own
 (`TRG…` for Go, `TRS…` for Swift). Whatever the code, each diagnostic

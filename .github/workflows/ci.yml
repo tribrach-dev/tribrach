@@ -24,6 +24,8 @@ jobs:
         run: pip install --quiet "jsonschema==4.26.0"
       - name: Build core
         run: lake build
+      - name: Wire conformance cases match the codecs
+        run: lake env lean --run tools/WireCases.lean
       - name: Build examples
         run: |
           for d in examples/*/; do
