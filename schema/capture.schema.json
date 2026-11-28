@@ -39,8 +39,8 @@
         "additionalProperties": false,
         "required": ["start", "end"],
         "properties": {
-          "end": { "type": "integer", "minimum": 1 },
-          "start": { "type": "integer", "minimum": 1 }
+          "end": { "type": "integer", "minimum": 1, "format": "int64" },
+          "start": { "type": "integer", "minimum": 1, "format": "int64" }
         }
       }
     },

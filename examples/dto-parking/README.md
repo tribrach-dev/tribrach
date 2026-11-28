@@ -22,9 +22,14 @@ writes `exported/` and fails if any proof breaks.
 | `Meters.expiry_exact` | A session starts now and runs exactly the minutes asked |
 | `Meters.charge_within_limit` | The dearest valid session (zone A1, 240 minutes, 2,000 cents) fits under payments' limit. This is where meters relies on payments |
 | `Meters.start_succeeds` | Composed with the real payments service, a valid request starts a session whenever the card approves |
-| `Meters.v2_serves_v1` | A v2 server on the v1 route answers every v1 request exactly as a v1 server would |
+| `Meters.requestVersion` | The v1 to v2 request change is a `Tribrach.Version`: every v1 request comes back unchanged after an upgrade, and whatever a v1 server can read upgrades back to itself |
+| `Meters.v2_serves_v1` | A v2 server on the v1 route answers every v1 request exactly as a v1 server would (a `Tribrach.Serves`) |
 | `Meters.v1_never_queued` | v1 requests never get v2's new `queued` answer |
-| `Meters.rollback_safe` | A v1 server reads a v2 request only when nothing is lost, and then answers as v2 would |
+| `Meters.rollback_safe` | A v1 server reads a v2 request only when nothing is lost, and then answers as v2 would. It follows from the two above by `Serves.rollback` |
+
+`Meters.v2Revision` is the contract history record for v2, written by
+`Revision.ofVersion` from `requestVersion`: kind `extend both`, evidence
+`checked`.
 
 ## Tested (check.sh), not yet proved
 

@@ -163,6 +163,18 @@ formats the same way by passing `tests/conformance` (see its README);
   `tests/conformance/wire.json`, written by `tools/WireCases.lean` from the
   codecs themselves, pins how each primitive reads JSON text and writes it
   back, so instruments' readers can be checked one primitive at a time.
+  Whole numbers, as JSON numbers or decimal strings, are signed 64-bit
+  whatever their bounds, so every instrument can hold them; integer schemas
+  say `"format": "int64"`.
+- **Versions** (`Tribrach.Version`): one revision of a type to the next,
+  with `upgrade`, a required `downgrade?` and two proofs: every old value
+  comes back unchanged (`forward`), and whatever downgrades upgrades back to
+  itself (`backRead`). `OneWay` is the explicit opt-out. Versions chain
+  (`Version.comp`); `Serves` states that a service at the new revision
+  answers old clients as the old service did, and `Serves.rollback` derives
+  that rolling back is safe. `Revision.ofVersion` writes the contract
+  history record (kind `extend both`, evidence `checked`) from the version
+  itself. Example: `examples/dto-parking` (`Meters.requestVersion`).
 - **Exchanges** (`tribrach.exchanges.v1`, `schema/exchanges.schema.json`):
   requests a service handled, what it was given besides the request (clock,
   ids, stubbed answers), the calls it made with their answers, and the

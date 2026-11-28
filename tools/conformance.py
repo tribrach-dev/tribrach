@@ -207,6 +207,7 @@ def parse_wire(text):
         raise WireError(str(e))
 
 
+INT64 = (-(2 ** 63), 2 ** 63 - 1)
 INSTANT = None  # the instant regex, read from patterns.json in main()
 DECIMAL = None
 
@@ -261,6 +262,8 @@ def read_wire(schema, v):
         return v
     if t == "integer":
         n = whole(v)
+        if not INT64[0] <= n <= INT64[1]:
+            raise WireError("outside signed 64-bit")
         if n < schema.get("minimum", n) or n > schema.get("maximum", n) or n % schema.get("multipleOf", 1):
             raise WireError("out of bounds")
         return n
@@ -270,7 +273,8 @@ def read_wire(schema, v):
         pat = schema.get("pattern")
         if pat == DECIMAL:
             bounds = schema.get("x-tribrach", {})
-            if not matches(pat, v) or not bounds.get("minimum", int(v)) <= int(v) <= bounds.get("maximum", int(v)):
+            if not matches(pat, v) or not INT64[0] <= int(v) <= INT64[1] \
+                    or not bounds.get("minimum", int(v)) <= int(v) <= bounds.get("maximum", int(v)):
                 raise WireError("not a decimal in bounds")
             return str(int(v))
         if pat == INSTANT:
