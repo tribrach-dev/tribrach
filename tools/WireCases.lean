@@ -164,7 +164,10 @@ def all : List Case :=
     ("utc", "\"2026-11-26T19:29:22Z\""), ("west", "\"2026-11-26T11:29:22-08:00\""),
     ("east-half-hour", "\"2026-11-27T00:59:22+05:30\""),
     ("zero-offset", "\"2026-11-26T19:29:22+00:00\""),
-    ("day-rolls-over", "\"2026-02-30T00:00:00Z\""), ("leap-day", "\"2028-02-29T12:00:00Z\""),
+    ("leap-day", "\"2028-02-29T12:00:00Z\""), ("leap-century", "\"2000-02-29T00:00:00Z\""),
+    ("february-30", "\"2026-02-30T00:00:00Z\""), ("not-a-leap-year", "\"2026-02-29T00:00:00Z\""),
+    ("century-not-leap", "\"1900-02-29T00:00:00Z\""), ("april-31", "\"2026-04-31T00:00:00Z\""),
+    ("day-00", "\"2026-11-00T00:00:00Z\""), ("month-end-west", "\"2026-04-30T23:30:00-08:00\""),
     ("year-one", "\"0001-01-01T00:00:00Z\""), ("year-9999", "\"9999-12-31T23:59:59Z\""),
     ("before-1970", "\"1969-12-31T23:59:59Z\""),
     ("fraction", "\"2026-11-26T19:29:22.5Z\""), ("lowercase", "\"2026-11-26t19:29:22z\""),
@@ -205,7 +208,8 @@ def about : String :=
   "their own JSON parser, read it as the schema says, write it back and compare with output " ++
   "by the JSON equality of replay.json. Reading fails on text that isn't one JSON value " ++
   "(trailing data, a trailing comma, NaN) and on an object with a duplicated key. Whole numbers " ++
-  "may be written 2.0 or 1e2 and are written back plainly; instants are written back in UTC. " ++
+  "may be written 2.0 or 1e2 and are written back plainly; instants are written back in UTC, " ++
+  "and an instant whose day doesn't exist in its month (30 February, 29 February outside leap years) fails. " ++
   "Cases stay within signed 64-bit integers."
 
 def file : String :=

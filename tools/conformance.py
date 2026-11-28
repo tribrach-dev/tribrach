@@ -165,6 +165,22 @@ def tree_matches(tree, s):
     return len(s) in tree_steps(tree, s, 0)
 
 
+def real_date(s):
+    """The YYYY-MM-DD at the start of s exists (proleptic Gregorian)."""
+    try:
+        y, m, d = int(s[0:4]), int(s[5:7]), int(s[8:10])
+    except ValueError:
+        return False
+    leap = (y % 4 == 0 and y % 100 != 0) or y % 400 == 0
+    days = [31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    return 1 <= m <= 12 and 1 <= d <= days[m - 1]
+
+
+def pattern_matches(case, s):
+    """What instruments check: the tree, plus the calendar where asked."""
+    return tree_matches(case["tree"], s) and (not case.get("calendar") or real_date(s))
+
+
 class WireError(Exception):
     pass
 
@@ -200,7 +216,7 @@ def read_instant(s):
     if not matches(INSTANT, s):
         raise WireError("not an instant")
     y, mo, d, h, mi, se = (int(s[a:b]) for a, b in ((0, 4), (5, 7), (8, 10), (11, 13), (14, 16), (17, 19)))
-    t = datetime.datetime(y, mo, 1, h, mi, se) + datetime.timedelta(days=d - 1)  # 02-30 rolls over
+    t = datetime.datetime(y, mo, d, h, mi, se)
     if s[19] != "Z":
         off = datetime.timedelta(hours=int(s[20:22]), minutes=int(s[23:25]))
         t = t - off if s[19] == "+" else t + off
@@ -258,6 +274,8 @@ def read_wire(schema, v):
                 raise WireError("not a decimal in bounds")
             return str(int(v))
         if pat == INSTANT:
+            if not real_date(v):
+                raise WireError("not a day that exists")
             return read_instant(v)
         if not schema.get("minLength", 0) <= len(v) <= schema.get("maxLength", len(v)):
             raise WireError("wrong length")
@@ -308,8 +326,9 @@ def main():
         for want, key in ((True, "accept"), (False, "reject")):
             for s in c[key]:
                 label = f"patterns: {c['name']} {key}s {s!r}"
-                failed |= report(label + " (regex)", matches(c["regex"], s), want)
-                failed |= report(label + " (tree)", tree_matches(c["tree"], s), want)
+                cal = not c.get("calendar") or real_date(s)
+                failed |= report(label + " (regex)", matches(c["regex"], s) and cal, want)
+                failed |= report(label + " (tree)", pattern_matches(c, s), want)
     global INSTANT, DECIMAL
     INSTANT = next(c["regex"] for c in pt["cases"] if c["name"] == "instant")
     DECIMAL = next(c["regex"] for c in pt["cases"] if c["name"] == "decimal")

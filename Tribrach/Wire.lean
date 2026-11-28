@@ -36,8 +36,9 @@ open Schema
 
 /-! ## Instants -/
 
-/-- Days since 1970-01-01 for a proleptic Gregorian date. Months and days
-past the end roll over, so 2026-02-30 is 2026-03-02. -/
+/-- Days since 1970-01-01 for a proleptic Gregorian date. Given a day past
+the end of its month it would roll over, but `parseInstant?` only passes it
+days that exist (`Pat.calendar`). -/
 def daysFromCivil (y m d : Int) : Int :=
   let y := if m ≤ 2 then y - 1 else y
   let era := y / 400
@@ -47,17 +48,36 @@ def daysFromCivil (y m d : Int) : Int :=
   let doe := yoe * 365 + yoe / 4 - yoe / 100 + doy
   era * 146097 + doe - 719468
 
-/-- The (year, month, day) of a day number from `daysFromCivil`. -/
-def civilFromDays (z : Int) : Int × Int × Int :=
-  let z := z + 719468
-  let era := z / 146097
-  let doe := z - era * 146097
+/-- The (year, month, day) of day `doe` (0 to 146096) of a 400-year era
+that starts on 1 March of year 0. -/
+def civilOfEraDay (doe : Int) : Int × Int × Int :=
   let yoe := (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365
   let doy := doe - (365 * yoe + yoe / 4 - yoe / 100)
   let mp := (5 * doy + 2) / 153
   let d := doy - (153 * mp + 2) / 5 + 1
   let m := if mp < 10 then mp + 3 else mp - 9
-  (if m ≤ 2 then yoe + era * 400 + 1 else yoe + era * 400, m, d)
+  (if m ≤ 2 then yoe + 1 else yoe, m, d)
+
+/-- The (year, month, day) of a day number from `daysFromCivil`. -/
+def civilFromDays (z : Int) : Int × Int × Int :=
+  let z := z + 719468
+  let (y, m, d) := civilOfEraDay (z % 146097)
+  (y + z / 146097 * 400, m, d)
+
+/-- The calendar repeats every 400 years (146,097 days): checking one era
+checks them all. -/
+theorem civilFromDays_period (z : Int) :
+    civilFromDays (z + 146097) =
+      ((civilFromDays z).1 + 400, (civilFromDays z).2.1, (civilFromDays z).2.2) := by
+  have hm : (z + 146097 + 719468) % 146097 = (z + 719468) % 146097 := by omega
+  have hd : (z + 146097 + 719468) / 146097 = (z + 719468) / 146097 + 1 := by omega
+  simp only [civilFromDays, hm, hd]
+  congr 1; omega
+
+theorem daysFromCivil_period (y m d : Int) :
+    daysFromCivil (y + 400) m d = daysFromCivil y m d + 146097 := by
+  simp only [daysFromCivil]
+  split <;> omega
 
 private def pad (width : Nat) (n : Int) : String :=
   let s := toString n.natAbs
@@ -78,7 +98,7 @@ private def num (s : String) (start len : Nat) : Int :=
   (((s.drop start).take len).toString.toNat?.getD 0 : Nat)
 
 /-- Seconds since 1970 for any string `Pat.instant` accepts, after applying
-its offset. -/
+its offset. A day that doesn't exist, such as 30 February, is `none`. -/
 def parseInstant? (s : String) : Option Int :=
   if !Pat.instant.check s then none else
   let wall := daysFromCivil (num s 0 4) (num s 5 2) (num s 8 2) * 86400
@@ -289,7 +309,8 @@ section Checks
 #guard formatInstant 1795721362 == "2026-11-26T19:29:22Z"
 #guard parseInstant? "2026-11-26T11:29:22-08:00" == some 1795721362
 #guard parseInstant? "2026-11-27T00:59:22+05:30" == some 1795721362
-#guard parseInstant? "2026-02-30T00:00:00Z" == parseInstant? "2026-03-02T00:00:00Z"
+#guard parseInstant? "2026-02-30T00:00:00Z" == none
+#guard parseInstant? "2028-02-29T00:00:00Z" == some 1835395200
 #guard parseInstant? "2026-11-26T19:29:22.5Z" == none
 #guard formatInstant instantMin == "0001-01-01T00:00:00Z"
 #guard formatInstant instantMax == "9999-12-31T23:59:59Z"
@@ -298,6 +319,20 @@ section Checks
 #guard (List.range ((instantMax - instantMin).toNat / 997331 + 1)).all fun i =>
   let t := instantMin + 997331 * i
   parseInstant? (formatInstant t) == some t
+-- Every day of one 400-year era (years 2000 to 2399) is a day that exists
+-- and converts back to the same day number; with the two `_period`
+-- theorems this holds for every era.
+#guard (List.range 146097).all fun i =>
+  let z := daysFromCivil 2000 3 1 + i
+  let (y, m, d) := civilFromDays z
+  1 ≤ m && m ≤ 12 && 1 ≤ d && d ≤ (Pat.daysInMonth y.toNat m.toNat : Int) && daysFromCivil y m d == z
+-- And the other way: in that era, a (year, month, day) converts to a day
+-- number and back unchanged exactly when the calendar check accepts it, so
+-- `Pat.calendar` refuses precisely the days that would roll over.
+#guard (List.range 400).all fun i => (List.range 12).all fun mi => (List.range 31).all fun di =>
+  let y : Int := 2000 + i
+  let (m, d) : Int × Int := (mi + 1, di + 1)
+  (civilFromDays (daysFromCivil y m d) == (y, m, d)) == decide (d ≤ Pat.daysInMonth y.toNat m.toNat)
 #guard Codec.decimal.dec "9007199254740993" == some 9007199254740993
 #guard Codec.decimal.dec "1_000" == none
 end Checks

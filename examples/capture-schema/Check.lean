@@ -41,6 +41,8 @@ def checkPatterns (root : System.FilePath) : IO Bool := do
       if c.getObjValD "tree" != p.tree.toJson then
         IO.println s!"FAIL patterns: {p.name} tree differs from Pat.tree; it is {p.tree.toJson.compress}"
         ok := false
+      if (c.getObjValAs? Bool "calendar").toOption.getD false != p.calendar then
+        IO.println s!"FAIL patterns: {p.name} calendar differs from Pat.calendar"; ok := false
       for s in strings c "accept" do
         if !p.check s then IO.println s!"FAIL patterns: {p.name} should accept {repr s}"; ok := false
       for s in strings c "reject" do

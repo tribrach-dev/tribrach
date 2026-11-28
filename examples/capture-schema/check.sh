@@ -5,7 +5,8 @@
 #  2. the Lean checker agrees with the pattern conformance cases and with
 #     the capture goldens;
 #  3. the Lean checker, the reference tree matcher (tools/conformance.py)
-#     and the exported regexes agree on many generated strings near the
+#     and the exported regexes (plus the calendar check, where a pattern
+#     asks for it) agree on many generated strings near the
 #     conformance cases.
 set -e
 
@@ -53,22 +54,22 @@ lake env lean --run Check.lean fuzz "$tmp/in.json" "$tmp/out.json"
 python3 - "$tmp" <<'PY'
 import json, re, sys
 sys.path.insert(0, "../../tools")
-from conformance import tree_matches
+from conformance import pattern_matches, real_date
 tmp = sys.argv[1]
 all_cases = json.load(open("../../tests/conformance/patterns.json"))["cases"]
 cases = {c["name"]: c["regex"] for c in all_cases}
-trees = {c["name"]: c["tree"] for c in all_cases}
+byname = {c["name"]: c for c in all_cases}
 samples = json.load(open(f"{tmp}/in.json"))
 lean = json.load(open(f"{tmp}/out.json"))
 bad = 0
 for name, strs in samples.items():
     rx = re.compile(cases[name][:-1] + r"\Z")  # ECMA $: only at the very end
     for s, got in zip(strs, lean[name]):
-        want = rx.search(s) is not None
+        want = rx.search(s) is not None and (not byname[name].get("calendar") or real_date(s))
         if want != got:
             bad += 1
             print(f"FAIL {name}: Lean says {got} for {s!r}")
-        if want != tree_matches(trees[name], s):
+        if want != pattern_matches(byname[name], s):
             bad += 1
             print(f"FAIL {name}: the reference tree matcher says {not want} for {s!r}")
 total = sum(len(v) for v in samples.values())

@@ -46,9 +46,11 @@ inductive Pat where
   checked, not the calendar. -/
   | dateTime
   /-- An RFC 3339 instant to the second: like `dateTime` but with no
-  fraction, and with each field in range (month 01-12, day 01-31, hour 00-23,
-  minute and second 00-59, offset up to 23:59). The day isn't checked against
-  the month, so `2026-02-30` passes and decodes to 2 March. -/
+  fraction, with each field in range (month 01-12, hour 00-23, minute and
+  second 00-59, offset up to 23:59), and with a day that exists in that month
+  of the Gregorian calendar: `2028-02-29` passes, `2026-02-29` and
+  `2026-04-31` don't. The tree checks the shape; the day check is
+  `Pat.calendar` (see `realDate`). -/
   | instant
   /-- A whole number written as a decimal string, for values JSON numbers
   can't carry safely (money, 64-bit ids): `0` or an optional `-` then digits
@@ -95,6 +97,13 @@ def tree : Pat → Re
 /-- The regular expression, in the syntax JSON Schema uses (ECMA-262). -/
 def regex (p : Pat) : String := p.tree.toRegex
 
+/-- Patterns whose strings start with a `YYYY-MM-DD` date that must exist,
+which no tree or regex says. JSON Schema's `format: date-time` asks the same
+of validators that check formats. -/
+def calendar : Pat → Bool
+  | instant => true
+  | _ => false
+
 -- The trees render to the regexes the schema has always published.
 #guard (hex 16).regex == "^[0-9a-f]{16}$"
 #guard slug.regex == "^[a-z0-9][a-z0-9-]*$"
@@ -127,8 +136,27 @@ def name : Pat → String
   | instant => "instant"
   | decimal => "decimal"
 
-/-- The Lean side of each pattern, read off the tree. -/
-def check (p : Pat) : String → Bool := p.tree.accepts
+/-- Days in month `m` of year `y`, proleptic Gregorian. -/
+def daysInMonth (y m : Nat) : Nat :=
+  if m == 2 then (if (y % 4 == 0 && y % 100 != 0) || y % 400 == 0 then 29 else 28)
+  else if m == 4 || m == 6 || m == 9 || m == 11 then 30
+  else 31
+
+/-- Whether the `YYYY-MM-DD` at the start of `s` is a day that exists. -/
+def realDate (s : String) : Bool :=
+  let field (start len : Nat) := ((s.drop start).take len).toString.toNat?
+  match field 0 4, field 5 2, field 8 2 with
+  | some y, some m, some d => 1 ≤ m && m ≤ 12 && 1 ≤ d && d ≤ daysInMonth y m
+  | _, _, _ => false
+
+/-- The Lean side of each pattern: the tree, plus the calendar where the
+pattern asks for it. -/
+def check (p : Pat) (s : String) : Bool := p.tree.accepts s && (!p.calendar || realDate s)
+
+#guard instant.check "2028-02-29T12:00:00Z" && instant.check "2000-02-29T00:00:00Z"
+#guard !instant.check "2026-02-29T12:00:00Z" && !instant.check "1900-02-29T00:00:00Z"
+#guard !instant.check "2026-02-30T00:00:00Z" && !instant.check "2026-04-31T00:00:00Z"
+#guard instant.check "2026-12-31T23:59:59Z" && dateTime.check "2026-02-30T00:00:00Z"
 
 /-- Every pattern conformance covers. -/
 def all : List Pat :=
